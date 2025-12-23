@@ -2086,6 +2086,9 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      */
     protected static final int[] PRESSED_ENABLED_FOCUSED_SELECTED_WINDOW_FOCUSED_STATE_SET;
 
+    /**
+     * 用于初始化各种视图状态集合常量。这些状态集合在 Android 的 drawable 系统中广泛使用，用于根据视图的不同状态显示不同的视觉效果。
+     */
     static {
         EMPTY_STATE_SET = StateSet.get(0);
 
@@ -5835,10 +5838,12 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         mRenderNode = RenderNode.create(getClass().getName(), this);
     }
 
+    //用于确定是否应该在绘制过程中显示调试信息。这是一个辅助方法，帮助开发者在调试布局时可视化视图边界和其他布局信息。
     final boolean debugDraw() {
         return DEBUG_DRAW || mAttachInfo != null && mAttachInfo.mDebugLayout;
     }
 
+    //用于获取一个 SparseArray<String> 类型的属性映射表，该映射表用于存储视图的属性信息。
     private static SparseArray<String> getAttributeMap() {
         if (mAttributeMap == null) {
             mAttributeMap = new SparseArray<>();
@@ -5846,6 +5851,12 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         return mAttributeMap;
     }
 
+    /**
+     * 用于保存视图的属性数据，主要用于调试目的。
+     * 该方法的主要作用是收集并保存视图的 XML 属性和样式属性，以便后续调试使用
+     * @param attrs
+     * @param t
+     */
     private void saveAttributeData(@Nullable AttributeSet attrs, @NonNull TypedArray t) {
         final int attrsCount = attrs == null ? 0 : attrs.getAttributeCount();
         final int indexCount = t.getIndexCount();
@@ -24032,7 +24043,17 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * <a href="{@docRoot}guide/topics/ui/drag-drop.html">Drag and Drop</a> developer guide.</p>
      * </div>
      */
+    /**
+     * 用于在拖拽操作期间创建和管理拖拽阴影（drag shadow）。
+     * 当用户在界面上进行拖拽操作时，会在手指或触控点附近显示一个半透明的阴影图像，
+     * 表示正在被拖拽的内容，这个类就是用来定制这个阴影图像的外观和行为。
+     * 主要功能：
+     * 创建拖拽阴影：定义在拖拽过程中跟随手指移动的阴影图像
+     * 定制阴影外观：允许开发者自定义阴影的尺寸、外观和触摸点位置
+     * 弱引用持有视图：通过弱引用持有原始视图，避免内存泄漏
+     */
     public static class DragShadowBuilder {
+        //用于持有与阴影关联的原始视图对象。使用弱引用是为了避免在拖拽过程中造成内存泄漏。
         private final WeakReference<View> mView;
 
         /**
@@ -24065,6 +24086,8 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          * null.
          *
          * @return The View object associate with this builder object.
+         * 返回传递给 DragShadowBuilder(View) 构造函数的视图对象。
+         * 如果该视图参数为 null 或者使用了 DragShadowBuilder() 构造函数来实例化构建器对象，则此方法将返回 null。
          */
         @SuppressWarnings({"JavadocReference"})
         final public View getView() {
@@ -24091,6 +24114,12 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          * operation. Your application must set {@link android.graphics.Point#x} to the
          * X coordinate and {@link android.graphics.Point#y} to the Y coordinate of this position.
          */
+        /**
+         * 提供阴影图像的度量信息，包括阴影图像的尺寸以及在拖拽过程中应该置于触摸点下方的阴影图像上的位置点。
+         * 默认实现将阴影的尺寸设置为与视图本身相同的尺寸，并将阴影居中放置在触摸点下方。
+         * @param outShadowSize             一个 Point 对象，包含阴影图像的宽度和高度
+         * @param outShadowTouchPoint       一个 Point 对象，表示在阴影图像中应该位于触摸点下方的位置坐标
+         */
         public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
             final View view = mView.get();
             if (view != null) {
@@ -24107,6 +24136,9 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          * {@link #onProvideShadowMetrics(Point, Point)} callback.
          *
          * @param canvas A {@link android.graphics.Canvas} object in which to draw the shadow image.
+         * 绘制阴影图像。系统会根据从 onProvideShadowMetrics() 回调中接收到的尺寸创建 Canvas 对象。
+         * 默认实现会直接绘制关联的视图到画布上。
+         * canvas：用于绘制阴影图像的 Canvas 对象
          */
         public void onDrawShadow(Canvas canvas) {
             final View view = mView.get();
@@ -25644,6 +25676,12 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * Interface definition for a callback to be invoked when a captured pointer event
      * is being dispatched this view. The callback will be invoked before the event is
      * given to the view.
+     * 用于监听捕获的指针事件。
+     * 主要功能：
+     * 指针事件监听：当视图捕获到指针事件（如鼠标、触控笔等）时，会触发此接口的回调方法
+     * 事件处理：允许开发者自定义处理捕获的指针事件
+     * true：表示监听器已经消费了该事件，不再继续传递
+     * false：表示监听器未消费该事件，事件将继续传递
      */
     public interface OnCapturedPointerListener {
         /**
@@ -25884,6 +25922,14 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * MeasureSpecs are implemented as ints to reduce object allocation. This class
      * is provided to pack and unpack the &lt;size, mode&gt; tuple into the int.
      */
+    /**
+     * 用于在 Android 的测量流程中封装父视图对子视图的尺寸要求。
+     * 它将测量模式（mode）和尺寸大小（size）打包成一个 32 位的整数，其中高 2 位表示模式，剩余 30 位表示尺寸大小。
+     * 测量模式（MeasureSpec Modes）
+     * UNSPECIFIED：父视图不对子视图施加任何约束，子视图可以是任意大小
+     * EXACTLY：父视图已经确定了子视图的确切大小，子视图必须使用这个大小
+     * AT_MOST：子视图可以最大达到指定的尺寸
+     */
     public static class MeasureSpec {
         private static final int MODE_SHIFT = 30;
         private static final int MODE_MASK  = 0x3 << MODE_SHIFT;
@@ -25932,6 +25978,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          * @param size the size of the measure specification
          * @param mode the mode of the measure specification
          * @return the measure specification based on size and mode
+         * 作用是将尺寸大小（size）和测量模式（mode）打包成一个 32 位的整数，形成一个 MeasureSpec。
          */
         public static int makeMeasureSpec(@IntRange(from = 0, to = (1 << MeasureSpec.MODE_SHIFT) - 1) int size,
                                           @MeasureSpecMode int mode) {
@@ -25962,6 +26009,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          * @return {@link android.view.View.MeasureSpec#UNSPECIFIED},
          *         {@link android.view.View.MeasureSpec#AT_MOST} or
          *         {@link android.view.View.MeasureSpec#EXACTLY}
+         *         从 MeasureSpec 中提取模式
          */
         @MeasureSpecMode
         public static int getMode(int measureSpec) {
@@ -25974,11 +26022,18 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @param measureSpec the measure specification to extract the size from
          * @return the size in pixels defined in the supplied measure specification
+         * 从 MeasureSpec 中提取尺寸
          */
         public static int getSize(int measureSpec) {
             return (measureSpec & ~MODE_MASK);
         }
 
+        /**
+         * 作用是根据给定的增量(delta)来调整 MeasureSpec 的尺寸大小，同时保持其测量模式不变。
+         * @param measureSpec   原始的 MeasureSpec 值
+         * @param delta         需要调整的增量值，可以为正数(增加)或负数(减少)
+         * @return
+         */
         static int adjust(int measureSpec, int delta) {
             final int mode = getMode(measureSpec);
             int size = getSize(measureSpec);
@@ -26001,6 +26056,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @param measureSpec the measure specification to convert to a String
          * @return a String with the following format: "MeasureSpec: MODE SIZE"
+         * 将 MeasureSpec 转换为字符串表示形式
          */
         public static String toString(int measureSpec) {
             int mode = getMode(measureSpec);
@@ -26022,10 +26078,19 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         }
     }
 
+    /**
+     * 用于检测和处理长按事件。
+     * 主要功能：
+     * 检测用户是否长时间按下视图
+     * 在满足条件时触发长按事件回调
+     */
     private final class CheckForLongPress implements Runnable {
+        //记录创建该 runnable 时窗口附加计数
         private int mOriginalWindowAttachCount;
+        //记录触摸点坐标
         private float mX;
         private float mY;
+        //记录创建该 runnable 时的按下状态
         private boolean mOriginalPressedState;
 
         @Override
@@ -26043,15 +26108,18 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             mY = y;
         }
 
+        //保存当前窗口附加计数，用于后续验证。
         public void rememberWindowAttachCount() {
             mOriginalWindowAttachCount = mWindowAttachCount;
         }
 
+        //保存当前按下状态，用于后续验证。
         public void rememberPressedState() {
             mOriginalPressedState = isPressed();
         }
     }
 
+    //这个类的主要作用是在适当的时间延迟后确认用户的点击操作，并触发相应的视觉反馈和长按检测。
     private final class CheckForTap implements Runnable {
         public float x;
         public float y;
@@ -26064,6 +26132,8 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         }
     }
 
+    //专门用于处理点击事件的执行。
+    //这个类的主要目的是封装点击事件的执行逻辑，以便可以在适当的时候通过消息队列执行点击操作。
     private final class PerformClick implements Runnable {
         @Override
         public void run() {
@@ -26369,6 +26439,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         public WindowInsets onApplyWindowInsets(View v, WindowInsets insets);
     }
 
+    //这个类的唯一目的是在适当的时候取消视图的按下状态。
     private final class UnsetPressedState implements Runnable {
         @Override
         public void run() {
@@ -26381,6 +26452,12 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * happens after the regular removal operation to make sure the operation is finished by the
      * time this is called.
      */
+    /**
+     * 该类专门用于处理与自动填充(Autofill)相关的视图可见性变化通知。
+     * 当视图的可见性发生变化时，通过此 Handler 异步通知 AutofillManager。
+     * mAfm: AutofillManager 实例，用于管理自动填充功能
+     * mView: 相关联的 View 实例
+     */
     private static class VisibilityChangeForAutofillHandler extends Handler {
         private final AutofillManager mAfm;
         private final View mView;
@@ -26391,6 +26468,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             mView = view;
         }
 
+        //重写了 Handler 的 handleMessage 方法，当收到消息时调用 AutofillManager 的 notifyViewVisibilityChanged 方法，通知视图可见性已更改。
         @Override
         public void handleMessage(Message msg) {
             mAfm.notifyViewVisibilityChanged(mView, mView.isShown());
@@ -26401,15 +26479,25 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * Base class for derived classes that want to save and restore their own
      * state in {@link android.view.View#onSaveInstanceState()}.
      */
+    /**
+     * 用于保存和恢复视图的状态信息。
+     * 该类是视图状态保存和恢复机制的基础类，为视图提供了一种标准的方式来存储和恢复其状态数据，
+     * 特别是在配置变更（如屏幕旋转）或进程被系统杀死后重建时保持视图的状态。
+     */
     public static class BaseSavedState extends AbsSavedState {
+        //这些二进制标志用于标记 mSavedData 中哪些数据是有效的。
         static final int START_ACTIVITY_REQUESTED_WHO_SAVED = 0b1;
         static final int IS_AUTOFILLED = 0b10;
         static final int AUTOFILL_ID = 0b100;
 
         // Flags that describe what data in this state is valid
+        //一个整型标志位，用于描述哪些数据在状态中是有效的
         int mSavedData;
+        //字符串类型，保存启动活动请求的相关信息
         String mStartActivityRequestWhoSaved;
+        //标识视图是否已被自动填充
         boolean mIsAutofilled;
+        //视图的自动填充ID
         int mAutofillViewId;
 
         /**
@@ -26445,6 +26533,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             super(superState);
         }
 
+        //将视图状态数据写入 Parcel，用于保存状态。
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
@@ -26455,6 +26544,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             out.writeInt(mAutofillViewId);
         }
 
+        //实现了 Parcelable 的标准创建器，用于从 Parcel 创建 BaseSavedState 实例。
         public static final Parcelable.Creator<BaseSavedState> CREATOR
                 = new Parcelable.ClassLoaderCreator<BaseSavedState>() {
             @Override
@@ -26478,7 +26568,13 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * A set of information given to a view when it is attached to its parent
      * window.
      */
+    /**
+     * 用于存储与窗口附加相关的信息。这个类主要负责管理视图与其宿主窗口之间的连接信息和状态。
+     * AttachInfo 作为一个信息容器，保存了视图树附加到窗口时所需的各种信息和状态，
+     * 包括窗口会话、显示信息、回调接口等。它是连接视图层和窗口管理层的桥梁。
+     */
     final static class AttachInfo {
+        //定义了播放声音效果和执行触觉反馈的回调方法。
         interface Callbacks {
             void playSoundEffect(int effectId);
             boolean performHapticFeedback(int effectId, boolean always);
@@ -26492,6 +26588,12 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          * For performance purposes, this class also implements a pool of up to
          * POOL_LIMIT objects that get reused. This reduces memory allocations
          * whenever possible.
+         */
+        /**
+         * 这是一个用于优化内存分配的内部类：
+         * 实现了一个对象池机制，最多缓存10个对象实例
+         * 用于封装无效化区域的信息（目标视图和矩形坐标）
+         * 提供 obtain() 和 recycle() 方法来获取和回收对象实例
          */
         static class InvalidateInfo {
             private static final int POOL_LIMIT = 10;
@@ -26517,13 +26619,13 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             }
         }
 
-        final IWindowSession mSession;
+        final IWindowSession mSession;//窗口会话接口，用于与窗口管理器通信
 
-        final IWindow mWindow;
+        final IWindow mWindow;//窗口接口
 
-        final IBinder mWindowToken;
+        final IBinder mWindowToken;//窗口的 Binder token
 
-        Display mDisplay;
+        Display mDisplay;//显示设备信息
 
         final Callbacks mRootCallbacks;
 
@@ -26533,7 +26635,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         /**
          * The top view of the hierarchy.
          */
-        View mRootView;
+        View mRootView;//视图层次结构的根视图
 
         IBinder mPanelParentWindowToken;
 
@@ -26926,39 +27028,50 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * is supported. This avoids keeping too many unused fields in most
      * instances of View.</p>
      */
+    /**
+     * 用于管理和缓存与滚动相关的视觉元素，特别是滚动条的绘制和动画效果。
+     * 主要功能
+     * 这个类负责处理视图滚动时的视觉反馈，包括滚动条的显示、隐藏、淡出动画以及滚动边缘的渐变效果。
+     */
     private static class ScrollabilityCache implements Runnable {
 
         /**
          * Scrollbars are not visible
+         * 滚动条不可见
          */
         public static final int OFF = 0;
 
         /**
          * Scrollbars are visible
+         * 滚动条可见
          */
         public static final int ON = 1;
 
         /**
          * Scrollbars are fading away
+         * 滚动条正在淡出
          */
         public static final int FADING = 2;
 
+        //是否启用滚动条淡出效果
         public boolean fadeScrollBars;
 
+        //滚动边缘渐变长度
         public int fadingEdgeLength;
-        public int scrollBarDefaultDelayBeforeFade;
-        public int scrollBarFadeDuration;
+        public int scrollBarDefaultDelayBeforeFade;//滚动条开始淡出前的默认延迟时间
+        public int scrollBarFadeDuration;//滚动条淡出动画持续时间
 
-        public int scrollBarSize;
-        public int scrollBarMinTouchTarget;
-        public ScrollBarDrawable scrollBar;
+        public int scrollBarSize;//滚动条大小
+        public int scrollBarMinTouchTarget;//滚动条最小触摸目标尺寸
+        public ScrollBarDrawable scrollBar;//用于绘制滚动条
         public float[] interpolatorValues;
-        public View host;
+        public View host;//关联的 View 对象
 
-        public final Paint paint;
-        public final Matrix matrix;
-        public Shader shader;
+        public final Paint paint;//用于绘制操作
+        public final Matrix matrix;//用于变换操作
+        public Shader shader;//用于渐变效果
 
+        //插值器，控制滚动条淡出动画
         public final Interpolator scrollBarInterpolator = new Interpolator(1, 2);
 
         private static final float[] OPAQUE = { 255 };
@@ -26967,16 +27080,18 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         /**
          * When fading should start. This time moves into the future every time
          * a new scroll happens. Measured based on SystemClock.uptimeMillis()
+         * 滚动条淡出动画开始时间
          */
         public long fadeStartTime;
 
 
         /**
          * The current state of the scrollbars: ON, OFF, or FADING
+         * 当前滚动条状态
          */
         public int state = OFF;
 
-        private int mLastColor;
+        private int mLastColor;//上一次设置的颜色值
 
         public final Rect mScrollBarBounds = new Rect();
         public final Rect mScrollBarTouchBounds = new Rect();
@@ -27006,6 +27121,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             this.host = host;
         }
 
+        //设置滚动条淡出颜色。根据传入的颜色值创建相应的 LinearGradient 着色器，并设置适当的混合模式。
         public void setFadeColor(int color) {
             if (color != mLastColor) {
                 mLastColor = color;
@@ -27024,6 +27140,11 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             }
         }
 
+        //负责执行滚动条淡出动画
+//        计算当前动画时间
+//        设置插值器的关键帧（从不透明到透明）
+//        更新状态为 FADING
+//        触发宿主视图重绘
         public void run() {
             long now = AnimationUtils.currentAnimationTimeMillis();
             if (now >= fadeStartTime) {
@@ -27055,11 +27176,22 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * Resuable callback for sending
      * {@link AccessibilityEvent#TYPE_VIEW_SCROLLED} accessibility event.
      */
+    /**
+     * 专门用于处理视图滚动时的无障碍事件通知。
+     * 主要功能
+     * 该类负责在视图发生滚动时，定期向无障碍服务发送滚动事件通知，以便辅助技术（如屏幕阅读器）能够感知到滚动变化。
+     */
     private class SendViewScrolledAccessibilityEvent implements Runnable {
-        public volatile boolean mIsPending;
-        public int mDeltaX;
-        public int mDeltaY;
+        public volatile boolean mIsPending;//表示是否已有待处理的事件
+        public int mDeltaX;//X轴方向的累计滚动距离
+        public int mDeltaY;//Y轴方向的累计滚动距离
 
+        /**
+         * 用于提交滚动事件：
+         * 累加滚动距离 (mDeltaX 和 mDeltaY)
+         * 如果没有待处理事件，则标记为待处理状态
+         * 使用 postDelayed 延迟执行，延迟时间由 ViewConfiguration.getSendRecurringAccessibilityEventsInterval() 确定
+         */
         public void post(int dx, int dy) {
             mDeltaX += dx;
             mDeltaY += dy;
@@ -27069,6 +27201,14 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             }
         }
 
+        /**
+         * 实际执行事件发送的逻辑：
+         * 检查无障碍服务是否启用
+         * 创建 AccessibilityEvent.TYPE_VIEW_SCROLLED 类型的事件
+         * 设置滚动距离信息 (setScrollDeltaX 和 setScrollDeltaY)
+         * 发送无障碍事件 (sendAccessibilityEventUnchecked)
+         * 重置状态 (reset)
+         */
         @Override
         public void run() {
             if (AccessibilityManager.getInstance(mContext).isEnabled()) {
@@ -27081,6 +27221,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
             reset();
         }
 
+        //重置所有状态变量，为下一次滚动事件做准备
         private void reset() {
             mIsPending = false;
             mDeltaX = 0;
@@ -27170,6 +27311,11 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * methods are called <i>after</i> host methods, which all properties to be
      * modified without being overwritten by the host class.
      */
+    /**
+     * 用于处理视图的无障碍访问功能。它允许开发者自定义视图的无障碍行为，而无需创建视图的子类。
+     * 主要功能
+     * 该类提供了一系列方法来处理无障碍事件和操作，使应用程序能够更好地支持辅助技术（如屏幕阅读器）。
+     */
     public static class AccessibilityDelegate {
 
         /**
@@ -27185,6 +27331,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          * @param eventType The type of the event to send.
          *
          * @see View#sendAccessibilityEvent(int) View#sendAccessibilityEvent(int)
+         * 发送指定类型的无障碍事件
          */
         public void sendAccessibilityEvent(View host, int eventType) {
             host.sendAccessibilityEventInternal(eventType);
@@ -27205,6 +27352,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @see View#performAccessibilityAction(int, Bundle)
          *      View#performAccessibilityAction(int, Bundle)
+         *       执行指定的无障碍操作
          */
         public boolean performAccessibilityAction(View host, int action, Bundle args) {
             return host.performAccessibilityActionInternal(action, args);
@@ -27227,6 +27375,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @see View#sendAccessibilityEventUnchecked(AccessibilityEvent)
          *      View#sendAccessibilityEventUnchecked(AccessibilityEvent)
+         *      发送无障碍事件而不检查无障碍功能是否启用
          */
         public void sendAccessibilityEventUnchecked(View host, AccessibilityEvent event) {
             host.sendAccessibilityEventUncheckedInternal(event);
@@ -27248,6 +27397,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @see View#dispatchPopulateAccessibilityEvent(AccessibilityEvent)
          *      View#dispatchPopulateAccessibilityEvent(AccessibilityEvent)
+         *      将无障碍事件分发给宿主视图及其子视图以填充文本内容
          */
         public boolean dispatchPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
             return host.dispatchPopulateAccessibilityEventInternal(event);
@@ -27268,6 +27418,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @see View#onPopulateAccessibilityEvent(AccessibilityEvent)
          *      View#onPopulateAccessibilityEvent(AccessibilityEvent)
+         *      用宿主视图的文本内容填充无障碍事件
          */
         public void onPopulateAccessibilityEvent(View host, AccessibilityEvent event) {
             host.onPopulateAccessibilityEventInternal(event);
@@ -27288,6 +27439,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @see View#onInitializeAccessibilityEvent(AccessibilityEvent)
          *      View#onInitializeAccessibilityEvent(AccessibilityEvent)
+         *      用宿主视图的信息初始化无障碍事件
          */
         public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
             host.onInitializeAccessibilityEventInternal(event);
@@ -27307,6 +27459,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @see View#onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo)
          *      View#onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo)
+         *      用宿主视图的信息初始化无障碍节点信息
          */
         public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
             host.onInitializeAccessibilityNodeInfoInternal(info);
@@ -27334,6 +27487,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *                  May be {@code null} if the if the service provided no arguments.
          *
          * @see AccessibilityNodeInfo#setExtraAvailableData
+         * 根据显式请求向无障碍节点信息添加额外数据
          */
         public void addExtraDataToAccessibilityNodeInfo(@NonNull View host,
                 @NonNull AccessibilityNodeInfo info, @NonNull String extraDataKey,
@@ -27359,6 +27513,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          *
          * @see ViewGroup#onRequestSendAccessibilityEvent(View, AccessibilityEvent)
          *      ViewGroup#onRequestSendAccessibilityEvent(View, AccessibilityEvent)
+         *      处理子视图请求发送无障碍事件的情况
          */
         public boolean onRequestSendAccessibilityEvent(ViewGroup host, View child,
                 AccessibilityEvent event) {
@@ -27378,6 +27533,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          * @return The provider.
          *
          * @see AccessibilityNodeProvider
+         * 获取管理虚拟视图层次结构的提供者
          */
         public AccessibilityNodeProvider getAccessibilityNodeProvider(View host) {
             return null;
@@ -27405,24 +27561,30 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
          * @see AccessibilityNodeInfo
          *
          * @hide
+         * 创建表示宿主视图的无障碍节点信息
          */
         public AccessibilityNodeInfo createAccessibilityNodeInfo(View host) {
             return host.createAccessibilityNodeInfoInternal();
         }
     }
 
+    //这个类用于根据视图的 ID 来匹配和筛选视图。它是一个简单的谓词（predicate）实现，用来测试给定的视图是否具有特定的 ID。
     private static class MatchIdPredicate implements Predicate<View> {
-        public int mId;
+        public int mId;//存储要匹配的目标视图 ID
 
+        //实现了 Predicate 接口的测试方法，检查传入的 view 的 mID 是否与 mId 相等
         @Override
         public boolean test(View view) {
             return (view.mID == mId);
         }
     }
 
+    //这个类用于根据视图的 mLabelForId 属性来匹配和筛选视图。
+    // 它是一个谓词（predicate）实现，用来测试给定的视图是否具有特定的标签对应ID。
     private static class MatchLabelForPredicate implements Predicate<View> {
-        private int mLabeledId;
+        private int mLabeledId;//存储要匹配的目标标签ID
 
+        //实现了 Predicate 接口的测试方法，检查传入的 view 的 mLabelForId 是否与 mLabeledId 相等
         @Override
         public boolean test(View view) {
             return (view.mLabelForId == mLabeledId);

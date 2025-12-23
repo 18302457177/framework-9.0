@@ -31,6 +31,14 @@ import android.view.ViewGroup;
  * @see android.widget.CursorAdapter
  * @see android.widget.SimpleCursorAdapter
  */
+
+/**
+ * 用于连接数据源和 UI 组件（如 AdapterView）。
+ * 核心功能
+ * 桥梁作用：作为 AdapterView 和底层数据之间的桥梁
+ * 数据访问：提供对数据项的访问接口
+ * 视图创建：为数据集中的每个项目创建对应的 View
+ */
 public interface Adapter {
     /**
      * Register an observer that is called when changes happen to the data used by this adapter.
@@ -51,6 +59,7 @@ public interface Adapter {
      * How many items are in the data set represented by this Adapter.
      * 
      * @return Count of items.
+     * 由该适配器表示的数据集中有多少项。
      */
     int getCount();   
     
@@ -60,6 +69,7 @@ public interface Adapter {
      * @param position Position of the item whose data we want within the adapter's 
      * data set.
      * @return The data at the specified position.
+     * 获取指定位置的数据项
      */
     Object getItem(int position);
     
@@ -68,6 +78,7 @@ public interface Adapter {
      * 
      * @param position The position of the item within the adapter's data set whose row id we want.
      * @return The id of the item at the specified position.
+     * 获取指定位置项目的行 ID
      */
     long getItemId(int position);
     
@@ -76,6 +87,7 @@ public interface Adapter {
      * underlying data.
      * 
      * @return True if the same id always refers to the same object.
+     * 指示项目 ID 是否在数据更改时保持稳定
      */
     boolean hasStableIds();
     
@@ -96,6 +108,7 @@ public interface Adapter {
      *        {@link #getItemViewType(int)}).
      * @param parent The parent that this view will eventually be attached to
      * @return A View corresponding to the data at the specified position.
+     * 为指定位置的数据创建视图
      */
     View getView(int position, View convertView, ViewGroup parent);
 
@@ -120,6 +133,7 @@ public interface Adapter {
      *         range 0 to {@link #getViewTypeCount} - 1. {@link #IGNORE_ITEM_VIEW_TYPE} can
      *         also be returned.
      * @see #IGNORE_ITEM_VIEW_TYPE
+     * 获取指定位置视图的类型
      */
     int getItemViewType(int position);
     
@@ -135,6 +149,7 @@ public interface Adapter {
      * </p>
      * 
      * @return The number of types of Views that will be created by this adapter
+     * 返回视图类型的总数
      */
     int getViewTypeCount();
     
