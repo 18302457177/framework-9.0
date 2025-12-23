@@ -265,7 +265,7 @@ public abstract class AdapterView<T extends Adapter> extends ViewGroup {
     private boolean mDesiredFocusableInTouchModeState;
 
     /** Lazily-constructed runnable for dispatching selection events. */
-    延迟构造的选择事件分发 Runnable
+    //延迟构造的选择事件分发 Runnable
     private SelectionNotifier mSelectionNotifier;
 
     /** Selection notifier that's waiting for the next layout pass. */

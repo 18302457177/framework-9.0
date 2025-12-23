@@ -25,6 +25,7 @@ import android.view.ViewGroup;
  * define two different views: one that shows the data in the spinner itself
  * and one that shows the data in the drop down list when the spinner is
  * pressed.
+ * 扩展了 Adapter 接口的接口，作为 Spinner 和其数据之间的桥梁。
  */
 public interface SpinnerAdapter extends Adapter {
     /**
@@ -39,6 +40,13 @@ public interface SpinnerAdapter extends Adapter {
      * @param parent the parent that this view will eventually be attached to
      * @return a {@link android.view.View} corresponding to the data at the
      *         specified position.
+     */
+    /**
+     * 获取在下拉弹出窗口中显示指定位置数据的 View
+     * @param position  要显示项目的索引
+     * @param convertView  可重用的旧视图，使用前需检查非空和类型匹配
+     * @param parent  该视图最终将附加到的父容器
+     * @return
      */
     public View getDropDownView(int position, View convertView, ViewGroup parent);
 }
