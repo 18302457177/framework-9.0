@@ -222,6 +222,10 @@ public interface ViewParent {
      * @return {@code true} if the context menu was shown, {@code false}
      *         otherwise
      * @see #showContextMenuForChild(View, float, float)
+     * 用于为指定视图或其祖先视图显示上下文菜单。
+     * originalView - 最初触发上下文菜单的源视图
+     * true - 如果上下文菜单已显示
+     * false - 如果上下文菜单未显示
      */
     public boolean showContextMenuForChild(View originalView);
 
