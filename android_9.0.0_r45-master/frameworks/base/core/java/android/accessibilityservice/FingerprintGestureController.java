@@ -49,6 +49,7 @@ import com.android.internal.annotations.VisibleForTesting;
  * conflict with each other.
  * <p>
  * {@see android.hardware.fingerprint.FingerprintManager#isHardwareDetected}
+ * 允许无障碍服务捕获在指纹传感器上执行的手势
  */
 public final class FingerprintGestureController {
     /** Identifier for a swipe right on the fingerprint sensor */
