@@ -18,7 +18,7 @@ package android.accounts;
 
 /**
  * Used to store the Account and the UserId this account is associated with.
- *
+ *将 Account 对象与用户ID绑定在一起
  * @hide
  */
 public class AccountAndUser {

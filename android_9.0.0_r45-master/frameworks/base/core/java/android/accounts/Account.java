@@ -34,6 +34,7 @@ import java.util.Set;
  * Value type that represents an Account in the {@link AccountManager}. This object is
  * {@link Parcelable} and also overrides {@link #equals} and {@link #hashCode}, making it
  * suitable for use as the key of a {@link java.util.Map}
+ * 作为账户管理系统的数据载体，实现 Parcelable 接口支持跨进程传输
  */
 public class Account implements Parcelable {
     private static final String TAG = "Account";
@@ -41,8 +42,8 @@ public class Account implements Parcelable {
     @GuardedBy("sAccessedAccounts")
     private static final Set<Account> sAccessedAccounts = new ArraySet<>();
 
-    public final String name;
-    public final String type;
+    public final String name;//账户名称
+    public final String type;//账户类型
     private final @Nullable String accessId;
 
     public boolean equals(Object o) {
