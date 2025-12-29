@@ -12323,7 +12323,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * important for accessibility are regarded.
      *
      * @return Whether to regard the view for accessibility.
-     *
+     *判断当前视图是否应该被包含在无障碍（Accessibility）功能中。
      * @hide
      */
     public boolean includeForAccessibility() {
@@ -12369,7 +12369,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * {@link ViewConfiguration#getSendRecurringAccessibilityEventsInterval()}
      * to avoid unnecessary load to the system. Also once a view has a pending
      * notification this method is a NOP until the notification has been sent.
-     *
+     *  在视图的无障碍状态发生改变时，通知无障碍服务。
      * @hide
      */
     public void notifyViewAccessibilityStateChangedIfNeeded(int changeType) {
@@ -12427,7 +12427,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * {@link ViewConfiguration#getSendRecurringAccessibilityEventsInterval()}
      * to avoid unnecessary load to the system. Also once a view has a pending
      * notification this method is a NOP until the notification has been sent.
-     *
+     *在子树无障碍状态发生改变时，通知无障碍服务
      * @hide
      */
     public void notifySubtreeAccessibilityStateChangedIfNeeded() {
@@ -12457,7 +12457,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * the original visibility value is always restored.
      *
      * @param visibility One of {@link #VISIBLE}, {@link #INVISIBLE}, or {@link #GONE}.
-     * @hide
+     * @hide 设置视图在转换过程中的可见性状态。
      */
     public void setTransitionVisibility(@Visibility int visibility) {
         mViewFlags = (mViewFlags & ~View.VISIBILITY_MASK) | visibility;
@@ -12489,6 +12489,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param action Accessibility action to delegate
      * @param arguments Optional action arguments
      * @return true if the action was consumed by a parent
+     * 将无障碍操作分发到父视图层次结构中，允许父视图在子视图处理之前拦截和处理无障碍操作。
      */
     public boolean dispatchNestedPrePerformAccessibilityAction(int action, Bundle arguments) {
         for (ViewParent p = getParent(); p != null; p = p.getParent()) {
@@ -12665,6 +12666,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         return false;
     }
 
+    //按指定的粒度在文本内容中移动无障碍选择范围，支持向前或向后移动。
     private boolean traverseAtGranularity(int granularity, boolean forward,
             boolean extendSelection) {
         CharSequence text = getIterableTextForAccessibility();
@@ -12719,7 +12721,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @return If selection is extensible.
      *
-     * @hide
+     * @hide 判断视图是否支持扩展无障碍选择范围。
      */
     public boolean isAccessibilitySelectionExtendable() {
         return false;
@@ -12741,6 +12743,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
 
     /**
      * @hide
+     * 设置无障碍功能中的文本选择位置。
      */
     public void setAccessibilitySelection(int start, int end) {
         if (start ==  end && end == mAccessibilityCursorPosition) {
@@ -12754,6 +12757,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED);
     }
 
+    //发送文本按粒度遍历的无障碍事件，通知辅助技术（如屏幕阅读器）用户在文本中的移动操作。
     private void sendViewTextTraversedAtGranularityEvent(int action, int granularity,
             int fromIndex, int toIndex) {
         if (mParent == null) {
@@ -12823,6 +12827,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @return {@code true} when the View is in the state between {@link #onStartTemporaryDetach()}
      * and {@link #onFinishTemporaryDetach()}.
+     * 检查视图是否处于临时分离状态。
      */
     public final boolean isTemporarilyDetached() {
         return (mPrivateFlags3 & PFLAG3_TEMPORARY_DETACH) != 0;
@@ -12831,6 +12836,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /**
      * Dispatch {@link #onStartTemporaryDetach()} to this View and its direct children if this is
      * a container View.
+     * 用于处理视图的临时分离分发，将视图标记为临时分离状态并触发相应的回调。
      */
     @CallSuper
     public void dispatchStartTemporaryDetach() {
@@ -12877,6 +12883,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * to the window.  Normally you will not need to use this directly, but
      * just use the standard high-level event callbacks like
      * {@link #onKeyDown(int, KeyEvent)}.
+     * 获取与当前视图关联的按键分发状态管理器。
      */
     public KeyEvent.DispatcherState getKeyDispatcherState() {
         return mAttachInfo != null ? mAttachInfo.mKeyDispatchState : null;
@@ -12891,6 +12898,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @param event The key event to be dispatched.
      * @return True if the event was handled, false otherwise.
+     * 分发预输入法（Pre-IME）键盘事件，将事件传递给 onKeyPreIme 方法处理。
      */
     public boolean dispatchKeyEventPreIme(KeyEvent event) {
         return onKeyPreIme(event.getKeyCode(), event);
@@ -12935,6 +12943,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @param event The key event to be dispatched.
      * @return True if the event was handled by the view, false otherwise.
+     * 分发键盘快捷键事件，将事件传递给 onKeyShortcut 方法处理。
      */
     public boolean dispatchKeyShortcutEvent(KeyEvent event) {
         return onKeyShortcut(event.getKeyCode(), event);
@@ -13031,6 +13040,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @param event The motion event to be dispatched.
      * @return True if the event was handled by the view, false otherwise.
+     * 分发轨迹球事件，将事件传递给 onTrackballEvent 方法处理。
      */
     public boolean dispatchTrackballEvent(MotionEvent event) {
         if (mInputEventConsistencyVerifier != null) {
@@ -13045,6 +13055,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @param event The motion event to be dispatched.
      * @return True if the event was handled by the view, false otherwise.
+     * 分发已捕获的指针事件，处理指针捕获状态下的事件分发逻辑。
      */
     public boolean dispatchCapturedPointerEvent(MotionEvent event) {
         if (!hasPointerCapture()) {
@@ -13364,6 +13375,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param isVisible true if this view's visibility to the user is uninterrupted by its
      *                  ancestors or by window visibility
      * @return true if this view is visible to the user, not counting clipping or overlapping
+     * 分发可见性聚合事件，处理视图的可见性状态聚合逻辑。
      */
     boolean dispatchVisibilityAggregated(boolean isVisible) {
         final boolean thisVisible = getVisibility() == VISIBLE;
@@ -13462,6 +13474,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @param outRect Filled in with the visible display frame.  If the view
      * is not attached to a window, this is simply the raw display size.
+     *                获取当前窗口的可见显示区域矩形框，将结果保存到传入的 Rect 对象中。
      */
     public void getWindowVisibleDisplayFrame(Rect outRect) {
         if (mAttachInfo != null) {
@@ -13541,6 +13554,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         performCollectViewAttributes(attachInfo, visibility);
     }
 
+    //收集视图属性，将当前视图的属性信息合并到 AttachInfo 对象中，以便在视图附加到窗口时应用这些属性。
     void performCollectViewAttributes(AttachInfo attachInfo, int visibility) {
         if ((visibility & VISIBILITY_MASK) == VISIBLE) {
             if ((mViewFlags & KEEP_SCREEN_ON) == KEEP_SCREEN_ON) {
@@ -13705,6 +13719,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *                    {@link android.view.KeyEvent}.
      * @param repeatCount The number of times the action was made.
      * @param event       The KeyEvent object that defines the button action.
+     *                    处理多个连续按键事件的回调方法，当发生重复按键事件时被调用。
      */
     public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
         return false;
@@ -13720,6 +13735,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param event Description of the key event.
      * @return If you handled the event, return true. If you want to allow the
      *         event to be handled by the next receiver, return false.
+     *         处理键盘快捷键事件的回调方法。
      */
     public boolean onKeyShortcut(int keyCode, KeyEvent event) {
         return false;
@@ -14192,7 +14208,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         final float y = event.getY();
         final int viewFlags = mViewFlags;
         final int action = event.getAction();
-        
+
         // 判断是否可以点击
         final boolean clickable = ((viewFlags & CLICKABLE) == CLICKABLE // 点击
                 || (viewFlags & LONG_CLICKABLE) == LONG_CLICKABLE)           // 长按
@@ -14475,6 +14491,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         return (mBottom > mTop) && (mRight > mLeft);
     }
 
+    //判断当前视图是否可以获取焦点，是内部辅助方法。
     private boolean canTakeFocus() {
         return ((mViewFlags & VISIBILITY_MASK) == VISIBLE)
                 && ((mViewFlags & FOCUSABLE) == FOCUSABLE)
@@ -14733,6 +14750,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * with the new child ordering.
      *
      * @see ViewGroup#bringChildToFront(View)
+     * 将当前视图移动到其父视图中的最前面，使其显示在其他子视图之上。
      */
     public void bringToFront() {
         if (mParent != null) {
@@ -14852,6 +14870,8 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * by derived classes to gain control just before its children are drawn
      * (but after its own view has been drawn).
      * @param canvas the canvas on which to draw the view
+     *               分发绘制操作到子视图。
+     *               这是 ViewGroup 中实际绘制子视图的核心方法，但在基础 View 类中仅作为空实现存在。
      */
     protected void dispatchDraw(Canvas canvas) {
 
@@ -15025,6 +15045,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @see #getPivotX()
      * @see #getPivotY()
      * @return The current transform matrix for the view
+     * 获取当前视图的变换矩阵，返回一个包含视图所有变换信息的 Matrix 对象。
      */
     public Matrix getMatrix() {
         ensureTransformationInfo();
@@ -15043,6 +15064,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         return mRenderNode.hasIdentityMatrix();
     }
 
+    //确保 mTransformationInfo 对象已初始化，采用懒加载模式创建变换信息对象。
     void ensureTransformationInfo() {
         if (mTransformationInfo == null) {
             mTransformationInfo = new TransformationInfo();
@@ -15056,6 +15078,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @return The inverse of the current matrix of this view.
      * @hide
+     * 获取当前视图的逆变换矩阵，返回一个包含视图逆变换信息的 Matrix 对象。
      */
     public final Matrix getInverseMatrix() {
         ensureTransformationInfo();
@@ -15073,6 +15096,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @see #setCameraDistance(float)
      *
      * @return The distance along the Z axis.
+     * 获取当前视图的相机距离，返回一个表示相机距离的浮点数值。
      */
     public float getCameraDistance() {
         final float dpi = mResources.getDisplayMetrics().densityDpi;
@@ -15136,6 +15160,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @see #getPivotY()
      *
      * @return The degrees of rotation.
+     * 获取当前视图的旋转角度，返回一个表示视图绕 Z 轴旋转角度的浮点数值。
      */
     @ViewDebug.ExportedProperty(category = "drawing")
     public float getRotation() {
@@ -15341,6 +15366,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @return The x location of the pivot point.
      *
      * @attr ref android.R.styleable#View_transformPivotX
+     * 获取当前视图的 X 轴变换中心点坐标，返回一个表示变换中心点 X 坐标的浮点数值。
      */
     @ViewDebug.ExportedProperty(category = "drawing")
     public float getPivotX() {
@@ -15460,6 +15486,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * instead of that returned by {@link #hasOverlappingRendering()}.
      *
      * @attr ref android.R.styleable#View_forceHasOverlappingRendering
+     * 强制设置视图的重叠渲染标志，覆盖系统自动判断的重叠渲染状态。
      */
     public void forceHasOverlappingRendering(boolean hasOverlappingRendering) {
         mPrivateFlags3 |= PFLAG3_HAS_OVERLAPPING_RENDERING_FORCED;
@@ -15630,7 +15657,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * affected by) the real alpha property. This value is composited with the other
      * alpha value (and the AlphaAnimation value, when that is present) to produce
      * a final visual translucency result, which is what is passed into the DisplayList.
-     *
+     *设置视图的过渡透明度（alpha值），主要用于动画过渡效果。
      * @hide
      */
     @ViewDebug.ExportedProperty(category = "drawing")
@@ -15715,6 +15742,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * True if this view has changed since the last time being drawn.
      *
      * @return The dirty state of this view.
+     * 检查视图是否被标记为"脏"状态，即视图内容需要重新绘制。
      */
     public boolean isDirty() {
         return (mPrivateFlags & PFLAG_DIRTY_MASK) != 0;
@@ -15897,6 +15925,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         return sanitizeFloatPropertyValue(value, propertyName, -Float.MAX_VALUE, Float.MAX_VALUE);
     }
 
+    //验证和规范化浮点数属性值，确保其在指定范围内并处理特殊情况。
     private static float sanitizeFloatPropertyValue(float value, String propertyName,
             float min, float max) {
         // The expected "nothing bad happened" path
@@ -15936,6 +15965,9 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * {@link #getLeft() left} property.
      *
      * @return The visual x position of this view, in pixels.
+     * 获取视图在父容器中的X轴坐标位置。
+     * mLeft 表示视图在父容器中的原始左边位置
+     * getTranslationX() 获取X轴方向的平移量
      */
     @ViewDebug.ExportedProperty(category = "drawing")
     public float getX() {
@@ -16013,6 +16045,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * Sets the base elevation of this view, in pixels.
      *
      * @attr ref android.R.styleable#View_elevation
+     * 设置视图的海拔高度（elevation），这会影响视图在Z轴上的位置和阴影效果。
      */
     public void setElevation(float elevation) {
         if (elevation != getElevation()) {
@@ -16144,6 +16177,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @param stateListAnimator The StateListAnimator to update the view
      * @see android.animation.StateListAnimator
+     * 设置视图的状态列表动画器（StateListAnimator），它可以根据视图的不同状态执行不同的动画效果。
      */
     public void setStateListAnimator(StateListAnimator stateListAnimator) {
         if (mStateListAnimator == stateListAnimator) {
@@ -16188,6 +16222,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @see #setOutlineProvider(ViewOutlineProvider)
      * @see #getClipToOutline()
+     * 设置视图是否裁剪到轮廓（outline）边界。
      */
     public void setClipToOutline(boolean clipToOutline) {
         damageInParent();
@@ -16311,6 +16346,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @attr ref android.R.styleable#View_outlineSpotShadowColor
      * @param color The color this View will cast for its elevation spot shadow.
+     *              设置视图轮廓的点阴影颜色。
      */
     public void setOutlineSpotShadowColor(@ColorInt int color) {
         if (mRenderNode.setSpotShadowColor(color)) {
@@ -16339,6 +16375,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @attr ref android.R.styleable#View_outlineAmbientShadowColor
      * @param color The color this View will cast for its elevation shadow.
+     *              设置视图轮廓的环境阴影颜色。
      */
     public void setOutlineAmbientShadowColor(@ColorInt int color) {
         if (mRenderNode.setAmbientShadowColor(color)) {
@@ -16356,6 +16393,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
 
 
     /** @hide */
+    //设置视图的揭示裁剪效果，通过圆形裁剪区域来控制视图的可见部分。
     public void setRevealClip(boolean shouldClip, float x, float y, float radius) {
         mRenderNode.setRevealClip(shouldClip, x, y, radius);
         invalidateViewProperty(false, false);
@@ -16365,6 +16403,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * Hit rectangle in parent's coordinates
      *
      * @param outRect The hit rectangle of the view.
+     *                获取视图的命中矩形（hit rectangle），即视图在屏幕上的实际边界矩形，用于触摸事件检测。
      */
     public void getHitRect(Rect outRect) {
         if (hasIdentityMatrix() || mAttachInfo == null) {
@@ -16595,7 +16634,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
 
     /**
      * Resolve the layout parameters depending on the resolved layout direction
-     *
+     *解析视图的布局参数，主要处理布局方向相关的设置。
      * @hide
      */
     public void resolveLayoutParams() {
@@ -16664,6 +16703,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @see #isVerticalScrollBarEnabled()
      * @see #setHorizontalScrollBarEnabled(boolean)
      * @see #setVerticalScrollBarEnabled(boolean)
+     * 唤醒视图的滚动条，使其可见并开始计时隐藏。
      */
     protected boolean awakenScrollBars() {
         return mScrollCache != null &&
@@ -16808,6 +16848,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /**
      * Do not invalidate views which are not visible and which are not running an animation. They
      * will not get drawn and they should not set dirty flags as if they will be drawn
+     * 判断是否应该跳过视图的无效化操作。
      */
     private boolean skipInvalidate() {
         return (mViewFlags & VISIBILITY_MASK) != VISIBLE && mCurrentAnimation == null &&
@@ -16896,6 +16937,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         invalidateInternal(0, 0, mRight - mLeft, mBottom - mTop, invalidateCache, true);
     }
 
+    //处理视图无效化的核心方法，负责标记视图的某个区域需要重绘，并将重绘请求传递给父视图。
     void invalidateInternal(int l, int t, int r, int b, boolean invalidateCache,
             boolean fullInvalidate) {
         if (mGhostView != null) {
@@ -16945,6 +16987,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
 
     /**
      * @return this view's projection receiver, or {@code null} if none exists
+     * 查找当前视图的投影接收器
      */
     private View getProjectionReceiver() {
         ViewParent p = getParent();
@@ -17000,7 +17043,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
 
     /**
      * Tells the parent view to damage this view's bounds.
-     *
+     *通知父视图其子视图（即当前视图）需要重绘，通过调用父视图的 onDescendantInvalidated 方法。
      * @hide
      */
     protected void damageInParent() {
@@ -17011,6 +17054,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
 
     /**
      * Utility method to transform a given Rect by the current matrix of this view.
+     * 对给定的矩形应用当前视图的变换矩阵，将矩形坐标从视图的本地坐标系转换到父视图坐标系。
      */
     void transformRect(final Rect rect) {
         if (!getMatrix().isIdentity()) {
@@ -17045,7 +17089,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * which is necessary when various parent-managed properties of the view change, such as
      * alpha, translationX/Y, scrollX/Y, scaleX/Y, and rotation/X/Y. This method will propagate
      * an invalidation event to the parent.
-     *
+     *在特定条件下使父视图失效，以确保在硬件加速环境下视图的正确更新。
      * @hide
      */
     protected void invalidateParentIfNeeded() {
@@ -17074,6 +17118,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * invalidate/draw passes.
      *
      * @return True if this View is guaranteed to be fully opaque, false otherwise.
+     * 判断当前视图是否是不透明的。
      */
     @ViewDebug.ExportedProperty(category = "drawing")
     public boolean isOpaque() {
@@ -17151,6 +17196,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
 
     /**
      * @hide
+     * 获取与当前视图关联的线程渲染器
      */
     public ThreadedRenderer getThreadedRenderer() {
         return mAttachInfo != null ? mAttachInfo.mThreadedRenderer : null;
@@ -17455,7 +17501,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *         otherwise
      *
      * @see #setHorizontalFadingEdgeEnabled(boolean)
-     *
+     *检查当前视图是否启用了水平方向的边缘渐变效果。
      * @attr ref android.R.styleable#View_requiresFadingEdge
      */
     public boolean isHorizontalFadingEdgeEnabled() {
@@ -17530,6 +17576,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * when scrolling occurs.
      *
      * @return the intensity of the top fade as a float between 0.0f and 1.0f
+     * 获取顶部边缘渐变效果的强度。
      */
     protected float getTopFadingEdgeStrength() {
         return computeVerticalScrollOffset() > 0 ? 1.0f : 0.0f;
@@ -17854,6 +17901,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @see #computeHorizontalScrollRange()
      * @see #computeHorizontalScrollOffset()
      * @see android.widget.ScrollBarDrawable
+     * 计算水平滚动的范围（宽度）。
      */
     protected int computeHorizontalScrollExtent() {
         return getWidth();
@@ -17954,6 +18002,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         }
     }
 
+    //获取滚动指示器的边界矩形。
     void getScrollIndicatorBounds(@NonNull Rect out) {
         out.left = mScrollX;
         out.right = mScrollX + mRight - mLeft;
@@ -18289,6 +18338,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /*
      * Caller is responsible for calling requestLayout if necessary.
      * (This allows addViewInLayout to not request a new layout.)
+     * 为视图分配父视图
      */
     void assignParent(ViewParent parent) {
         if (mParent == null) {
@@ -18309,6 +18359,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * before or after {@link #onMeasure(int, int)}.
      *
      * @see #onDetachedFromWindow()
+     * 在视图被附加到窗口时被调用，用于执行必要的初始化和状态恢复操作。
      */
     @CallSuper
     protected void onAttachedToWindow() {
@@ -18424,7 +18475,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @param displayId The id of the display to which the view was moved.
      * @param config Configuration of the resources on new display after move.
-     *
+     *处理视图移动到新显示设备的事件。
      * @see #onConfigurationChanged(Configuration)
      * @hide
      */
@@ -18681,7 +18732,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * If you override this you *MUST* call super.onDetachedFromWindowInternal()!
      * The super method should be called at the end of the overridden method to ensure
      * subclasses are destroyed first
-     *
+     *在视图从窗口分离时被调用，用于执行清理和资源释放操作。
      * @hide
      */
     @CallSuper
@@ -18722,6 +18773,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
 
     /**
      * @return The number of times this view has been attached to a window
+     * 获取视图窗口附加计数。
      */
     protected int getWindowAttachCount() {
         return mWindowAttachCount;
@@ -18808,6 +18860,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
 
     /**
      * Return the visibility value of the least visible component passed.
+     * 合并两个视图可见性状态，返回两者中优先级较高的状态。
      */
     int combineVisibility(int vis1, int vis2) {
         // This works because VISIBLE < INVISIBLE < GONE.
@@ -18958,6 +19011,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /**
      * Called by {@link #cancelPendingInputEvents()} to cancel input events in flight.
      * Overridden by ViewGroup to dispatch. Package scoped to prevent app-side meddling.
+     * 分发取消待处理输入事件的请求，确保子类正确调用了父类的 onCancelPendingInputEvents 方法。
      */
     void dispatchCancelPendingInputEvents() {
         mPrivateFlags3 &= ~PFLAG3_CALLED_SUPER;
@@ -19169,6 +19223,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * <p>Return the time at which the drawing of the view hierarchy started.</p>
      *
      * @return the drawing start time in milliseconds
+     * 获取视图的绘制时间。
      */
     public long getDrawingTime() {
         return mAttachInfo != null ? mAttachInfo.mDrawingTime : 0;
@@ -19194,6 +19249,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @see #getDrawableState()
      * @see #isDuplicateParentStateEnabled()
+     * 设置视图是否启用复制父状态功能。
      */
     public void setDuplicateParentStateEnabled(boolean enabled) {
         setFlags(enabled ? DUPLICATE_PARENT_STATE : 0, DUPLICATE_PARENT_STATE);
@@ -19248,6 +19304,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @see #setAlpha(float)
      *
      * @attr ref android.R.styleable#View_layerType
+     * 设置视图的图层类型，控制视图的渲染方式。
      */
     public void setLayerType(int layerType, @Nullable Paint paint) {
         if (layerType < LAYER_TYPE_NONE || layerType > LAYER_TYPE_HARDWARE) {
@@ -19303,6 +19360,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *        {@link #LAYER_TYPE_NONE}
      *
      * @see #setLayerType(int, android.graphics.Paint)
+     * 设置视图图层的绘制参数（Paint对象），仅在视图已启用图层时生效。
      */
     public void setLayerPaint(@Nullable Paint paint) {
         int layerType = getLayerType();
@@ -19385,6 +19443,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * this method.
      *
      * @hide
+     * 销毁与硬件相关的资源，清理视图的硬件加速资源。
      */
     @CallSuper
     protected void destroyHardwareResources() {
@@ -19474,6 +19533,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * descendants.
      *
      * @hide
+     * 输出视图的脏标志位信息，主要用于调试目的。
      */
     @SuppressWarnings({"UnusedDeclaration"})
     public void outputDirtyFlags(String indent, boolean clear, int clearMask) {
@@ -19512,6 +19572,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @return true if view has the ability to create a display list, false otherwise.
      *
      * @hide
+     * 判断当前视图是否可以拥有显示列表
      */
     public boolean canHaveDisplayList() {
         return !(mAttachInfo == null || mAttachInfo.mThreadedRenderer == null);
@@ -19989,7 +20050,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /**
      * Create a snapshot of the view into a bitmap.  We should probably make
      * some form of this public, but should think about the API.
-     *
+     *创建视图的快照（截图），生成一个包含视图内容的位图。
      * @hide
      */
     public Bitmap createSnapshot(ViewDebug.CanvasProvider canvasProvider, boolean skipChildren) {
@@ -20176,6 +20237,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @return True if the view is attached to a window and the window is
      *         hardware accelerated; false in any other case.
+     *         检查当前视图是否使用硬件加速渲染。
      */
     @ViewDebug.ExportedProperty(category = "drawing")
     public boolean isHardwareAccelerated() {
@@ -20239,6 +20301,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /**
      * Utility function, called by draw(canvas, parent, drawingTime) to handle the less common
      * case of an active Animation being run on the view.
+     * 应用传统的（pre-3.0）动画到视图上，这是Android早期的动画系统实现。
      */
     private boolean applyLegacyAnimation(ViewGroup parent, long drawingTime,
             Animation a, boolean scalingRequired) {
@@ -20632,6 +20695,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         return sDebugPaint;
     }
 
+    //将 dips（密度无关像素）转换为实际像素值。
     final int dipsToPixels(int dips) {
         float scale = getContext().getResources().getDisplayMetrics().density;
         return (int) (dips * scale + 0.5f);
@@ -20985,6 +21049,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @return The ViewOverlay object for this view.
      * @see ViewOverlay
+     * 获取当前视图的覆盖层
      */
     public ViewOverlay getOverlay() {
         if (mOverlay == null) {
@@ -21003,6 +21068,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @see #setHorizontalFadingEdgeEnabled(boolean)
      *
      * @return The known solid color background for this view, or 0 if the color may vary
+     * 获取视图的纯色背景颜色值。
      */
     @ViewDebug.ExportedProperty(category = "drawing")
     @ColorInt
@@ -21121,6 +21187,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         return o instanceof ViewGroup && ((ViewGroup) o).isLayoutModeOptical();
     }
 
+    //设置视图的光学框架，通过考虑父视图和子视图的光学边距来计算实际的框架位置。
     private boolean setOpticalFrame(int left, int top, int right, int bottom) {
         Insets parentInsets = mParent instanceof View ?
                 ((View) mParent).getOpticalInsets() : Insets.NONE;
@@ -21377,6 +21444,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * <p>Even if the subclass overrides onFinishInflate, they should always be
      * sure to call the super method, so that we get called.
+     * 视图完成从XML布局文件中填充后的回调方法。
      */
     @CallSuper
     protected void onFinishInflate() {
@@ -21416,6 +21484,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param what the action to run on the drawable
      * @param when the time at which the action must occur. Uses the
      *        {@link SystemClock#uptimeMillis} timebase.
+     *             安排一个可绘制对象的回调执行，通常用于动画或定时更新可绘制对象。
      */
     @Override
     public void scheduleDrawable(@NonNull Drawable who, @NonNull Runnable what, long when) {
@@ -21471,7 +21540,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * that the View directionality can and will be resolved before its Drawables.
      *
      * Will call {@link View#onResolveDrawables} when resolution is done.
-     *
+     *解析和设置视图中所有可绘制对象（Drawables）的布局方向。
      * @hide
      */
     protected void resolveDrawables() {
@@ -21551,6 +21620,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @see #unscheduleDrawable(android.graphics.drawable.Drawable)
      * @see #drawableStateChanged()
+     * 验证指定的 Drawable 是否属于当前视图的管理范围。
      */
     @CallSuper
     protected boolean verifyDrawable(@NonNull Drawable who) {
@@ -21620,6 +21690,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @param x hotspot x coordinate
      * @param y hotspot y coordinate
+     *          处理热点（hotspot）位置变化，当触摸或点击事件发生时更新视图中相关 Drawable 的热点位置。
      */
     @CallSuper
     public void drawableHotspotChanged(float x, float y) {
@@ -21736,6 +21807,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * <p>
      * This always happens when this view is focused, and only at this moment the default focus
      * highlight can be visible.
+     * 切换默认焦点高亮显示状态，根据当前视图是否需要焦点高亮来动态添加或移除高亮效果。
      */
     private void switchDefaultFocusHighlight() {
         if (isFocused()) {
@@ -22209,6 +22281,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param foreground the Drawable to be drawn on top of the children
      *
      * @attr ref android.R.styleable#View_foreground
+     * 设置视图的前景 Drawable，实现前景图功能。
      */
     public void setForeground(Drawable foreground) {
         if (mForegroundInfo == null) {
@@ -22323,6 +22396,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @attr ref android.R.styleable#View_foregroundTint
      * @see #getForegroundTintList()
      * @see Drawable#setTintList(ColorStateList)
+     * 设置前景 Drawable 的色调列表，实现前景图的着色功能。
      */
     public void setForegroundTintList(@Nullable ColorStateList tint) {
         if (mForegroundInfo == null) {
@@ -22598,6 +22672,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param top the top padding in pixels
      * @param end the end padding in pixels
      * @param bottom the bottom padding in pixels
+     * 设置视图的相对内边距（支持从左到右和从右到左布局方向），根据当前布局方向自动调整左右内边距。
      */
     public void setPaddingRelative(int start, int top, int end, int bottom) {
         resetResolvedPaddingInternal();
@@ -22711,6 +22786,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         return (mUserPaddingStart != UNDEFINED_PADDING || mUserPaddingEnd != UNDEFINED_PADDING);
     }
 
+    //计算视图的光学边距（optical insets），这是一个私有方法，返回一个 Insets 对象。
     Insets computeOpticalInsets() {
         return (mBackground == null) ? Insets.NONE : mBackground.getOpticalInsets();
     }
@@ -22895,6 +22971,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *
      * @param ev the view-local motion event
      * @return false if the transformation could not be applied
+     * 将一个 MotionEvent 从视图的本地坐标系转换到全局（屏幕）坐标系。
      * @hide
      */
     public boolean toGlobalMotionEvent(MotionEvent ev) {
@@ -22936,6 +23013,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * on-screen coordinates.
      *
      * @param m input matrix to modify
+     *          将给定的变换矩阵从当前视图的坐标系转换到全局（屏幕）坐标系。
      * @hide
      */
     public void transformMatrixToGlobal(Matrix m) {
@@ -23031,6 +23109,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         transformFromViewToWindowSpace(outLocation);
     }
 
+    //将坐标点从视图的本地坐标系转换到窗口坐标系。
     /** @hide */
     public void transformFromViewToWindowSpace(@Size(2) int[] inOutLocation) {
         if (inOutLocation == null || inOutLocation.length < 2) {
@@ -23084,6 +23163,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /**
      * @param id the id of the view to be found
      * @return the view of the specified id, null if cannot be found
+     * 在当前视图中查找具有指定ID的视图。
      * @hide
      */
     protected <T extends View> T findViewTraversal(@IdRes int id) {
@@ -23110,6 +23190,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param childToSkip If not null, ignores this child during the recursive traversal.
      * @return The first view that matches the predicate or null.
      * @hide
+     * 在当前视图中通过谓词（Predicate）条件查找视图。
      */
     protected <T extends View> T findViewByPredicateTraversal(Predicate<View> predicate,
             View childToSkip) {
@@ -23260,6 +23341,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param predicate The predicate to evaluate.
      * @return The first view that matches the predicate or null.
      * @hide
+     * 从指定的起始视图开始，向上遍历视图层级结构，通过谓词条件查找满足条件的视图。
      */
     public final <T extends View> T findViewByPredicateInsideOut(
             View start, Predicate<View> predicate) {
@@ -23600,6 +23682,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * Forces this view to be laid out during the next layout pass.
      * This method does not call requestLayout() or forceLayout()
      * on the parent.
+     * 强制视图在下次布局传递时重新测量和布局。
      */
     public void forceLayout() {
         if (mMeasureCache != null) mMeasureCache.clear();
@@ -23627,6 +23710,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      *        parent
      *
      * @see #onMeasure(int, int)
+     * 测量视图的尺寸，根据给定的宽度和高度测量规范确定视图的宽度和高度。
      */
     public final void measure(int widthMeasureSpec, int heightMeasureSpec) {
         boolean optical = isLayoutModeOptical(this);
@@ -23755,6 +23839,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param measuredHeight The measured height of this view.  May be a complex
      * bit mask as defined by {@link #MEASURED_SIZE_MASK} and
      * {@link #MEASURED_STATE_TOO_SMALL}.
+     *                       设置视图的测量尺寸，包括宽度和高度。
      */
     protected final void setMeasuredDimension(int measuredWidth, int measuredHeight) {
         boolean optical = isLayoutModeOptical(this);
@@ -24077,7 +24162,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @return Returns true if the effective visibility of the view at this
      * point is opaque, regardless of the transparent region; returns false
      * if it is possible for underlying windows to be seen behind the view.
-     *
+     *收集视图的透明区域，将当前视图从透明区域中移除。
      * {@hide}
      */
     public boolean gatherTransparentRegion(Region region) {
@@ -24164,6 +24249,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param feedbackConstant One of the constants defined in
      * {@link HapticFeedbackConstants}
      * @param flags Additional flags as per {@link HapticFeedbackConstants}.
+     *              执行触觉反馈（震动反馈）。
      */
     public boolean performHapticFeedback(int feedbackConstant, int flags) {
         if (mAttachInfo == null) {
@@ -24512,6 +24598,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @return {@code true} if the method completes successfully, or
      * {@code false} if it fails anywhere. Returning {@code false} means the system was unable to
      * do a drag, and so no drag operation is in progress.
+     * 启动拖拽和放置操作，创建拖拽阴影并在屏幕上显示。
      */
     public final boolean startDragAndDrop(ClipData data, DragShadowBuilder shadowBuilder,
             Object myLocalState, int flags) {
@@ -24721,6 +24808,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     }
 
     // Dispatches ACTION_DRAG_ENTERED and ACTION_DRAG_EXITED events for pre-Nougat apps.
+    //处理拖拽进入和退出事件
     boolean dispatchDragEnterExitInPreN(DragEvent event) {
         return callDragEventHandler(event);
     }
@@ -24808,6 +24896,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * transparency information reduced by the corresponding parts of the
      * Drawable that are not transparent.
      * {@hide}
+     *               将可绘制对象（Drawable）的透明区域应用到指定的区域（Region）中。
      */
     public void applyDrawableToTransparentRegion(Drawable dr, Region region) {
         if (DBG) {
@@ -24868,6 +24957,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param root A view group that will be the parent.  Used to properly inflate the
      * layout_* parameters.
      * @see LayoutInflater
+     * 将布局资源文件转换为View对象，
      */
     public static View inflate(Context context, @LayoutRes int resource, ViewGroup root) {
         LayoutInflater factory = LayoutInflater.from(context);
@@ -24895,6 +24985,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param isTouchEvent true if this scroll operation is the result of a touch event.
      * @return true if scrolling was clamped to an over-scroll boundary along either
      *          axis, false otherwise.
+     *          处理视图的滚动边界，当滚动超过内容边界时提供弹性效果。
      */
     @SuppressWarnings({"UnusedParameters"})
     protected boolean overScrollBy(int deltaX, int deltaY,
@@ -24987,6 +25078,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * view is capable of scrolling.
      *
      * @param overScrollMode The new over-scroll mode for this view.
+     * 设置视图的弹性滚动模式，控制视图在滚动到边界时是否允许超过边界继续滚动（橡皮筋效果）。
      */
     public void setOverScrollMode(int overScrollMode) {
         if (overScrollMode != OVER_SCROLL_ALWAYS &&
@@ -25009,6 +25101,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param enabled true to enable nested scrolling, false to disable
      *
      * @see #isNestedScrollingEnabled()
+     * 设置视图是否启用嵌套滚动功能，允许视图与其子视图或父视图之间进行协调滚动。
      */
     public void setNestedScrollingEnabled(boolean enabled) {
         if (enabled) {
@@ -25253,6 +25346,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param velocityY Vertical fling velocity in pixels per second
      * @param consumed true if the child consumed the fling, false otherwise
      * @return true if the nested scrolling parent consumed or otherwise reacted to the fling
+     * 分发嵌套快速滑动事件给父级嵌套滚动处理器。
      */
     public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
         if (isNestedScrollingEnabled() && mNestedScrollingParent != null) {
@@ -25290,6 +25384,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * @param velocityX Horizontal fling velocity in pixels per second
      * @param velocityY Vertical fling velocity in pixels per second
      * @return true if a nested scrolling parent consumed the fling
+     * 分发嵌套预快速滑动事件给父级嵌套滚动处理器。
      */
     public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
         if (isNestedScrollingEnabled() && mNestedScrollingParent != null) {
@@ -25302,6 +25397,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * Gets a scale factor that determines the distance the view should scroll
      * vertically in response to {@link MotionEvent#ACTION_SCROLL}.
      * @return The vertical scroll scale factor.
+     * 获取垂直滚动因子，这是一个用于计算滚动距离的系数，通常用于基于触摸事件计算滚动偏移量。
      * @hide
      */
     protected float getVerticalScrollFactor() {
@@ -25617,6 +25713,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * will return the default {@link #TEXT_ALIGNMENT_GRAVITY}.
      *
      * @attr ref android.R.styleable#View_textAlignment
+     * 设置视图的文本对齐方式，只有当新值与当前值不同时才会执行操作。
      */
     public void setTextAlignment(@TextAlignment int textAlignment) {
         if (textAlignment != getRawTextAlignment()) {
@@ -26449,6 +26546,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
      * specific properties on this View.
      *
      * @return ViewPropertyAnimator The ViewPropertyAnimator associated with this View.
+     * 提供对视图属性动画的访问接口
      */
     public ViewPropertyAnimator animate() {
         if (mAnimator == null) {
@@ -27535,6 +27633,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /**
      * Remove the pending callback for sending a
      * {@link AccessibilityEvent#TYPE_VIEW_SCROLLED} accessibility event.
+     * 取消一个等待执行的 SendViewScrolledAccessibilityEvent 回调任务
      */
     private void cancel(@Nullable SendViewScrolledAccessibilityEvent callback) {
         if (callback == null || !callback.mIsPending) return;
@@ -27897,6 +27996,8 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /**
      * Dump all private flags in readable format, useful for documentation and
      * sanity checking.
+     * 转储标志位信息：遍历 View 类中所有的静态 final 字段，输出标志位的名称和值
+     * 调试工具：用于调试和查看 View 类中定义的所有标志位信息
      */
     private static void dumpFlags() {
         final HashMap<String, String> found = Maps.newHashMap();
@@ -27927,6 +28028,11 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         }
     }
 
+    /*
+    * 主要功能
+        格式化标志位信息：将标志位的名称和值格式化为二进制字符串表示
+        辅助调试：用于 dumpFlags() 方法中，生成可读的标志位输出
+    * */
     private static void dumpFlag(HashMap<String, String> found, String name, int value) {
         // Sort flags by prefix, then by bits, always keeping unique keys
         final String bits = String.format("%32s", Integer.toBinaryString(value)).replace('0', ' ');
@@ -27944,6 +28050,9 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     }
 
     /** {@hide} */
+    //主要功能
+    //属性序列化：将 View 的所有属性信息编码到 ViewHierarchyEncoder 中
+    //调试支持：为视图层次结构调试工具提供完整的属性信息
     @CallSuper
     protected void encodeProperties(@NonNull ViewHierarchyEncoder stream) {
         Object resolveId = ViewDebug.resolveId(getContext(), mID);
@@ -28078,6 +28187,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /**
      * Determine if this view is rendered on a round wearable device and is the main view
      * on the screen.
+     * 判断是否需要绘制圆形滚动条：在圆形屏幕设备上，检查当前视图是否需要绘制特殊的圆形滚动条
      */
     boolean shouldDrawRoundScrollbar() {
         if (!mResources.getConfiguration().isScreenRound() || mAttachInfo == null) {
@@ -28259,6 +28369,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         return false;
     }
 
+    //处理工具提示相关的按键事件：根据按键的不同动作（按下/释放）执行相应的工具提示处理逻辑
     void handleTooltipKey(KeyEvent event) {
         switch (event.getAction()) {
             case KeyEvent.ACTION_DOWN:
@@ -28273,6 +28384,7 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
         }
     }
 
+    //处理工具提示的释放事件：当用户释放按键或触摸时，处理工具提示的延迟隐藏逻辑
     private void handleTooltipUp() {
         if (mTooltipInfo == null || mTooltipInfo.mTooltipPopup == null) {
             return;
