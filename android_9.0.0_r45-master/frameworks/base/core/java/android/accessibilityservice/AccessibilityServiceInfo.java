@@ -357,6 +357,15 @@ public class AccessibilityServiceInfo implements Parcelable {
 
 
     /** @hide */
+    /**
+     * 定义无障碍服务反馈类型的合法值集合
+     * FEEDBACK_AUDIBLE：音频反馈（非语音）
+     * FEEDBACK_GENERIC：通用反馈
+     * FEEDBACK_HAPTIC：触觉反馈
+     * FEEDBACK_SPOKEN：语音反馈
+     * FEEDBACK_VISUAL：视觉反馈
+     * FEEDBACK_BRAILLE：盲文反馈
+     */
     @IntDef(flag = true, prefix = { "FEEDBACK_" }, value = {
             FEEDBACK_AUDIBLE,
             FEEDBACK_GENERIC,
@@ -657,6 +666,7 @@ public class AccessibilityServiceInfo implements Parcelable {
      * @return True if window content can be retrieved.
      *
      * @deprecated Use {@link #getCapabilities()}.
+     * 判断无障碍服务是否能够检索当前窗口内容
      */
     public boolean getCanRetrieveWindowContent() {
         return (mCapabilities & CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT) != 0;
@@ -754,6 +764,7 @@ public class AccessibilityServiceInfo implements Parcelable {
     }
 
     /** {@hide} */
+    //检查无障碍服务是否支持直接启动模式
     public boolean isDirectBootAware() {
         return ((flags & FLAG_FORCE_DIRECT_BOOT_AWARE) != 0)
                 || mResolveInfo.serviceInfo.directBootAware;
@@ -766,6 +777,7 @@ public class AccessibilityServiceInfo implements Parcelable {
         return 0;
     }
 
+    //将 AccessibilityServiceInfo 对象序列化到 Parcel 中
     public void writeToParcel(Parcel parcel, int flagz) {
         parcel.writeInt(eventTypes);
         parcel.writeStringArray(packageNames);
@@ -930,6 +942,7 @@ public class AccessibilityServiceInfo implements Parcelable {
      *
      * @param feedbackType The feedback type.
      * @return The string representation.
+     * 初始化并返回无障碍服务所有能力类型的信息映射表
      */
     public static String feedbackTypeToString(int feedbackType) {
         StringBuilder builder = new StringBuilder();
@@ -1115,6 +1128,7 @@ public class AccessibilityServiceInfo implements Parcelable {
     }
     /**
      * @hide
+     * 封装能力类型及其对应的资源ID信息
      */
     public static final class CapabilityInfo {
         public final int capability;
