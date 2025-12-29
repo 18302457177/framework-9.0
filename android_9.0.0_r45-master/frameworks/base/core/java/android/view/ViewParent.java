@@ -24,7 +24,13 @@ import android.view.accessibility.AccessibilityEvent;
 /**
  * Defines the responsibilities for a class that will be a parent of a View.
  * This is the API that a view sees when it wants to interact with its parent.
- * 
+ * 定义作为视图父级的类所需承担的职责
+ * 核心功能
+ * 布局管理：处理子视图的布局请求和重新计算
+ * 焦点管理：处理子视图的焦点获取和释放
+ * 事件分发：处理触摸事件拦截和嵌套滚动
+ * 绘制管理：处理子视图的重绘请求
+ * 无障碍支持：处理无障碍事件和状态变化
  */
 public interface ViewParent {
     /**
@@ -126,6 +132,7 @@ public interface ViewParent {
      *        actually has focus.
      * @param focused The view that is a descendant of child that actually has
      *        focus
+     *                当子视图请求获取焦点时调用此方法
      */
     public void requestChildFocus(View child, View focused);
 
@@ -206,6 +213,7 @@ public interface ViewParent {
      * the case where the first focusable view appears.
      * 
      * @param v The view that has become newly focusable
+     *          当一个新的可获取焦点的视图变得可用时，通知父视图
      */
     public void focusableViewAvailable(View v);
 
@@ -291,6 +299,7 @@ public interface ViewParent {
      * @param callback The callback that will handle lifecycle events for the action mode
      * @param type One of {@link ActionMode#TYPE_PRIMARY} or {@link ActionMode#TYPE_FLOATING}.
      * @return The new action mode if it was started, null otherwise
+     * 为指定的子视图启动一个操作模式(Action Mode)
      */
     public ActionMode startActionModeForChild(
             View originalView, ActionMode.Callback callback, int type);
@@ -389,6 +398,7 @@ public interface ViewParent {
     /**
      * Ask that a new dispatch of {@link View#fitSystemWindows(Rect)
      * View.fitSystemWindows(Rect)} be performed.
+     * 请求重新分发 fitSystemWindows 调用
      */
     public void requestFitSystemWindows();
 
@@ -662,6 +672,7 @@ public interface ViewParent {
      *               {@link android.view.accessibility.AccessibilityNodeInfo}
      * @param arguments Optional action arguments
      * @return true if the action was consumed by this ViewParent
+     * 处理目标后代视图委托的无障碍操作，在目标视图处理之前执行
      */
     public boolean onNestedPrePerformAccessibilityAction(View target, int action, Bundle arguments);
 }
