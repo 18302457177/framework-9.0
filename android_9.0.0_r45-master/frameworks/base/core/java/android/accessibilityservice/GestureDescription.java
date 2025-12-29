@@ -36,6 +36,7 @@ import java.util.List;
  * Gestures are immutable once built.
  * <p>
  * Spatial dimensions throughout are in screen pixels. Time is measured in milliseconds.
+ * 描述无障碍服务中执行的手势操作
  */
 public final class GestureDescription {
     /** Gestures may contain no more than this many strokes */
@@ -98,6 +99,7 @@ public final class GestureDescription {
      * offset
      * @param offset the minimum start time
      * @return The next key time that is at least the offset or -1 if one can't be found
+     * 查找时间偏移量至少为指定值的最小关键时间点
      */
     private long getNextKeyPointAtLeast(long offset) {
         long nextKeyPoint = Long.MAX_VALUE;
@@ -156,6 +158,8 @@ public final class GestureDescription {
 
     /**
      * Builder for a {@code GestureDescription}
+     * 构建 GestureDescription 对象
+     * 提供建造者模式来逐步构建手势描述
      */
     public static class Builder {
 
@@ -197,19 +201,20 @@ public final class GestureDescription {
 
     /**
      * Immutable description of stroke that can be part of a gesture.
+     * 定义手势中单个笔画的路径、时间和行为特性
      */
     public static class StrokeDescription {
         private static final int INVALID_STROKE_ID = -1;
 
         static int sIdCounter;
 
-        Path mPath;
+        Path mPath;//笔画的路径
         long mStartTime;
         long mEndTime;
-        private float mTimeToLengthConversion;
-        private PathMeasure mPathMeasure;
+        private float mTimeToLengthConversion;//时间到长度的转换系数
+        private PathMeasure mPathMeasure;//路径测量器
         // The tap location is only set for zero-length paths
-        float[] mTapLocation;
+        float[] mTapLocation;//零长度路径的点击位置
         int mId;
         boolean mContinued;
         int mContinuedStrokeId = INVALID_STROKE_ID;
@@ -329,6 +334,7 @@ public final class GestureDescription {
          * @param willContinue {@code true} if this stroke will be continued by one in the
          *             next gesture {@code false} otherwise.
          * @return
+         * 创建继续的笔画
          */
         public StrokeDescription continueStroke(Path path, long startTime, long duration,
                 boolean willContinue) {
@@ -366,7 +372,7 @@ public final class GestureDescription {
         }
 
         /* Assumes hasPointForTime returns true */
-        boolean getPosForTime(long time, float[] pos) {
+        boolean getPosForTime(long time, float[] pos) {//获取指定时间的位置
             if (mTapLocation != null) {
                 pos[0] = mTapLocation[0];
                 pos[1] = mTapLocation[1];
@@ -380,6 +386,7 @@ public final class GestureDescription {
             return mPathMeasure.getPosTan(length, pos, null);
         }
 
+        //检查时间点是否在笔画时间内
         boolean hasPointForTime(long time) {
             return ((time >= mStartTime) && (time <= mEndTime));
         }
@@ -387,17 +394,18 @@ public final class GestureDescription {
 
     /**
      * The location of a finger for gesture dispatch
-     *
+     *记录特定时刻的触摸点信息
      * @hide
      */
     public static class TouchPoint implements Parcelable {
-        private static final int FLAG_IS_START_OF_PATH = 0x01;
-        private static final int FLAG_IS_END_OF_PATH = 0x02;
+        private static final int FLAG_IS_START_OF_PATH = 0x01;//表示路径起始点标志
+        private static final int FLAG_IS_END_OF_PATH = 0x02;//表示路径结束点标志
 
-        public int mStrokeId;
-        public int mContinuedStrokeId;
-        public boolean mIsStartOfPath;
-        public boolean mIsEndOfPath;
+        public int mStrokeId;//笔画ID
+        public int mContinuedStrokeId;//被继续的笔画ID
+        public boolean mIsStartOfPath;//是否为路径起始点
+        public boolean mIsEndOfPath;//是否为路径结束点
+        //触摸点坐标
         public float mX;
         public float mY;
 
@@ -469,13 +477,13 @@ public final class GestureDescription {
 
     /**
      * A step along a gesture. Contains all of the touch points at a particular time
-     *
+     *将手势分解为时间序列上的离散步骤
      * @hide
      */
     public static class GestureStep implements Parcelable {
-        public long timeSinceGestureStart;
-        public int numTouchPoints;
-        public TouchPoint[] touchPoints;
+        public long timeSinceGestureStart;  //从手势开始的时间
+        public int numTouchPoints;//触摸点数量
+        public TouchPoint[] touchPoints;//触摸点数组
 
         public GestureStep(long timeSinceGestureStart, int numTouchPoints,
                 TouchPoint[] touchPointsToCopy) {
@@ -523,7 +531,7 @@ public final class GestureDescription {
 
     /**
      * Class to convert a GestureDescription to a series of GestureSteps.
-     *
+     *生成用于执行的手势步骤序列
      * @hide
      */
     public static class MotionEventGenerator {
@@ -555,6 +563,7 @@ public final class GestureDescription {
             return gestureSteps;
         }
 
+        //提供缓存的触摸点数组，避免重复创建
         private static TouchPoint[] getCurrentTouchPoints(int requiredCapacity) {
             if ((sCurrentTouchPoints == null) || (sCurrentTouchPoints.length < requiredCapacity)) {
                 sCurrentTouchPoints = new TouchPoint[requiredCapacity];
