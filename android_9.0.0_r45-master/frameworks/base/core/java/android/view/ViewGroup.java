@@ -753,6 +753,10 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      *
      * @return one of {@link #FOCUS_BEFORE_DESCENDANTS}, {@link #FOCUS_AFTER_DESCENDANTS},
      *   {@link #FOCUS_BLOCK_DESCENDANTS}.
+     *   获取 ViewGroup 的后代焦点可获取性设置，返回当前 ViewGroup 与它的后代视图在获取焦点方面的关系。
+     *   FOCUS_BEFORE_DESCENDANTS：ViewGroup 优先于后代视图获取焦点
+     * FOCUS_AFTER_DESCENDANTS：ViewGroup 仅在后代视图都不需要焦点时才获取焦点
+     * FOCUS_BLOCK_DESCENDANTS：阻止后代视图获取焦点，即使它们是可聚焦的
      */
     @ViewDebug.ExportedProperty(category = "focus", mapping = {
         @ViewDebug.IntToString(from = FOCUS_BEFORE_DESCENDANTS, to = "FOCUS_BEFORE_DESCENDANTS"),
@@ -898,6 +902,8 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         } while (parent instanceof ViewGroup);
     }
 
+    //焦点处理机制涉及两个关键方法：focusableViewAvailable() 和 requestChildFocus()，
+    // 它们共同管理 ViewGroup 与其子视图之间的焦点关系。
     @Override
     public void focusableViewAvailable(View v) {
         if (mParent != null
@@ -930,6 +936,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
 
     /**
      * @hide used internally for compatibility with existing app code only
+     * 检查上下文菜单是否使用坐标显示的辅助方法。
      */
     public final boolean isShowingContextMenuWithCoords() {
         return (mGroupFlags & FLAG_SHOW_CONTEXT_MENU_WITH_COORDS) != 0;
@@ -948,6 +955,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         return mParent != null && mParent.showContextMenuForChild(originalView, x, y);
     }
 
+    //为子视图启动一个操作模式
     @Override
     public ActionMode startActionModeForChild(View originalView, ActionMode.Callback callback) {
         if ((mGroupFlags & FLAG_START_ACTION_MODE_FOR_CHILD_IS_TYPED) == 0) {
@@ -1031,6 +1039,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         return null;
     }
 
+    //请求将子视图的矩形区域显示在屏幕上。
     @Override
     public boolean requestChildRectangleOnScreen(View child, Rect rectangle, boolean immediate) {
         return false;
@@ -1144,6 +1153,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         }
     }
 
+    //处理失去焦点的情况
     @Override
     void unFocus(View focused) {
         if (DBG) {
@@ -1300,6 +1310,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         }
     }
 
+    //为键盘导航集群添加子视图到指定的集合中。
     @Override
     public void addKeyboardNavigationClusters(Collection<View> views, int direction) {
         final int focusableCount = views.size();
@@ -1868,6 +1879,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         return changed;
     }
 
+    //分发预输入法键盘事件，是键盘事件处理链中的重要一环。
     @Override
     public boolean dispatchKeyEventPreIme(KeyEvent event) {
         if ((mPrivateFlags & (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS))
@@ -2021,6 +2033,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         return pointerIcon;
     }
 
+    //获取并验证子视图的预排序索引，用于处理自定义绘制顺序的情况。
     private int getAndVerifyPreorderedIndex(int childrenCount, int i, boolean customOrder) {
         final int childIndex;
         if (customOrder) {
@@ -2226,6 +2239,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         return handled;
     }
 
+    //退出所有悬停目标，包括自身和子视图的悬停状态。
     private void exitHoverTargets() {
         if (mHoveredSelf || mFirstHoverTarget != null) {
             final long now = SystemClock.uptimeMillis();
@@ -3071,6 +3085,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      *              child views. <code>false</code> to only allow one child view to be the target of
      *              any MotionEvent received by this ViewGroup.
      * @attr ref android.R.styleable#ViewGroup_splitMotionEvents
+     * 设置是否启用 MotionEvent 分割功能，控制 ViewGroup 是否将 MotionEvents 分发给多个子视图。
      */
     public void setMotionEventSplittingEnabled(boolean split) {
         // TODO Applications really shouldn't change this setting mid-touch event,
@@ -3423,6 +3438,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         }
     }
 
+    //处理 ViewGroup 及其所有子视图移动到新显示器的事件分发。
     @Override
     void dispatchMovedToDisplay(Display display, Configuration config) {
         super.dispatchMovedToDisplay(display, config);
@@ -3435,6 +3451,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
     }
 
     /** @hide */
+    //处理无障碍事件的填充，将无障碍事件分发给当前视图组的子视图。
     @Override
     public boolean dispatchPopulateAccessibilityEventInternal(AccessibilityEvent event) {
         boolean handled = false;
@@ -3467,6 +3484,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * Dispatch creation of {@link ViewStructure} down the hierarchy.  This implementation
      * adds in all child views of the view group, in addition to calling the default View
      * implementation.
+     * 为视图组的子视图提供结构信息，主要用于辅助功能（如屏幕截图、辅助服务等）获取视图层级结构。
      */
     @Override
     public void dispatchProvideStructure(ViewStructure structure) {
@@ -3596,6 +3614,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
     }
 
     /** @hide */
+    //为自动填充（autofill）功能收集子视图，将符合条件的子视图添加到指定列表中。
     private void populateChildrenForAutofill(ArrayList<View> list, @AutofillFlags int flags) {
         final int childrenCount = mChildrenCount;
         if (childrenCount <= 0) {
@@ -3617,6 +3636,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         }
     }
 
+    //获取并验证预排序列表中的视图，确保返回的子视图是有效的。
     private static View getAndVerifyPreorderedView(ArrayList<View> preorderedList, View[] children,
             int childIndex) {
         final View child;
@@ -3811,6 +3831,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * subclasses to freeze their own state but not the state of their children.
      *
      * @param container the container
+     * 仅保存 ViewGroup 自身的状态，而不处理其子视图的状态保存。
      */
     protected void dispatchFreezeSelfOnly(SparseArray<Parcelable> container) {
         super.dispatchSaveInstanceState(container);
@@ -3943,10 +3964,12 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         }
     }
 
+    //获取整数的符号，返回 1 或 -1
     private static int sign(int x) {
         return (x >= 0) ? 1 : -1;
     }
 
+    //绘制一个角落（corner），通过绘制两个矩形来实现角落的视觉效果。
     private static void drawCorner(Canvas c, Paint paint, int x1, int y1, int dx, int dy, int lw) {
         fillRect(c, paint, x1, y1, x1 + dx, y1 + lw * sign(dy));
         fillRect(c, paint, x1, y1, x1 + lw * sign(dx), y1 + dy);
@@ -3960,6 +3983,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         drawCorner(canvas, paint, x2, y2, -lineLength, -lineLength, lineWidth);
     }
 
+    //绘制一个"差集"形状，通过绘制四个矩形来填充一个中心区域周围的空白部分。
     private static void fillDifference(Canvas canvas,
             int x2, int y2, int x3, int y3,
             int dx1, int dy1, int dx2, int dy2, Paint paint) {
@@ -4184,6 +4208,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      *
      * @return The ViewGroupOverlay object for this view.
      * @see ViewGroupOverlay
+     * 获取当前 ViewGroup 的覆盖层（overlay），如果尚未创建则会创建一个新的覆盖层。
      */
     @Override
     public ViewGroupOverlay getOverlay() {
@@ -4393,6 +4418,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * @param clipToPadding true to clip children to the padding of the group, and resize (but
      *        not clip) any EdgeEffect to the padded region. False otherwise.
      * @attr ref android.R.styleable#ViewGroup_clipToPadding
+     * 设置 ViewGroup 是否将绘制区域裁剪到内边距（padding）边界。
      */
     public void setClipToPadding(boolean clipToPadding) {
         if (hasBooleanFlag(FLAG_CLIP_TO_PADDING) != clipToPadding) {
@@ -4534,6 +4560,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         return false;
     }
 
+    //获取 ViewGroup 的子视图变换对象，用于在绘制子视图时应用变换。
     Transformation getChildTransformation() {
         if (mChildTransformation == null) {
             mChildTransformation = new Transformation();
@@ -4884,6 +4911,8 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * Interface definition for a callback to be invoked when the hierarchy
      * within this view changed. The hierarchy changes whenever a child is added
      * to or removed from this view.
+     * 主要功能
+     * 监听视图层级变化：提供回调方法来监听 ViewGroup 中子视图的添加和移除事件
      */
     public interface OnHierarchyChangeListener {
         /**
@@ -6020,6 +6049,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
     /**
      * Helper method that offsets a rect either from parent to descendant or
      * descendant to parent.
+     * 在父视图和子视图之间转换矩形坐标，支持从子视图坐标系到父视图坐标系或相反方向的转换。
      */
     void offsetRectBetweenParentAndChild(View descendant, Rect rect,
             boolean offsetFromChildToParent, boolean clipToBounds) {
@@ -7001,7 +7031,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * suppression is disabled with a later call to suppressLayout(false).
      * When layout suppression is disabled, a requestLayout() call is sent
      * if layout() was attempted while layout was being suppressed.
-     *
+     *控制是否抑制布局操作，当抑制布局时，ViewGroup 会暂时停止执行布局操作，直到取消抑制时才根据需要重新执行布局。
      * @hide
      */
     public void suppressLayout(boolean suppress) {
@@ -7026,6 +7056,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         return mSuppressLayout;
     }
 
+    //收集 ViewGroup 及其子视图的透明区域，用于优化绘制性能。
     @Override
     public boolean gatherTransparentRegion(Region region) {
         // If no transparent regions requested, we are always opaque.
@@ -7430,6 +7461,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * not scroll should generally override this method and return false.
      * 
      * 对于不可滑动布局，应该返回 false
+     * 确定 ViewGroup 是否应该延迟更新子视图的按下状态。
      */
     public boolean shouldDelayChildPressedState() {
         return true; 
@@ -7511,6 +7543,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * @see #SCROLL_AXIS_HORIZONTAL
      * @see #SCROLL_AXIS_VERTICAL
      * @see #SCROLL_AXIS_NONE
+     * 获取当前 ViewGroup 的嵌套滚动轴信息。
      */
     public int getNestedScrollAxes() {
         return mNestedScrollAxes;
@@ -7636,6 +7669,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      *
      * @attr ref android.R.styleable#ViewGroup_Layout_layout_height
      * @attr ref android.R.styleable#ViewGroup_Layout_layout_width
+     * 定义子视图在 ViewGroup 中的布局参数，包括宽度、高度等尺寸信息。
      */
     public static class LayoutParams {
         /**
@@ -7643,6 +7677,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
          * FILL_PARENT means that the view wants to be as big as its parent,
          * minus the parent's padding, if any. This value is deprecated
          * starting in API Level 8 and replaced by {@link #MATCH_PARENT}.
+         * 与 MATCH_PARENT 相同功能，已废弃
          */
         @SuppressWarnings({"UnusedDeclaration"})
         @Deprecated
@@ -7652,6 +7687,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
          * Special value for the height or width requested by a View.
          * MATCH_PARENT means that the view wants to be as big as its parent,
          * minus the parent's padding, if any. Introduced in API Level 8.
+         * 视图希望与其父视图一样大
          */
         public static final int MATCH_PARENT = -1;
 
@@ -7659,6 +7695,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
          * Special value for the height or width requested by a View.
          * WRAP_CONTENT means that the view wants to be just large enough to fit
          * its own internal content, taking its own padding into account.
+         * 视图希望刚好能包围其内部内容
          */
         public static final int WRAP_CONTENT = -2;
 
@@ -7666,6 +7703,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
          * Information about how wide the view wants to be. Can be one of the
          * constants FILL_PARENT (replaced by MATCH_PARENT
          * in API Level 8) or WRAP_CONTENT, or an exact size.
+         * 视图期望的宽度
          */
         @ViewDebug.ExportedProperty(category = "layout", mapping = {
             @ViewDebug.IntToString(from = MATCH_PARENT, to = "MATCH_PARENT"),
@@ -7677,6 +7715,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
          * Information about how tall the view wants to be. Can be one of the
          * constants FILL_PARENT (replaced by MATCH_PARENT
          * in API Level 8) or WRAP_CONTENT, or an exact size.
+         * 视图期望的高度
          */
         @ViewDebug.ExportedProperty(category = "layout", mapping = {
             @ViewDebug.IntToString(from = MATCH_PARENT, to = "MATCH_PARENT"),
@@ -7686,6 +7725,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
 
         /**
          * Used to animate layouts.
+         * 用于布局动画
          */
         public LayoutAnimationController.AnimationParameters layoutAnimationParameters;
 
@@ -7845,6 +7885,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * @attr ref android.R.styleable#ViewGroup_MarginLayout_layout_marginBottom
      * @attr ref android.R.styleable#ViewGroup_MarginLayout_layout_marginStart
      * @attr ref android.R.styleable#ViewGroup_MarginLayout_layout_marginEnd
+     * 为子视图提供带边距（margin）的布局参数。
      */
     public static class MarginLayoutParams extends ViewGroup.LayoutParams {
         /**
@@ -8335,6 +8376,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * it can use a bitfield to track which pointer ids are present.
      * As it happens, the lower layers of the input dispatch pipeline also use the
      * same trick so the assumption should be safe here...
+     * 表示一个触摸目标，用于追踪 ViewGroup 中接收触摸事件的子视图。
      */
     private static final class TouchTarget {
         private static final int MAX_RECYCLED = 32;
@@ -8345,17 +8387,21 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         public static final int ALL_POINTER_IDS = -1; // all ones
 
         // The touched child view.
+        //接收触摸事件的子视图
         public View child;
 
         // The combined bit mask of pointer ids for all pointers captured by the target.
+        //捕获到的指针 ID 位掩码，记录所有被该目标捕获的指针
         public int pointerIdBits;
 
         // The next target in the target list.
+        //下一个触摸目标，形成链表结构
         public TouchTarget next;
 
         private TouchTarget() {
         }
 
+        //从回收池获取或创建新的 TouchTarget 实例
         public static TouchTarget obtain(@NonNull View child, int pointerIdBits) {
             if (child == null) {
                 throw new IllegalArgumentException("child must be non-null");
@@ -8377,6 +8423,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
             return target;
         }
 
+        //将实例放回回收池以供重用
         public void recycle() {
             if (child == null) {
                 throw new IllegalStateException("already recycled once");
@@ -8396,6 +8443,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
     }
 
     /* Describes a hovered view. */
+    //表示一个悬停目标，用于追踪 ViewGroup 中接收悬停事件的子视图。
     private static final class HoverTarget {
         private static final int MAX_RECYCLED = 32;
         private static final Object sRecycleLock = new Object[0];
@@ -8411,6 +8459,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         private HoverTarget() {
         }
 
+        //从回收池获取或创建新的 HoverTarget 实例
         public static HoverTarget obtain(@NonNull View child) {
             if (child == null) {
                 throw new IllegalArgumentException("child must be non-null");
@@ -8451,6 +8500,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
 
     /**
      * Pooled class that to hold the children for autifill.
+     * 继承自 ArrayList<View> 的特殊列表类，用于自动填充（auto-fill）功能中管理子视图列表。
      */
     static class ChildListForAutoFill extends ArrayList<View> {
         private static final int MAX_POOL_SIZE = 32;
@@ -8475,6 +8525,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
     /**
      * Pooled class that orderes the children of a ViewGroup from start
      * to end based on how they are laid out and the layout direction.
+     * 用于无障碍访问（accessibility）的子视图列表管理类，专门用于管理和排序 ViewGroup 中的子视图。
      */
     static class ChildListForAccessibility {
 
@@ -8560,11 +8611,13 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * a specified root. This enables sorting of views based on their
      * coordinates without recomputing the position relative to the root
      * on every comparison.
+     * 存储和比较视图的位置信息，主要用于无障碍访问中的视图排序。
      */
     static class ViewLocationHolder implements Comparable<ViewLocationHolder> {
 
         private static final int MAX_POOL_SIZE = 32;
 
+        //实现线程安全的对象重用
         private static final SynchronizedPool<ViewLocationHolder> sPool =
                 new SynchronizedPool<ViewLocationHolder>(MAX_POOL_SIZE);
 
@@ -8574,13 +8627,14 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
 
         private static int sComparisonStrategy = COMPARISON_STRATEGY_STRIPE;
 
+        //存储视图的边界矩形
         private final Rect mLocation = new Rect();
 
-        private ViewGroup mRoot;
+        private ViewGroup mRoot;//根视图组
 
-        public View mView;
+        public View mView;//当前视图
 
-        private int mLayoutDirection;
+        private int mLayoutDirection;//布局方向（LTR/RTL）
 
         public static ViewLocationHolder obtain(ViewGroup root, View view) {
             ViewLocationHolder holder = sPool.acquire();
@@ -8623,6 +8677,7 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
          * @param holder1 Holder of first view to compare
          * @param holder2 Holder of second view to compare. Must have the same root at holder1.
          * @return The compare result, with equality if no good comparison was found.
+         * 比较两个视图的位置边界，通过递归比较视图及其子视图的边界来确定它们的排序关系。
          */
         private static int compareBoundsOfTree(
                 ViewLocationHolder holder1, ViewLocationHolder holder2) {
