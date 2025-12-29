@@ -1,10 +1,13 @@
 <html>
 <body>
 <p>
+    此包中的类用于开发辅助功能服务，为用户提供替代或增强的反馈。
   The classes in this package are used for development of accessibility service that
   provide alternative or augmented feedback to the user.
 </p>
 <p>
+    一个无障碍服务在后台运行，并在无障碍事件触发时接收系统回调。此类事件表示用户界面中的某些状态变化，
+    例如焦点已更改、按钮已被点击等。此类服务可以选择请求查询活动窗口内容的能力。开发辅助功能服务需要继承此类并实现其抽象方法。
   An {@link android.accessibilityservice.AccessibilityService} runs in the background and
   receives callbacks by the system when {@link android.view.accessibility.AccessibilityEvent}s
   are fired. Such events denote some state transition in the user interface, for example, the
@@ -13,6 +16,8 @@
   service requires extends this class and implements its abstract methods.
 </p>
 <p>
+    一个AccessibilityServiceInfo 描述了一个 AccessibilityService
+    系统会根据此类封装的信息， 通知 AccessibilityService 关于 AccessibilityEvent 的事件。
   An {@link android.accessibilityservice.AccessibilityServiceInfo} describes an
   {@link android.accessibilityservice.AccessibilityService}. The system notifies an
   AccessibilityService for {@link android.view.accessibility.AccessibilityEvent}s

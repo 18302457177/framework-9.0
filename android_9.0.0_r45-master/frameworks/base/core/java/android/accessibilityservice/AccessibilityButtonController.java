@@ -54,7 +54,7 @@ import com.android.internal.util.Preconditions;
 public final class AccessibilityButtonController {
     private static final String LOG_TAG = "A11yButtonController";
 
-    private final IAccessibilityServiceConnection mServiceConnection;
+    private final IAccessibilityServiceConnection mServiceConnection;//用于与无障碍服务建立连接的远程连接对象
     private final Object mLock;
     private ArrayMap<AccessibilityButtonCallback, Handler> mCallbacks;
 
@@ -74,6 +74,7 @@ public final class AccessibilityButtonController {
      *
      * @return {@code true} if the accessibility button in the system's navigation area is
      * available to the calling service, {@code false} otherwise
+     * 检查系统导航区域的无障碍按钮对调用服务是否可用
      */
     public boolean isAccessibilityButtonAvailable() {
         try {
@@ -191,6 +192,7 @@ public final class AccessibilityButtonController {
     /**
      * Callback for interaction with and changes to state of the accessibility button
      * within the system's navigation area.
+     * 用于处理系统导航区域中无障碍按钮的交互和状态变化的回调
      */
     public static abstract class AccessibilityButtonCallback {
 
@@ -198,6 +200,7 @@ public final class AccessibilityButtonController {
          * Called when the accessibility button in the system's navigation area is clicked.
          *
          * @param controller the controller used to register for this callback
+         * 当系统导航区域的无障碍按钮被点击时调用
          */
         public void onClicked(AccessibilityButtonController controller) {}
 
@@ -210,6 +213,7 @@ public final class AccessibilityButtonController {
          * @param controller the controller used to register for this callback
          * @param available {@code true} if the accessibility button is available to this
          *                  service, {@code false} otherwise
+         * 当无障碍按钮的可用性发生变化时调用
          */
         public void onAvailabilityChanged(AccessibilityButtonController controller,
                 boolean available) {
