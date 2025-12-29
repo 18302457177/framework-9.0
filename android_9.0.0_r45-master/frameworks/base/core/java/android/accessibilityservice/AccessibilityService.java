@@ -382,10 +382,10 @@ public abstract class AccessibilityService extends Service {
         boolean onGesture(int gestureId);
         boolean onKeyEvent(KeyEvent event);
         void onMagnificationChanged(@NonNull Region region,
-                float scale, float centerX, float centerY);
+                float scale, float centerX, float centerY);//处理屏幕缩放状态变化的回调方法
         void onSoftKeyboardShowModeChanged(int showMode);
         void onPerformGestureResult(int sequence, boolean completedSuccessfully);
-        void onFingerprintCapturingGesturesChanged(boolean active);
+        void onFingerprintCapturingGesturesChanged(boolean active);//处理指纹手势捕获状态变化的回调方法
         void onFingerprintGesture(int gesture);
         void onAccessibilityButtonClicked();
         void onAccessibilityButtonAvailabilityChanged(boolean available);
@@ -752,6 +752,7 @@ public abstract class AccessibilityService extends Service {
 
     /**
      * Used to control and query the state of display magnification.
+     * 查询和修改屏幕缩放状态的控制器
      */
     public static final class MagnificationController {
         private final AccessibilityService mService;
@@ -770,6 +771,7 @@ public abstract class AccessibilityService extends Service {
 
         /**
          * Called when the service is connected.
+         * 服务连接时的回调处理
          */
         void onServiceConnected() {
             synchronized (mLock) {
@@ -783,7 +785,7 @@ public abstract class AccessibilityService extends Service {
          * Adds the specified change listener to the list of magnification
          * change listeners. The callback will occur on the service's main
          * thread.
-         *
+         * 添加缩放变化监听器
          * @param listener the listener to add, must be non-{@code null}
          */
         public void addListener(@NonNull OnMagnificationChangedListener listener) {
@@ -846,6 +848,7 @@ public abstract class AccessibilityService extends Service {
             }
         }
 
+        //设置缩放回调启用状态
         private void setMagnificationCallbackEnabled(boolean enabled) {
             final IAccessibilityServiceConnection connection =
                     AccessibilityInteractionClient.getInstance().getConnection(
@@ -862,6 +865,7 @@ public abstract class AccessibilityService extends Service {
         /**
          * Dispatches magnification changes to any registered listeners. This
          * should be called on the service's main thread.
+         * 分发缩放变化事件
          */
         void dispatchMagnificationChanged(final @NonNull Region region, final float scale,
                 final float centerX, final float centerY) {
@@ -906,6 +910,7 @@ public abstract class AccessibilityService extends Service {
          * return a default value of {@code 1.0f}.
          *
          * @return the current magnification scale
+         * 获取当前缩放比例
          */
         public float getScale() {
             final IAccessibilityServiceConnection connection =
@@ -935,6 +940,7 @@ public abstract class AccessibilityService extends Service {
          *
          * @return the unscaled screen-relative X coordinate of the center of
          *         the magnified region
+         *         获取缩放中心X坐标
          */
         public float getCenterX() {
             final IAccessibilityServiceConnection connection =
@@ -997,6 +1003,7 @@ public abstract class AccessibilityService extends Service {
          *
          * @return the region of the screen currently active for magnification, or an empty region
          * if magnification is not active.
+         * 获取缩放区域
          */
         @NonNull
         public Region getMagnificationRegion() {
@@ -1027,6 +1034,7 @@ public abstract class AccessibilityService extends Service {
          *                center or {@code false} to reset the scale and center
          *                immediately
          * @return {@code true} on success, {@code false} on failure
+         * 重置缩放状态
          */
         public boolean reset(boolean animate) {
             final IAccessibilityServiceConnection connection =
@@ -1055,6 +1063,7 @@ public abstract class AccessibilityService extends Service {
          * @param animate {@code true} to animate from the current scale or
          *                {@code false} to set the scale immediately
          * @return {@code true} on success, {@code false} on failure
+         * 设置缩放比例
          */
         public boolean setScale(float scale, boolean animate) {
             final IAccessibilityServiceConnection connection =
@@ -1087,6 +1096,7 @@ public abstract class AccessibilityService extends Service {
          * @param animate {@code true} to animate from the current viewport
          *                center or {@code false} to set the center immediately
          * @return {@code true} on success, {@code false} on failure
+         * 设置缩放中心
          */
         public boolean setCenter(float centerX, float centerY, boolean animate) {
             final IAccessibilityServiceConnection connection =
@@ -1148,6 +1158,7 @@ public abstract class AccessibilityService extends Service {
 
     /**
      * Used to control and query the soft keyboard show mode.
+     * 查询和修改软键盘显示模式的控制器
      */
     public static final class SoftKeyboardController {
         private final AccessibilityService mService;
@@ -1155,6 +1166,7 @@ public abstract class AccessibilityService extends Service {
         /**
          * Map of listeners to their handlers. Lazily created when adding the first
          * soft keyboard change listener.
+         * 监听器映射表
          */
         private ArrayMap<OnShowModeChangedListener, Handler> mListeners;
         private final Object mLock;
@@ -1600,24 +1612,24 @@ public abstract class AccessibilityService extends Service {
     /**
      * Implements the internal {@link IAccessibilityServiceClient} interface to convert
      * incoming calls to it back to calls on an {@link AccessibilityService}.
-     *
+     *作为系统服务与无障碍服务之间的桥梁
      * @hide
      */
     public static class IAccessibilityServiceClientWrapper extends IAccessibilityServiceClient.Stub
             implements HandlerCaller.Callback {
-        private static final int DO_INIT = 1;
-        private static final int DO_ON_INTERRUPT = 2;
-        private static final int DO_ON_ACCESSIBILITY_EVENT = 3;
-        private static final int DO_ON_GESTURE = 4;
+        private static final int DO_INIT = 1;//初始化消息
+        private static final int DO_ON_INTERRUPT = 2;//中断消息
+        private static final int DO_ON_ACCESSIBILITY_EVENT = 3;//无障碍事件消息
+        private static final int DO_ON_GESTURE = 4;//手势消息
         private static final int DO_CLEAR_ACCESSIBILITY_CACHE = 5;
-        private static final int DO_ON_KEY_EVENT = 6;
-        private static final int DO_ON_MAGNIFICATION_CHANGED = 7;
-        private static final int DO_ON_SOFT_KEYBOARD_SHOW_MODE_CHANGED = 8;
-        private static final int DO_GESTURE_COMPLETE = 9;
+        private static final int DO_ON_KEY_EVENT = 6;//按键事件消息
+        private static final int DO_ON_MAGNIFICATION_CHANGED = 7;// 缩放变化消息
+        private static final int DO_ON_SOFT_KEYBOARD_SHOW_MODE_CHANGED = 8;//软键盘显示模式变化消息
+        private static final int DO_GESTURE_COMPLETE = 9;//手势完成消息
         private static final int DO_ON_FINGERPRINT_ACTIVE_CHANGED = 10;
         private static final int DO_ON_FINGERPRINT_GESTURE = 11;
-        private static final int DO_ACCESSIBILITY_BUTTON_CLICKED = 12;
-        private static final int DO_ACCESSIBILITY_BUTTON_AVAILABILITY_CHANGED = 13;
+        private static final int DO_ACCESSIBILITY_BUTTON_CLICKED = 12;//指纹识别激活变化消息
+        private static final int DO_ACCESSIBILITY_BUTTON_AVAILABILITY_CHANGED = 13;//无障碍按钮可用性变化消息
 
         private final HandlerCaller mCaller;
 
@@ -1643,6 +1655,7 @@ public abstract class AccessibilityService extends Service {
             mCaller.sendMessage(message);
         }
 
+        //处理无障碍事件
         public void onAccessibilityEvent(AccessibilityEvent event, boolean serviceWantsEvent) {
             Message message = mCaller.obtainMessageBO(
                     DO_ON_ACCESSIBILITY_EVENT, serviceWantsEvent, event);
@@ -1850,11 +1863,13 @@ public abstract class AccessibilityService extends Service {
 
     /**
      * Class used to report status of dispatched gestures
+     * 报告分派手势的状态结果
      */
     public static abstract class GestureResultCallback {
         /** Called when the gesture has completed successfully
          *
          * @param gestureDescription The description of the gesture that completed.
+         *                           当手势成功完成时被调用
          */
         public void onCompleted(GestureDescription gestureDescription) {
         }
@@ -1862,6 +1877,7 @@ public abstract class AccessibilityService extends Service {
         /** Called when the gesture was cancelled
          *
          * @param gestureDescription The description of the gesture that was cancelled.
+         *                           当手势被取消时被调用
          */
         public void onCancelled(GestureDescription gestureDescription) {
         }
