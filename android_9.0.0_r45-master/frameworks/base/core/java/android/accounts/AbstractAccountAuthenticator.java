@@ -151,6 +151,10 @@ public abstract class AbstractAccountAuthenticator {
         mContext = context;
     }
 
+    /**
+     * 作为远程调用的传输层
+     * 处理来自 AccountManager 的远程调用请求
+     */
     private class Transport extends IAccountAuthenticator.Stub {
         @Override
         public void addAccount(IAccountAuthenticatorResponse response, String accountType,
@@ -183,6 +187,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //确认凭证
         @Override
         public void confirmCredentials(IAccountAuthenticatorResponse response,
                 Account account, Bundle options) throws RemoteException {
@@ -208,6 +213,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //获取令牌标签
         @Override
         public void getAuthTokenLabel(IAccountAuthenticatorResponse response,
                 String authTokenType)
@@ -233,6 +239,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //获取认证令牌
         @Override
         public void getAuthToken(IAccountAuthenticatorResponse response,
                 Account account, String authTokenType, Bundle loginOptions)
@@ -305,6 +312,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //检查功能支持
         @Override
         public void hasFeatures(IAccountAuthenticatorResponse response,
                 Account account, String[] features) throws RemoteException {
@@ -320,6 +328,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //检查账户移除权限
         @Override
         public void getAccountRemovalAllowed(IAccountAuthenticatorResponse response,
                 Account account) throws RemoteException {
@@ -335,6 +344,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //获取克隆凭证
         @Override
         public void getAccountCredentialsForCloning(IAccountAuthenticatorResponse response,
                 Account account) throws RemoteException {
@@ -351,6 +361,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //从凭证添加账户
         @Override
         public void addAccountFromCredentials(IAccountAuthenticatorResponse response,
                 Account account,
@@ -369,6 +380,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //开始添加账户会话
         @Override
         public void startAddAccountSession(IAccountAuthenticatorResponse response,
                 String accountType, String authTokenType, String[] features, Bundle options)
@@ -399,6 +411,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //开始更新凭证会话
         @Override
         public void startUpdateCredentialsSession(
                 IAccountAuthenticatorResponse response,
@@ -438,6 +451,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //完成会话
         @Override
         public void finishSession(
                 IAccountAuthenticatorResponse response,
@@ -465,6 +479,7 @@ public abstract class AbstractAccountAuthenticator {
             }
         }
 
+        //检查凭证更新建议
         @Override
         public void isCredentialsUpdateSuggested(
                 IAccountAuthenticatorResponse response,
@@ -984,6 +999,7 @@ public abstract class AbstractAccountAuthenticator {
      *         </ul>
      * @throws NetworkErrorException if the authenticator could not honor the request due to a
      *             network error
+     *             验证特定账户的凭证是否需要更新
      */
     public Bundle isCredentialsUpdateSuggested(
             final AccountAuthenticatorResponse response,
