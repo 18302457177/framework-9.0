@@ -33,8 +33,9 @@ import android.view.accessibility.AccessibilityWindowInfo;
  */
 interface IAccessibilityServiceConnection {
 
-    void setServiceInfo(in AccessibilityServiceInfo info);
+    void setServiceInfo(in AccessibilityServiceInfo info);//设置服务信息
 
+//通过无障碍ID查找节点信息
     String[] findAccessibilityNodeInfoByAccessibilityId(int accessibilityWindowId,
         long accessibilityNodeId, int interactionId,
         IAccessibilityInteractionConnectionCallback callback, int flags, long threadId,
@@ -47,13 +48,13 @@ interface IAccessibilityServiceConnection {
     String[] findAccessibilityNodeInfosByViewId(int accessibilityWindowId,
         long accessibilityNodeId, String viewId, int interactionId,
         IAccessibilityInteractionConnectionCallback callback, long threadId);
-
+//查找焦点
     String[] findFocus(int accessibilityWindowId, long accessibilityNodeId, int focusType,
         int interactionId, IAccessibilityInteractionConnectionCallback callback, long threadId);
-
+//焦点搜索
     String[] focusSearch(int accessibilityWindowId, long accessibilityNodeId, int direction,
         int interactionId, IAccessibilityInteractionConnectionCallback callback, long threadId);
-
+//执行无障碍动作
     boolean performAccessibilityAction(int accessibilityWindowId, long accessibilityNodeId,
         int action, in Bundle arguments, int interactionId,
         IAccessibilityInteractionConnectionCallback callback, long threadId);
@@ -63,7 +64,7 @@ interface IAccessibilityServiceConnection {
     List<AccessibilityWindowInfo> getWindows();
 
     AccessibilityServiceInfo getServiceInfo();
-
+//执行全局动作
     boolean performGlobalAction(int action);
 
     void disableSelf();
@@ -92,6 +93,6 @@ interface IAccessibilityServiceConnection {
     boolean isAccessibilityButtonAvailable();
 
     void sendGesture(int sequence, in ParceledListSlice gestureSteps);
-
+//检查指纹手势检测是否可用
     boolean isFingerprintGestureDetectionAvailable();
 }

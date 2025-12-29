@@ -24,15 +24,18 @@ import android.view.KeyEvent;
 
 /**
  * Top-level interface to an accessibility service component.
- *
+ *无障碍服务客户端的顶级接口
+ 定义系统与无障碍服务之间的通信协议
  * @hide
  */
  oneway interface IAccessibilityServiceClient {
 
+    //初始化服务连接
     void init(in IAccessibilityServiceConnection connection, int connectionId, IBinder windowToken);
 
     void onAccessibilityEvent(in AccessibilityEvent event, in boolean serviceWantsEvent);
 
+    //中断无障碍反馈
     void onInterrupt();
 
     void onGesture(int gesture);
@@ -47,9 +50,10 @@ import android.view.KeyEvent;
 
     void onPerformGestureResult(int sequence, boolean completedSuccessfully);
 
+    //处理指纹手势捕获状态变化
     void onFingerprintCapturingGesturesChanged(boolean capturing);
 
-    void onFingerprintGesture(int gesture);
+    void onFingerprintGesture(int gesture);//处理指纹手势
 
     void onAccessibilityButtonClicked();
 
