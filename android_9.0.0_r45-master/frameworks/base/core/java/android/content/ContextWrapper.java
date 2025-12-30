@@ -52,6 +52,8 @@ import java.util.concurrent.Executor;
  * Proxying implementation of Context that simply delegates all of its calls to
  * another Context.  Can be subclassed to modify behavior without changing
  * the original Context.
+ * Context的代理实现，简单地将其所有调用委托给另一个Context。
+ * 可以通过子类化来修改行为，而无需更改原始的Context。
  */
 public class ContextWrapper extends Context {
     Context mBase;

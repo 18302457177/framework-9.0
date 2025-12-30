@@ -26,6 +26,7 @@ import android.content.res.Resources;
 /**
  * A context wrapper that allows you to modify or replace the theme of the
  * wrapped context.
+ * 一个上下文包装器，允许你修改或替换被包装上下文的主题。
  */
 public class ContextThemeWrapper extends ContextWrapper {
     private int mThemeResource;
