@@ -803,6 +803,7 @@ public class Activity extends ContextThemeWrapper
     /** The autofill manager. Always access via {@link #getAutofillManager()}. */
     @Nullable private AutofillManager mAutofillManager;
 
+    //存储在配置变更时需要保留的实例数据
     static final class NonConfigurationInstances {
         Object activity;
         HashMap<String, Object> children;
@@ -831,6 +832,8 @@ public class Activity extends ContextThemeWrapper
     final Handler mHandler = new Handler();
     final FragmentController mFragments = FragmentController.createController(new HostCallbacks());
 
+    //管理 Activity 中使用的游标资源
+    //封装游标对象并跟踪其状态，用于自动管理游标生命周期
     private static final class ManagedCursor {
         ManagedCursor(Cursor cursor) {
             mCursor = cursor;
@@ -7596,6 +7599,7 @@ public class Activity extends ContextThemeWrapper
      * ActivityOptions)}
      *
      * @hide
+     * 确保在透明度转换时底层 Activity 已完成绘制
      */
     @SystemApi
     public interface TranslucentConversionListener {

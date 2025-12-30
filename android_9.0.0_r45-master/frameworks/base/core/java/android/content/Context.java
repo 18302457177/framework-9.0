@@ -87,35 +87,40 @@ import java.util.concurrent.Executor;
  * allows access to application-specific resources and classes, as well as
  * up-calls for application-level operations such as launching activities,
  * broadcasting and receiving intents, etc.
+ * 提供有关应用环境的全局信息的接口。它是一个抽象类，其实现由 Android 系统提供。
+ * 它允许访问应用特定的资源和类，以及应用级操作的上行调用，例如启动活动、发送和接收意图等。
  */
 public abstract class Context {
     /** @hide */
+    //标记文件操作模式的常量
     @IntDef(flag = true, prefix = { "MODE_" }, value = {
-            MODE_PRIVATE,
-            MODE_WORLD_READABLE,
-            MODE_WORLD_WRITEABLE,
-            MODE_APPEND,
+            MODE_PRIVATE,//私有模式
+            MODE_WORLD_READABLE,//全局可读模式
+            MODE_WORLD_WRITEABLE,//全局可写模式
+            MODE_APPEND,//追加模式
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface FileMode {}
 
     /** @hide */
+    //标记共享偏好设置操作模式的常量
     @IntDef(flag = true, prefix = { "MODE_" }, value = {
             MODE_PRIVATE,
             MODE_WORLD_READABLE,
             MODE_WORLD_WRITEABLE,
-            MODE_MULTI_PROCESS,
+            MODE_MULTI_PROCESS,//多进程模式
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PreferencesMode {}
 
     /** @hide */
+    //标记数据库操作模式的常量
     @IntDef(flag = true, prefix = { "MODE_" }, value = {
             MODE_PRIVATE,
             MODE_WORLD_READABLE,
             MODE_WORLD_WRITEABLE,
-            MODE_ENABLE_WRITE_AHEAD_LOGGING,
-            MODE_NO_LOCALIZED_COLLATORS,
+            MODE_ENABLE_WRITE_AHEAD_LOGGING,//启用预写日志模式
+            MODE_NO_LOCALIZED_COLLATORS,//无本地化排序器模式
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DatabaseMode {}
@@ -223,15 +228,16 @@ public abstract class Context {
     public static final int MODE_NO_LOCALIZED_COLLATORS = 0x0010;
 
     /** @hide */
+    //标记服务绑定标志的常量
     @IntDef(flag = true, prefix = { "BIND_" }, value = {
-            BIND_AUTO_CREATE,
-            BIND_DEBUG_UNBIND,
-            BIND_NOT_FOREGROUND,
-            BIND_ABOVE_CLIENT,
-            BIND_ALLOW_OOM_MANAGEMENT,
-            BIND_WAIVE_PRIORITY,
-            BIND_IMPORTANT,
-            BIND_ADJUST_WITH_ACTIVITY
+            BIND_AUTO_CREATE,//自动创建服务
+            BIND_DEBUG_UNBIND,//调试解绑
+            BIND_NOT_FOREGROUND,//不提升到前台
+            BIND_ABOVE_CLIENT,//比客户端更重要
+            BIND_ALLOW_OOM_MANAGEMENT,//允许OOM管理
+            BIND_WAIVE_PRIORITY,//放弃优先级
+            BIND_IMPORTANT,//重要服务
+            BIND_ADJUST_WITH_ACTIVITY//随活动调整
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BindServiceFlags {}
@@ -425,8 +431,9 @@ public abstract class Context {
     public static final int BIND_EXTERNAL_SERVICE = 0x80000000;
 
     /** @hide */
+    //标记注册广播接收器标志的常量
     @IntDef(flag = true, prefix = { "RECEIVER_VISIBLE_" }, value = {
-            RECEIVER_VISIBLE_TO_INSTANT_APPS
+            RECEIVER_VISIBLE_TO_INSTANT_APPS//接收器对即时应用可见
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RegisterReceiverFlags {}
@@ -446,6 +453,8 @@ public abstract class Context {
      *
      * @return an AssetManager instance for the application's package
      * @see #getResources()
+     * 获取应用程序包的 AssetManager 实例
+     * 访问应用程序的资源文件，如图片、音频、视频、文本等存储在 assets 目录下的文件
      */
     public abstract AssetManager getAssets();
 
@@ -702,6 +711,7 @@ public abstract class Context {
      * for more information.
      *
      * @see android.content.res.Resources.Theme#obtainStyledAttributes(AttributeSet, int[], int, int)
+     * 获取与当前主题关联的样式化属性
      */
     public final TypedArray obtainStyledAttributes(
             AttributeSet set, @StyleableRes int[] attrs) {
@@ -737,7 +747,9 @@ public abstract class Context {
      * this context.  This is the same as {@link #getBasePackageName()} except in
      * cases where system components are loaded into other app processes, in which
      * case this will be the name of the primary package in that process (so that app
-     * ops uid verification will work with the name). */
+     * ops uid verification will work with the name).
+     * 获取用于 AppOps 调用的包名
+     * */
     public abstract String getOpPackageName();
 
     /** Return the full application info for this context's package. */
@@ -770,6 +782,7 @@ public abstract class Context {
     /**
      * @hide
      * @deprecated use {@link #getSharedPreferencesPath(String)}
+     * 获取共享偏好设置文件的路径
      */
     @Deprecated
     public File getSharedPrefsFile(String name) {
@@ -794,6 +807,7 @@ public abstract class Context {
      *         to retrieve and modify the preference values.
      *
      * @see #MODE_PRIVATE
+     * 获取指定名称的共享偏好设置文件
      */
     public abstract SharedPreferences getSharedPreferences(String name, @PreferencesMode int mode);
 
@@ -989,6 +1003,7 @@ public abstract class Context {
      * @see #getFileStreamPath
      * @see #getDir
      * @see android.app.backup.BackupAgent
+     * 返回一个目录路径，该目录类似于 getFilesDir()，但存储在此目录下的文件会被排除在自动备份到远程存储之外
      */
     public abstract File getNoBackupFilesDir();
 
@@ -1213,6 +1228,8 @@ public abstract class Context {
      * @see Environment#getExternalStorageState(File)
      * @see Environment#isExternalStorageEmulated(File)
      * @see Environment#isExternalStorageRemovable(File)
+     * 返回应用程序的 OBB（Opaque Binary Blob）文件存储目录
+     * 存储应用的 OBB 扩展文件，通常用于存储大型资源文件，如游戏数据包
      */
     public abstract File getObbDir();
 
@@ -1378,6 +1395,7 @@ public abstract class Context {
      * Returns absolute path to application-specific directory in the preloaded cache.
      * <p>Files stored in the cache directory can be deleted when the device runs low on storage.
      * There is no guarantee when these files will be deleted.
+     * 返回预加载缓存中的应用特定目录路径
      * @hide
      */
     @Nullable
@@ -1702,6 +1720,7 @@ public abstract class Context {
      * @param intent The description of the activity to start.
      * @param user The UserHandle of the user to start this activity for.
      * @throws ActivityNotFoundException &nbsp;
+     * 启动指定用户的 Activity
      * @hide
      */
     @RequiresPermission(android.Manifest.permission.INTERACT_ACROSS_USERS_FULL)
@@ -1768,6 +1787,7 @@ public abstract class Context {
      *          for how to build the Bundle supplied here; there are no supported definitions
      *          for building it manually.
      * @hide
+     * 启动一个 Activity 并在完成后返回结果
      */
     public void startActivityForResult(
             @NonNull String who, Intent intent, int requestCode, @Nullable Bundle options) {
@@ -1873,6 +1893,12 @@ public abstract class Context {
      *
      * @see #startActivity(Intent)
      * @see #startIntentSender(IntentSender, Intent, int, int, int, Bundle)
+     * 启动一个 IntentSender
+     * IntentSender的作用是封装了启动Activity或Service所需的Intent。
+     * 通过IntentSender，开发者可以在一个组件中启动另一个组件，并且能够获取启动后的返回结果。
+     * IntentSender的核心是Intent，它是Android中用于描述应用内组件间交互信息的对象。
+     * 当使用IntentSender启动Activity或Service时，实际上是将Intent传递给了目标组件。
+     *
      */
     public abstract void startIntentSender(IntentSender intent, @Nullable Intent fillInIntent,
             @Intent.MutableFlags int flagsMask, @Intent.MutableFlags int flagsValues,
@@ -1978,6 +2004,7 @@ public abstract class Context {
      * @see #sendBroadcast(Intent)
      * @see #sendOrderedBroadcast(Intent, String)
      * @see #sendOrderedBroadcast(Intent, String, BroadcastReceiver, Handler, int, String, Bundle)
+     * 向所有感兴趣的广播接收器发送广播，并允许执行一组必需的权限
      * @hide
      */
     public abstract void sendBroadcastMultiplePermissions(Intent intent,
@@ -2435,6 +2462,7 @@ public abstract class Context {
     /**
      * @hide
      * This is just here for sending CONNECTIVITY_ACTION.
+     * 向指定用户发送粘性广播
      */
     @Deprecated
     @RequiresPermission(allOf = {
@@ -2694,6 +2722,7 @@ public abstract class Context {
      * @see #registerReceiver(BroadcastReceiver, IntentFilter, String, Handler)
      * @see #sendBroadcast
      * @see #unregisterReceiver
+     * 为指定用户注册广播接收器
      */
     @Nullable
     @RequiresPermission(android.Manifest.permission.INTERACT_ACROSS_USERS_FULL)
@@ -2970,102 +2999,104 @@ public abstract class Context {
      *
      * @return {@code true} if the instrumentation was successfully started,
      * else {@code false} if it could not be found.
+     * 启动一个 Instrumentation 组件  Instrumentation用于监控Android系统与应用程序之间的交互
      */
     public abstract boolean startInstrumentation(@NonNull ComponentName className,
             @Nullable String profileFile, @Nullable Bundle arguments);
 
     /** @hide */
+    //标记系统服务名称的常量
     @StringDef(suffix = { "_SERVICE" }, value = {
-            POWER_SERVICE,
-            WINDOW_SERVICE,
-            LAYOUT_INFLATER_SERVICE,
-            ACCOUNT_SERVICE,
-            ACTIVITY_SERVICE,
-            ALARM_SERVICE,
-            NOTIFICATION_SERVICE,
-            ACCESSIBILITY_SERVICE,
-            CAPTIONING_SERVICE,
-            KEYGUARD_SERVICE,
-            LOCATION_SERVICE,
+            POWER_SERVICE,//电源服务
+            WINDOW_SERVICE,//窗口服务
+            LAYOUT_INFLATER_SERVICE,//布局加载服务
+            ACCOUNT_SERVICE,//账户服务
+            ACTIVITY_SERVICE,//活动服务
+            ALARM_SERVICE,//闹钟服务
+            NOTIFICATION_SERVICE,//通知服务
+            ACCESSIBILITY_SERVICE,//无障碍服务
+            CAPTIONING_SERVICE,//字幕服务
+            KEYGUARD_SERVICE,//锁屏服务
+            LOCATION_SERVICE,//位置服务
             //@hide: COUNTRY_DETECTOR,
-            SEARCH_SERVICE,
-            SENSOR_SERVICE,
-            STORAGE_SERVICE,
-            STORAGE_STATS_SERVICE,
-            WALLPAPER_SERVICE,
-            TIME_ZONE_RULES_MANAGER_SERVICE,
-            VIBRATOR_SERVICE,
+            SEARCH_SERVICE,//搜索服务
+            SENSOR_SERVICE,//传感器服务
+            STORAGE_SERVICE,//存储服务
+            STORAGE_STATS_SERVICE,//存储统计服务
+            WALLPAPER_SERVICE,//壁纸服务
+            TIME_ZONE_RULES_MANAGER_SERVICE,//时区规则管理服务
+            VIBRATOR_SERVICE,//振动器服务
             //@hide: STATUS_BAR_SERVICE,
-            CONNECTIVITY_SERVICE,
-            IPSEC_SERVICE,
+            CONNECTIVITY_SERVICE,//连接服务
+            IPSEC_SERVICE,//IPSEC服务
             //@hide: UPDATE_LOCK_SERVICE,
             //@hide: NETWORKMANAGEMENT_SERVICE,
-            NETWORK_STATS_SERVICE,
+            NETWORK_STATS_SERVICE,//网络统计服务
             //@hide: NETWORK_POLICY_SERVICE,
-            WIFI_SERVICE,
-            WIFI_AWARE_SERVICE,
-            WIFI_P2P_SERVICE,
-            WIFI_SCANNING_SERVICE,
+            WIFI_SERVICE,//WiFi服务
+            WIFI_AWARE_SERVICE,//WIFI感知服务
+            WIFI_P2P_SERVICE,//WIFI_P2P服务
+            WIFI_SCANNING_SERVICE,//WIFI扫描服务
             //@hide: LOWPAN_SERVICE,
             //@hide: WIFI_RTT_SERVICE,
             //@hide: ETHERNET_SERVICE,
-            WIFI_RTT_RANGING_SERVICE,
-            NSD_SERVICE,
-            AUDIO_SERVICE,
-            FINGERPRINT_SERVICE,
-            MEDIA_ROUTER_SERVICE,
-            TELEPHONY_SERVICE,
-            TELEPHONY_SUBSCRIPTION_SERVICE,
-            CARRIER_CONFIG_SERVICE,
-            TELECOM_SERVICE,
-            CLIPBOARD_SERVICE,
-            INPUT_METHOD_SERVICE,
-            TEXT_SERVICES_MANAGER_SERVICE,
-            TEXT_CLASSIFICATION_SERVICE,
-            APPWIDGET_SERVICE,
+            WIFI_RTT_RANGING_SERVICE,//WIFI_RTT测距服务
+            NSD_SERVICE,//NSD服务
+            AUDIO_SERVICE,//音频服务
+            FINGERPRINT_SERVICE,//指纹服务
+            MEDIA_ROUTER_SERVICE,//媒体路由服务
+            TELEPHONY_SERVICE,//电话服务
+            TELEPHONY_SUBSCRIPTION_SERVICE,//电话订阅服务
+            CARRIER_CONFIG_SERVICE,//运营商配置服务
+            TELECOM_SERVICE,//电信服务
+            CLIPBOARD_SERVICE,//剪贴板服务
+            INPUT_METHOD_SERVICE,//输入法服务
+            TEXT_SERVICES_MANAGER_SERVICE,//文本服务管理器服务
+            TEXT_CLASSIFICATION_SERVICE,//文本分类服务
+            APPWIDGET_SERVICE,//应用小部件服务
             //@hide: VOICE_INTERACTION_MANAGER_SERVICE,
             //@hide: BACKUP_SERVICE,
-            DROPBOX_SERVICE,
+            DROPBOX_SERVICE,//Dropbox服务
             //@hide: DEVICE_IDLE_CONTROLLER,
-            DEVICE_POLICY_SERVICE,
-            UI_MODE_SERVICE,
-            DOWNLOAD_SERVICE,
-            NFC_SERVICE,
-            BLUETOOTH_SERVICE,
+            DEVICE_POLICY_SERVICE,//设备策略服务
+            UI_MODE_SERVICE,//界面模式服务
+            DOWNLOAD_SERVICE,//下载服务
+            NFC_SERVICE,//NFC服务
+            BLUETOOTH_SERVICE,//蓝牙服务
             //@hide: SIP_SERVICE,
-            USB_SERVICE,
-            LAUNCHER_APPS_SERVICE,
+            USB_SERVICE,//USB服务
+            LAUNCHER_APPS_SERVICE,//启动器应用服务
             //@hide: SERIAL_SERVICE,
             //@hide: HDMI_CONTROL_SERVICE,
-            INPUT_SERVICE,
-            DISPLAY_SERVICE,
-            USER_SERVICE,
-            RESTRICTIONS_SERVICE,
-            APP_OPS_SERVICE,
-            CAMERA_SERVICE,
-            PRINT_SERVICE,
-            CONSUMER_IR_SERVICE,
+            INPUT_SERVICE,//输入服务
+            DISPLAY_SERVICE,//显示服务
+            USER_SERVICE,//用户服务
+            RESTRICTIONS_SERVICE,//服务限制
+            APP_OPS_SERVICE,//应用操作服务
+            CAMERA_SERVICE,//相机服务
+            PRINT_SERVICE,//打印服务
+            CONSUMER_IR_SERVICE,//消费者互联网服务
             //@hide: TRUST_SERVICE,
-            TV_INPUT_SERVICE,
+            TV_INPUT_SERVICE,//电视输入服务
             //@hide: NETWORK_SCORE_SERVICE,
-            USAGE_STATS_SERVICE,
-            MEDIA_SESSION_SERVICE,
-            BATTERY_SERVICE,
-            JOB_SCHEDULER_SERVICE,
+            USAGE_STATS_SERVICE,//使用统计服务
+            MEDIA_SESSION_SERVICE,//媒体会话服务
+            BATTERY_SERVICE,//电池服务
+            JOB_SCHEDULER_SERVICE,//作业调度服务
             //@hide: PERSISTENT_DATA_BLOCK_SERVICE,
             //@hide: OEM_LOCK_SERVICE,
-            MEDIA_PROJECTION_SERVICE,
-            MIDI_SERVICE,
-            RADIO_SERVICE,
-            HARDWARE_PROPERTIES_SERVICE,
+            MEDIA_PROJECTION_SERVICE,//媒体投射服务
+            MIDI_SERVICE,//MIDI服务
+            RADIO_SERVICE,//无线电服务
+            HARDWARE_PROPERTIES_SERVICE,//硬件属性服务
             //@hide: SOUND_TRIGGER_SERVICE,
-            SHORTCUT_SERVICE,
+            SHORTCUT_SERVICE,//快捷方式服务
             //@hide: CONTEXTHUB_SERVICE,
-            SYSTEM_HEALTH_SERVICE,
+            SYSTEM_HEALTH_SERVICE,//系统健康服务
             //@hide: INCIDENT_SERVICE,
             //@hide: STATS_COMPANION_SERVICE,
-            COMPANION_DEVICE_SERVICE,
-            CROSS_PROFILE_APPS_SERVICE,
+            COMPANION_DEVICE_SERVICE,//配套设备服务
+            CROSS_PROFILE_APPS_SERVICE,//跨配置文件应用服务
             //@hide: SYSTEM_UPDATE_SERVICE,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -4263,6 +4294,7 @@ public abstract class Context {
      * @see PackageManager#checkPermission(String, String)
      * @see #checkPermission
      * @see #checkCallingOrSelfPermission
+     * 检查调用进程是否拥有指定的权限
      */
     @CheckResult(suggest="#enforceCallingPermission(String,String)")
     @PackageManager.PermissionResult
@@ -4283,6 +4315,7 @@ public abstract class Context {
      * @see PackageManager#checkPermission(String, String)
      * @see #checkPermission
      * @see #checkCallingPermission
+     * 检查调用进程或自身是否拥有指定的权限
      */
     @CheckResult(suggest="#enforceCallingOrSelfPermission(String,String)")
     @PackageManager.PermissionResult
@@ -4313,6 +4346,7 @@ public abstract class Context {
      * @param message A message to include in the exception if it is thrown.
      *
      * @see #checkPermission(String, int, int)
+     * 强制检查指定进程和用户ID是否拥有特定权限
      */
     public abstract void enforcePermission(
             @NonNull String permission, int pid, int uid, @Nullable String message);
@@ -4382,6 +4416,7 @@ public abstract class Context {
      * @param modeFlags The desired access modes.
      *
      * @see #revokeUriPermission
+     * 向其他应用授予访问特定Uri的权限
      */
     public abstract void grantUriPermission(String toPackage, Uri uri,
             @Intent.GrantUriMode int modeFlags);
@@ -4413,6 +4448,7 @@ public abstract class Context {
      * @param modeFlags The access modes to revoke.
      *
      * @see #grantUriPermission
+     * 撤销之前授予的Uri访问权限
      */
     public abstract void revokeUriPermission(Uri uri, @Intent.AccessUriMode int modeFlags);
 
@@ -4554,6 +4590,7 @@ public abstract class Context {
      * @param message A message to include in the exception if it is thrown.
      *
      * @see #checkUriPermission(Uri, int, int, int)
+     * 强制检查指定进程和用户ID对Uri的访问权限
      */
     public abstract void enforceUriPermission(
             Uri uri, int pid, int uid, @Intent.AccessUriMode int modeFlags, String message);
@@ -4620,13 +4657,14 @@ public abstract class Context {
             @Nullable String message);
 
     /** @hide */
+    //标记创建包选项的常量
     @IntDef(flag = true, prefix = { "CONTEXT_" }, value = {
-            CONTEXT_INCLUDE_CODE,
-            CONTEXT_IGNORE_SECURITY,
-            CONTEXT_RESTRICTED,
-            CONTEXT_DEVICE_PROTECTED_STORAGE,
-            CONTEXT_CREDENTIAL_PROTECTED_STORAGE,
-            CONTEXT_REGISTER_PACKAGE,
+            CONTEXT_INCLUDE_CODE,//包含代码上下文
+            CONTEXT_IGNORE_SECURITY,//忽略安全检查
+            CONTEXT_RESTRICTED,//受限上下文
+            CONTEXT_DEVICE_PROTECTED_STORAGE,//设备保护存储上下文
+            CONTEXT_CREDENTIAL_PROTECTED_STORAGE,//凭据保护存储上下文
+            CONTEXT_REGISTER_PACKAGE,//注册包上下文
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CreatePackageOptions {}
@@ -4745,6 +4783,7 @@ public abstract class Context {
      * @param splitName The name of the split to include, as declared in the split's
      *                  <code>AndroidManifest.xml</code>.
      * @return A {@link Context} with the given split's code and/or resources loaded.
+     * 为指定的分包（split）创建一个新的 Context 实例
      */
     public abstract Context createContextForSplit(String splitName)
             throws PackageManager.NameNotFoundException;
@@ -4832,6 +4871,7 @@ public abstract class Context {
      * fairly lightweight.
      *
      * @see #isDeviceProtectedStorage()
+     * 创建一个设备保护存储上下文
      */
     public abstract Context createDeviceProtectedStorageContext();
 
@@ -4859,6 +4899,7 @@ public abstract class Context {
      *
      * @see #isCredentialProtectedStorage()
      * @hide
+     * 创建一个凭证保护存储上下文
      */
     @SystemApi
     public abstract Context createCredentialProtectedStorageContext();
@@ -4871,11 +4912,13 @@ public abstract class Context {
      * @param displayId The display id for which to get compatibility info.
      * @return The compatibility info holder, or null if not required by the application.
      * @hide
+     * 获取指定显示设备的显示调整信息
      */
     public abstract DisplayAdjustments getDisplayAdjustments(int displayId);
 
     /**
      * @hide
+     * 获取与当前 Context 关联的主显示设备
      */
     public abstract Display getDisplay();
 
@@ -4890,6 +4933,7 @@ public abstract class Context {
      * @return {@code true} if this Context is restricted, {@code false} otherwise.
      *
      * @see #CONTEXT_RESTRICTED
+     * 检查当前 Context 是否受到限制
      */
     public boolean isRestricted() {
         return false;
@@ -4964,6 +5008,7 @@ public abstract class Context {
 
     /**
      * @hide
+     *  Compatibility 兼容性
      */
     public boolean isAutofillCompatibilityEnabled() {
         return false;
@@ -4981,6 +5026,7 @@ public abstract class Context {
      * Throws an exception if the Context is using system resources,
      * which are non-runtime-overlay-themable and may show inconsistent UI.
      * @hide
+     * 检查当前 Context 是否支持运行时主题覆盖
      */
     public void assertRuntimeOverlayThemable() {
         // Resources.getSystem() is a singleton and the only Resources not managed by
