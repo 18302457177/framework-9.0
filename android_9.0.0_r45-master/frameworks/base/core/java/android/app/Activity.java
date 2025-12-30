@@ -889,6 +889,7 @@ public class Activity extends ContextThemeWrapper
 
     private AutofillPopupWindow mAutofillPopupWindow;
 
+    //通过本地实现获取动态链接库相关的警告信息
     private static native String getDlWarning();
 
     /** Return the intent that started this activity. */
@@ -1433,6 +1434,7 @@ public class Activity extends ContextThemeWrapper
      * Check whether this activity is running as part of a voice interaction with the user.
      * If true, it should perform its interaction with the user through the
      * {@link VoiceInteractor} returned by {@link #getVoiceInteractor}.
+     * 检查当前 Activity 是否正在作为语音交互的一部分运行
      */
     public boolean isVoiceInteraction() {
         return mVoiceInteractor != null;
@@ -1765,6 +1767,7 @@ public class Activity extends ContextThemeWrapper
      * for helping activities determine the proper time to cancel a notification.
      *
      * @see #onUserInteraction()
+     * 当用户即将离开 Activity 时被调用
      */
     protected void onUserLeaveHint() {
     }
@@ -2020,6 +2023,7 @@ public class Activity extends ContextThemeWrapper
      * entirely drawn your UI and populated with all of the significant data.  You
      * can safely call this method any time after first launch as well, in which case
      * it will simply be ignored.
+     * 向系统报告应用程序已完全绘制完成
      */
     public void reportFullyDrawn() {
         if (mDoReportFullyDrawn) {
@@ -2116,6 +2120,7 @@ public class Activity extends ContextThemeWrapper
      * @see android.R.attr#supportsPictureInPicture
      *
      * @return True if the activity is in picture-in-picture mode.
+     * 检查当前 Activity 是否处于画中画（Picture-in-Picture）模式
      */
     public boolean isInPictureInPictureMode() {
         try {
@@ -2226,6 +2231,7 @@ public class Activity extends ContextThemeWrapper
         return getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
     }
 
+    //处理 Activity 移动到新显示器的事件分发
     void dispatchMovedToDisplay(int displayId, Configuration config) {
         updateDisplay(displayId);
         onMovedToDisplay(displayId, config);
@@ -2384,6 +2390,7 @@ public class Activity extends ContextThemeWrapper
      *
      * @return any Object holding the desired state to propagate to the
      *         next activity instance
+     *         保留配置变更时的非配置实例数据
      */
     public Object onRetainNonConfigurationInstance() {
         return null;
@@ -4648,6 +4655,7 @@ public class Activity extends ContextThemeWrapper
         return mActivityTransitionState.isTransitionRunning();
     }
 
+    //在特定条件下转换和传输 Activity 选项
     private Bundle transferSpringboardActivityOptions(Bundle options) {
         if (options == null && (mWindow != null && !mWindow.isActive())) {
             final ActivityOptions activityOptions = getActivityOptions();
@@ -5426,6 +5434,7 @@ public class Activity extends ContextThemeWrapper
      *
      * <p>Note that this is <em>not</em> a security feature -- you can not trust the
      * referrer information, applications can spoof it.</p>
+     * 获取启动此 Activity 的来源引用信息
      */
     @Nullable
     public Uri getReferrer() {
@@ -5454,6 +5463,7 @@ public class Activity extends ContextThemeWrapper
      * by the app.  The default implementation returns null, meaning the referrer will simply
      * be the android-app: of the package name of this activity.  Return a non-null Uri to
      * have that supplied as the {@link Intent#EXTRA_REFERRER} of any activities started from it.
+     * 提供引用者（referrer）信息的回调方法
      */
     public Uri onProvideReferrer() {
         return null;
@@ -5478,6 +5488,7 @@ public class Activity extends ContextThemeWrapper
      *
      * @return The package of the activity that will receive your
      *         reply, or null if none.
+     *         获取启动当前Activity的调用方应用包名
      */
     @Nullable
     public String getCallingPackage() {
@@ -5531,6 +5542,7 @@ public class Activity extends ContextThemeWrapper
         }
     }
 
+    //使Activity的窗口变为可见状态
     void makeVisible() {
         if (!mWindowAdded) {
 			// wm 是 WindowManagerImpl 对象
@@ -5653,6 +5665,7 @@ public class Activity extends ContextThemeWrapper
      * <p>Note that this finish does <em>not</em> allow you to deliver results
      * to the previous activity, and an exception will be thrown if you are trying
      * to do so.</p>
+     * 结束与当前 Activity 具有相同亲和性的 Activity 任务栈
      */
     public void finishAffinity() {
         if (mParent != null) {
@@ -5689,6 +5702,7 @@ public class Activity extends ContextThemeWrapper
      * {@link #finish()} is called. If no entry Transition was used, finish() is called
      * immediately and the Activity exit Transition is run.
      * @see android.app.ActivityOptions#makeSceneTransitionAnimation(Activity, android.util.Pair[])
+     * 在完成Activity转换动画后结束Activity
      */
     public void finishAfterTransition() {
         if (!mActivityTransitionState.startExitBackTransition(this)) {
@@ -5839,6 +5853,7 @@ public class Activity extends ContextThemeWrapper
      * supplied.
      *
      * @see PendingIntent
+     * 创建一个 PendingIntent，用于发送 Activity 结果
      */
     public PendingIntent createPendingResult(int requestCode, @NonNull Intent data,
             @PendingIntent.Flags int flags) {
@@ -5867,6 +5882,7 @@ public class Activity extends ContextThemeWrapper
      *
      * @param requestedOrientation An orientation constant as used in
      * {@link ActivityInfo#screenOrientation ActivityInfo.screenOrientation}.
+     *                             设置Activity的屏幕方向
      */
     public void setRequestedOrientation(@ActivityInfo.ScreenOrientation int requestedOrientation) {
         if (mParent == null) {
@@ -5945,6 +5961,7 @@ public class Activity extends ContextThemeWrapper
      *
      * @return If the task was moved (or it was already at the
      *         back) true is returned, else false.
+     *         将Activity所在任务栈移到后台
      */
     public boolean moveTaskToBack(boolean nonRoot) {
         try {
@@ -6005,6 +6022,7 @@ public class Activity extends ContextThemeWrapper
         return getSharedPreferences(getLocalClassName(), mode);
     }
 
+    //确保Activity的搜索管理器已初始化
     private void ensureSearchManager() {
         if (mSearchManager != null) {
             return;
@@ -6227,6 +6245,7 @@ public class Activity extends ContextThemeWrapper
      *
      * @param streamType The type of the audio stream whose volume should be
      *            changed by the hardware volume controls.
+     *                   设置Activity的音量控制流类型
      */
     public final void setVolumeControlStream(int streamType) {
         getWindow().setVolumeControlStream(streamType);
@@ -6404,6 +6423,7 @@ public class Activity extends ContextThemeWrapper
      *
      * @see #setImmersive(boolean)
      * @see android.content.pm.ActivityInfo#FLAG_IMMERSIVE
+     * 检查Activity是否处于沉浸式模式
      */
     public boolean isImmersive() {
         try {
@@ -6446,6 +6466,7 @@ public class Activity extends ContextThemeWrapper
      * @see TranslucentConversionListener
      *
      * @hide
+     * 将Activity从半透明状态转换为不透明状态
      */
     @SystemApi
     public void convertFromTranslucent() {
@@ -6853,6 +6874,7 @@ public class Activity extends ContextThemeWrapper
      * @param targetIntent An intent representing the target destination for up navigation
      * @return true if navigating up should recreate a new task stack, false if the same task
      *         should be used for the destination
+     *         判断是否应该为向上导航重新创建任务栈
      */
     public boolean shouldUpRecreateTask(Intent targetIntent) {
         try {
@@ -6985,6 +7007,7 @@ public class Activity extends ContextThemeWrapper
      * {@link Window#FEATURE_ACTIVITY_TRANSITIONS}.
      *
      * @param callback Used to manipulate shared element transitions on the launched Activity.
+     *                 设置Activity进入时的共享元素转换回调
      */
     public void setEnterSharedElementCallback(SharedElementCallback callback) {
         if (callback == null) {
@@ -7023,6 +7046,7 @@ public class Activity extends ContextThemeWrapper
      * start the transitions. If the Activity did not use
      * {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
      * android.util.Pair[])}, then this method does nothing.</p>
+     * 推迟Activity进入转换的执行
      */
     public void postponeEnterTransition() {
         mActivityTransitionState.postponeEnterTransition();
@@ -7912,6 +7936,7 @@ public class Activity extends ContextThemeWrapper
             super(Activity.this /*activity*/);
         }
 
+        //将 Activity 的调试信息输出到指定的 PrintWriter
         @Override
         public void onDump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
             Activity.this.dump(prefix, fd, writer, args);

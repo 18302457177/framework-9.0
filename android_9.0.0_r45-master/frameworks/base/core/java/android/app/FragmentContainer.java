@@ -33,12 +33,14 @@ public abstract class FragmentContainer {
     /**
      * Return the view with the given resource ID. May return {@code null} if the
      * view is not a child of this container.
+     * 根据资源ID查找对应的视图
      */
     @Nullable
     public abstract <T extends View> T onFindViewById(@IdRes int id);
 
     /**
      * Return {@code true} if the container holds any view.
+     * 检查容器是否持有任何视图
      */
     public abstract boolean onHasView();
 
@@ -46,7 +48,7 @@ public abstract class FragmentContainer {
      * Creates an instance of the specified fragment, can be overridden to construct fragments
      * with dependencies, or change the fragment being constructed. By default just calls
      * {@link Fragment#instantiate(Context, String, Bundle)}.
-     *
+     *创建指定 Fragment 的实例
      * @hide
      */
     public Fragment instantiate(Context context, String className, Bundle arguments) {

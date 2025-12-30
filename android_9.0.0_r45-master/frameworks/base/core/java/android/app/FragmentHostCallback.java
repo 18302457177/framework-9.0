@@ -37,6 +37,7 @@ import java.io.PrintWriter;
  * Fragments may be hosted by any object; such as an {@link Activity}. In order to
  * host fragments, implement {@link FragmentHostCallback}, overriding the methods
  * applicable to the host.
+ * Fragment可以由任何对象承载，例如Activity。为了承载Fragment，需要实现 FragmentHostCallback，并重写适用于宿主的方法。
  *
  * @deprecated Use the <a href="{@docRoot}tools/extras/support-library.html">Support Library</a>
  *      {@link android.support.v4.app.FragmentHostCallback}
@@ -78,6 +79,7 @@ public abstract class FragmentHostCallback<E> extends FragmentContainer {
     /**
      * Used internally in {@link #FragmentHostCallback(Context, Handler, int)} to choose
      * the Activity's handler or the provided handler.
+     * 用于在构造函数中选择合适的 Handler
      */
     private static Handler chooseHandler(Context context, Handler handler) {
         if (handler == null && context instanceof Activity) {
@@ -96,6 +98,7 @@ public abstract class FragmentHostCallback<E> extends FragmentContainer {
      * @param writer The PrintWriter to which you should dump your state. This will be closed
      *                  for you after you return.
      * @param args additional arguments to the dump request.
+     *             将 FragmentHostCallback 的内部状态输出到指定的 PrintWriter
      */
     public void onDump(String prefix, FileDescriptor fd, PrintWriter writer, String[] args) {
     }
@@ -110,6 +113,7 @@ public abstract class FragmentHostCallback<E> extends FragmentContainer {
     /**
      * Return a {@link LayoutInflater}.
      * See {@link Activity#getLayoutInflater()}.
+     * 返回一个 LayoutInflater 实例，用于 Fragment 布局的加载
      */
     public LayoutInflater onGetLayoutInflater() {
         return (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -220,6 +224,8 @@ public abstract class FragmentHostCallback<E> extends FragmentContainer {
         return true;
     }
 
+    //主要作用：返回 mRetainLoaders 字段的布尔值
+    //字段含义：标识 Fragment 加载器是否应该保留其状态
     boolean getRetainLoaders() {
         return mRetainLoaders;
     }
