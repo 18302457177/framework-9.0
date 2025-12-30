@@ -32,6 +32,8 @@ import android.os.Bundle;
  * This result will be sent as the result of the request when the activity finishes. If this
  * is never set or if it is set to null then error {@link AccountManager#ERROR_CODE_CANCELED}
  * will be called on the response.
+ * 认证辅助：为需要使用 Activity 处理请求的 AbstractAccountAuthenticator 提供支持
+ * 结果传递：通过 setAccountAuthenticatorResult() 方法设置返回结果
  */
 public class AccountAuthenticatorActivity extends Activity {
     private AccountAuthenticatorResponse mAccountAuthenticatorResponse = null;

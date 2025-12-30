@@ -2224,11 +2224,12 @@ public class AccountManager {
         });
     }
 
+    //Account Manager Service 任务的基类，用于异步执行账户管理操作
     private abstract class AmsTask extends FutureTask<Bundle> implements AccountManagerFuture<Bundle> {
-        final IAccountManagerResponse mResponse;
-        final Handler mHandler;
-        final AccountManagerCallback<Bundle> mCallback;
-        final Activity mActivity;
+        final IAccountManagerResponse mResponse;//账户管理服务响应接口
+        final Handler mHandler;//处理回调的 Handler
+        final AccountManagerCallback<Bundle> mCallback;//AccountManagerCallback 回调
+        final Activity mActivity;//关联的 Activity 上下文
         public AmsTask(Activity activity, Handler handler, AccountManagerCallback<Bundle> callback) {
             super(new Callable<Bundle>() {
                 @Override
@@ -2265,6 +2266,7 @@ public class AccountManager {
 
         public abstract void doWork() throws RemoteException;
 
+        //内部获取结果的实现
         private Bundle internalGetResult(Long timeout, TimeUnit unit)
                 throws OperationCanceledException, IOException, AuthenticatorException {
             if (!isDone()) {
@@ -2315,6 +2317,7 @@ public class AccountManager {
             return internalGetResult(timeout, unit);
         }
 
+        //任务完成时的回调处理
         @Override
         protected void done() {
             if (mCallback != null) {

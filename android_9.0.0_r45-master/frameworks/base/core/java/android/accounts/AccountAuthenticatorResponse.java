@@ -24,6 +24,7 @@ import android.util.Log;
 
 /**
  * Object used to communicate responses back to the AccountManager
+ * 用于向账户管理器传达响应的对象
  */
 public class AccountAuthenticatorResponse implements Parcelable {
     private static final String TAG = "AccountAuthenticator";
@@ -42,6 +43,7 @@ public class AccountAuthenticatorResponse implements Parcelable {
                 IAccountAuthenticatorResponse.Stub.asInterface(parcel.readStrongBinder());
     }
 
+    //发送认证结果
     public void onResult(Bundle result) {
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             result.keySet(); // force it to be unparcelled
@@ -55,6 +57,7 @@ public class AccountAuthenticatorResponse implements Parcelable {
         }
     }
 
+    //通知请求继续
     public void onRequestContinued() {
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "AccountAuthenticatorResponse.onRequestContinued");
@@ -66,6 +69,7 @@ public class AccountAuthenticatorResponse implements Parcelable {
         }
     }
 
+    //发送错误信息
     public void onError(int errorCode, String errorMessage) {
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "AccountAuthenticatorResponse.onError: " + errorCode + ", " + errorMessage);
