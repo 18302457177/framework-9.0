@@ -52,6 +52,7 @@ public abstract class AccountManagerInternal {
      * @param packageName The package name for which to request.
      * @param userId Concrete user id for which to request.
      * @param callback A callback for receiving the result.
+     *                 请求为指定包名的应用授予访问账户的权限。
      */
     public abstract void requestAccountAccess(@NonNull Account account,
             @NonNull String packageName, @IntRange(from = 0) int userId,
@@ -78,6 +79,7 @@ public abstract class AccountManagerInternal {
      * Backups the account access permissions.
      * @param userId The user for which to backup.
      * @return The backup data.
+     * 备份指定用户的账户访问权限。
      */
     public abstract byte[] backupAccountAccessPermissions(int userId);
 

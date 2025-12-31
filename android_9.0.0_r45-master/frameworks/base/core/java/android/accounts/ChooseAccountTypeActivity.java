@@ -41,6 +41,9 @@ import java.util.Set;
 
 /**
  * @hide
+ * 主要功能
+ * 账户类型选择 - 为用户提供可选择的账户类型列表
+ * 账户认证器管理 - 管理不同账户类型的认证器信息
  */
 public class ChooseAccountTypeActivity extends Activity {
     private static final String TAG = "AccountChooser";

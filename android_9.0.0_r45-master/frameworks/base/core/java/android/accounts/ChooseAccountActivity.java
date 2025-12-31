@@ -42,16 +42,19 @@ import java.util.HashMap;
 
 /**
  * @hide
+ * 主要功能
+ * 账户选择界面 - 为用户显示可选择的账户列表
+ * 账户管理 - 处理账户可见性设置和用户选择操作
  */
 public class ChooseAccountActivity extends Activity {
 
     private static final String TAG = "AccountManager";
 
-    private Parcelable[] mAccounts = null;
+    private Parcelable[] mAccounts = null;//存储待选择的账户数组
     private AccountManagerResponse mAccountManagerResponse = null;
     private Bundle mResult;
-    private int mCallingUid;
-    private String mCallingPackage;
+    private int mCallingUid;//调用方的用户ID
+    private String mCallingPackage;//调用方的应用包名
 
     private HashMap<String, AuthenticatorDescription> mTypeToAuthDescription
             = new HashMap<String, AuthenticatorDescription>();

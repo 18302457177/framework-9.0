@@ -25,6 +25,7 @@ import com.android.internal.R;
 /**
  * @hide
  * Just shows an error message about the account restrictions for the limited user.
+ * 显示账户限制错误信息的活动页面，主要为受限用户显示无法添加账户的提示。
  */
 public class CantAddAccountActivity extends Activity {
     public static final String EXTRA_ERROR_CODE = "android.accounts.extra.ERROR_CODE";

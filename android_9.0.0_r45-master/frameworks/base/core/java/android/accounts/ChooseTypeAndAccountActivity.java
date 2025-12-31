@@ -47,6 +47,10 @@ import java.util.Set;
 
 /**
  * @hide
+ * 主要功能
+ * 账户选择界面 - 提供账户类型和具体账户的选择界面
+ * 账户管理 - 处理现有账户选择和新账户添加流程
+ * 权限控制 - 管理账户访问权限和可见性
  */
 public class ChooseTypeAndAccountActivity extends Activity
         implements AccountManagerCallback<Bundle> {
@@ -260,6 +264,7 @@ public class ChooseTypeAndAccountActivity extends Activity
         super.onDestroy();
     }
 
+    //在 Activity 状态保存时保存当前账户选择活动的状态信息。
     @Override
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -304,6 +309,7 @@ public class ChooseTypeAndAccountActivity extends Activity
     // Called when the choose account type activity (for adding an account) returns.
     // If it was a success read the account and set it in the result. In all cases
     // return the result and finish this activity.
+    //处理从其他活动返回的结果，主要用于处理账户类型选择和账户添加操作的结果。
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode,
             final Intent data) {
@@ -466,6 +472,7 @@ public class ChooseTypeAndAccountActivity extends Activity
         finish();
     }
 
+    //启动账户类型选择活动，当用户选择"添加新账户"选项时被调用。
     private void startChooseAccountTypeActivity() {
         if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "ChooseAccountTypeActivity.startChooseAccountTypeActivity()");
@@ -523,6 +530,7 @@ public class ChooseTypeAndAccountActivity extends Activity
      * Create a list of Account objects for each account that is acceptable. Filter out accounts
      * that don't match the allowable types, if provided, or that don't match the allowable
      * accounts, if provided.
+     * 获取符合要求的账户选择列表，根据指定的条件过滤出可显示给用户的账户。
      */
     private LinkedHashMap<Account, Integer> getAcceptableAccountChoices(AccountManager accountManager) {
         Map<Account, Integer> accountsAndVisibilityForCaller =
@@ -549,6 +557,7 @@ public class ChooseTypeAndAccountActivity extends Activity
     /**
      * Return a set of account types specified by the intent as well as supported by the
      * AccountManager.
+     * 获取与调用方相关的账户类型集合，通过交集操作筛选出既被允许又受系统支持的账户类型。
      */
     private Set<String> getReleventAccountTypes(final Intent intent) {
       // An account type is relevant iff it is allowed by the caller and supported by the account
@@ -603,6 +612,7 @@ public class ChooseTypeAndAccountActivity extends Activity
     /**
      * Populates the UI ListView with the given list of items and selects an item
      * based on {@code mSelectedItemIndex} member variable.
+     * 在UI界面上填充账户列表，将账户信息展示在列表视图中供用户选择。
      */
     private final void populateUIAccountList(String[] listItems) {
       ListView list = findViewById(android.R.id.list);

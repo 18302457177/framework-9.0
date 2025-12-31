@@ -426,6 +426,7 @@ public class AccountManager {
 
     /**
      * @hide for internal use only
+     * 清理包含认证令牌的 Bundle 对象，以防止敏感信息（如认证令牌）在日志中泄露。
      */
     public static Bundle sanitizeResult(Bundle result) {
         if (result != null) {
@@ -528,6 +529,7 @@ public class AccountManager {
      * @return An array of {@link AuthenticatorDescription} for every
      *     authenticator known to the AccountManager service.  Empty (never
      *     null) if no authenticators are known.
+     *     获取当前注册的所有认证器（authenticator）类型。
      */
     public AuthenticatorDescription[] getAuthenticatorTypes() {
         try {
@@ -549,6 +551,7 @@ public class AccountManager {
      * @return An array of {@link AuthenticatorDescription} for every
      *     authenticator known to the AccountManager service.  Empty (never
      *     null) if no authenticators are known.
+     *     获取指定用户 ID 的认证器类型列表的方法。
      */
     public AuthenticatorDescription[] getAuthenticatorTypesAsUser(int userId) {
         try {
@@ -606,6 +609,7 @@ public class AccountManager {
      * @param packageName package name of the calling app.
      * @param uid the uid of the calling app.
      * @return the accounts that are available to this package and user.
+     * 获取指定包名和UID的账户列表，特别适用于共享账户场景。
      */
     @NonNull
     public Account[] getAccountsForPackage(String packageName, int uid) {
@@ -765,6 +769,7 @@ public class AccountManager {
      * @param handler {@link Handler} identifying the callback thread, null for the main thread
      * @return An {@link AccountManagerFuture} which resolves to a Boolean, true if the account
      *         exists and has all of the specified features.
+     *         检查指定账户是否具有所有指定的功能特性。
      */
     public AccountManagerFuture<Boolean> hasFeatures(final Account account,
             final String[] features,
@@ -876,6 +881,7 @@ public class AccountManager {
      *            none
      * @return True if the account was successfully added, false if the account
      *         already exists, the account is null, or another error occurs.
+     *         直接向账户管理器添加一个账户，通常由与认证器关联的注册向导使用，而不是直接由应用程序调用。
      */
     public boolean addAccountExplicitly(Account account, String password, Bundle userdata) {
         if (account == null) throw new IllegalArgumentException("account is null");
@@ -1346,6 +1352,7 @@ public class AccountManager {
      * @return The cached auth token for this account and type, or null if
      *     no auth token is cached or the account does not exist.
      * @see #getAuthToken
+     * 从AccountManager的缓存中获取指定账户和类型的身份验证令牌，如果该账户没有缓存的身份验证令牌，则返回null。此方法不会生成新的身份验证令牌，也不会联系服务器。
      */
     public String peekAuthToken(final Account account, final String authTokenType) {
         if (account == null) throw new IllegalArgumentException("account is null");
@@ -1886,6 +1893,7 @@ public class AccountManager {
      * @return An {@link AccountManagerFuture} which resolves to a Boolean indicated wether it
      * succeeded.
      * @hide
+     * 将账户从一个用户复制到另一个用户。
      */
     public AccountManagerFuture<Boolean> copyAccountToUser(
             final Account account, final UserHandle fromUser, final UserHandle toUser,
@@ -2365,6 +2373,12 @@ public class AccountManager {
 
     }
 
+    /**
+     * BaseFutureTask 为 AccountManager 的异步操作提供了统一的框架，
+     * 将远程服务调用、结果处理和异常处理封装在一个 FutureTask 中，
+     * 使调用者可以通过 Future 接口获取异步操作的结果。
+     * @param <T>
+     */
     private abstract class BaseFutureTask<T> extends FutureTask<T> {
         final public IAccountManagerResponse mResponse;
         final Handler mHandler;
@@ -2429,6 +2443,7 @@ public class AccountManager {
         }
     }
 
+    //它是 AccountManager 异步操作的核心实现类，负责处理异步任务的执行、回调和结果获取。
     private abstract class Future2Task<T>
             extends BaseFutureTask<T> implements AccountManagerFuture<T> {
         final AccountManagerCallback<T> mCallback;
@@ -2538,6 +2553,7 @@ public class AccountManager {
         }).start();
     }
 
+    //处理需要获取特定类型和功能的账户的认证令牌的复杂任务。
     private class GetAuthTokenByTypeAndFeaturesTask
             extends AmsTask implements AccountManagerCallback<Bundle> {
         GetAuthTokenByTypeAndFeaturesTask(final String accountType, final String authTokenType,
@@ -2753,6 +2769,7 @@ public class AccountManager {
      * @param addAccountOptions This {@link Bundle} is passed as the {@link #addAccount} options
      * parameter
      * @return an {@link Intent} that can be used to launch the ChooseAccount activity flow.
+     * 创建一个选择账户的Intent。这个方法提供了一个统一的界面，让用户可以从可用账户列表中选择一个账户。
      */
     @Deprecated
     static public Intent newChooseAccountIntent(
@@ -3263,6 +3280,7 @@ public class AccountManager {
      * @param handler {@link Handler} identifying the callback thread, null for the main thread
      * @return An {@link AccountManagerFuture} which resolves to a Boolean, true if the credentials
      *         of the account should be updated.
+     *         检查是否建议更新指定账户的凭证。
      */
     public AccountManagerFuture<Boolean> isCredentialsUpdateSuggested(
             final Account account,
@@ -3305,6 +3323,7 @@ public class AccountManager {
      * @return True if the package can access the account.
      *
      * @hide
+     * 检查指定包名的应用程序是否对特定账户有访问权限。
      */
     public boolean hasAccountAccess(@NonNull Account account, @NonNull String packageName,
             @NonNull UserHandle userHandle) {

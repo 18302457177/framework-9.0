@@ -32,6 +32,9 @@ import java.io.IOException;
 
 /**
  * @hide
+ * 主要功能
+ * 权限授予界面 - 为应用请求访问账户凭据提供权限授予界面
+ * 账户认证 - 处理账户认证令牌类型的权限管理
  */
 public class GrantCredentialsPermissionActivity extends Activity implements View.OnClickListener {
     public static final String EXTRAS_ACCOUNT = "account";
@@ -150,6 +153,7 @@ public class GrantCredentialsPermissionActivity extends Activity implements View
         return account.type;
     }
 
+    //创建单个应用包的视图项，用于在权限授予界面中显示请求访问的应用列表。
     private View newPackageView(String packageLabel) {
         View view = mInflater.inflate(R.layout.permissions_package_list_item, null);
         ((TextView) view.findViewById(R.id.package_label)).setText(packageLabel);
@@ -181,6 +185,7 @@ public class GrantCredentialsPermissionActivity extends Activity implements View
     /**
      * Sends the result or a {@link AccountManager#ERROR_CODE_CANCELED} error if a
      * result isn't present.
+     * 在关闭活动前处理账户认证器响应。
      */
     public void finish() {
         Intent intent = getIntent();

@@ -21,6 +21,7 @@ import android.os.Parcel;
 
 /**
  * A {@link Parcelable} value type that contains information about an account authenticator.
+ * 一个可打包的值类型，包含关于账户验证器的信息。
  */
 public class AuthenticatorDescription implements Parcelable {
     /** The string that uniquely identifies an authenticator */
@@ -38,6 +39,7 @@ public class AuthenticatorDescription implements Parcelable {
     /**
      * A resource id for a hierarchy of PreferenceScreen to be added to the settings page for the
      * account. See {@link AbstractAccountAuthenticator} for an example.
+     * 用于在账户设置页面中添加首选项屏幕层级的资源ID。
      */
     final public int accountPreferencesId;
 
