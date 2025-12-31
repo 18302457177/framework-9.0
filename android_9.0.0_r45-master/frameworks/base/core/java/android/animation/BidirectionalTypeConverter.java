@@ -21,6 +21,8 @@ package android.animation;
  * type. BidirectionalTypeConverter is needed when only the final value for the
  * animation is supplied to animators.
  * @see PropertyValuesHolder#setConverter(TypeConverter)
+ * 双向类型转换 - 提供类型 T 到类型 V 以及反向转换的能力
+ * 动画值转换 - 用于动画中值类型与属性类型不同时的转换
  */
 public abstract class BidirectionalTypeConverter<T, V> extends TypeConverter<T, V> {
     private BidirectionalTypeConverter mInvertedConverter;
@@ -35,6 +37,7 @@ public abstract class BidirectionalTypeConverter<T, V> extends TypeConverter<T, 
      * values will need to be read for an animation.
      * @param value The Object to convert.
      * @return A value of type T, converted from <code>value</code>.
+     * 将目标类型转换回源类型
      */
     public abstract T convertBack(V value);
 
@@ -44,6 +47,7 @@ public abstract class BidirectionalTypeConverter<T, V> extends TypeConverter<T, 
      * {@link #convert(Object)} calls and {@link #convert(Object)} for
      * {@link #convertBack(Object)} calls.
      * @return The inverse of this converter, where the from and to classes are reversed.
+     * 返回反向转换器
      */
     public BidirectionalTypeConverter<V, T> invert() {
         if (mInvertedConverter == null) {
@@ -52,6 +56,7 @@ public abstract class BidirectionalTypeConverter<T, V> extends TypeConverter<T, 
         return mInvertedConverter;
     }
 
+    //实现反向转换逻辑
     private static class InvertedConverter<From, To> extends BidirectionalTypeConverter<From, To> {
         private BidirectionalTypeConverter<To, From> mConverter;
 

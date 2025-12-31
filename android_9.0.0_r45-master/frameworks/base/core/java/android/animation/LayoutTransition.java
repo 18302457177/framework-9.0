@@ -540,6 +540,7 @@ public class LayoutTransition {
      * {@link #CHANGING}.
      * @param duration The length of time, in milliseconds, to delay before launching the next
      * animation in the sequence.
+     *                 设置交错延迟 - 设置在执行变化动画期间，启动每个动画之间的延迟时间
      */
     public void setStagger(int transitionType, long duration) {
         switch (transitionType) {
@@ -816,6 +817,7 @@ public class LayoutTransition {
      *
      * @param animateParentHierarchy A boolean value indicating whether the parents of
      * transitioning views should also be animated during the transition. Default value is true.
+     * 控制父级动画 - 设置是否在变化动画期间同时对父级层级执行默认变化动画
      */
     public void setAnimateParentHierarchy(boolean animateParentHierarchy) {
         mAnimateParentHierarchy = animateParentHierarchy;
@@ -1147,6 +1149,7 @@ public class LayoutTransition {
      *
      * @param parent The ViewGroup to which the View is being added.
      * @param child The View being added to the ViewGroup.
+     *              运行出现动画 - 执行添加项的出现动画
      */
     private void runAppearingTransition(final ViewGroup parent, final View child) {
         Animator currentAnimation = currentDisappearingAnimations.get(child);
@@ -1496,11 +1499,12 @@ public class LayoutTransition {
      * Utility class to clean up listeners after animations are setup. Cleanup happens
      * when either the OnPreDrawListener method is called or when the parent is detached,
      * whichever comes first.
+     * 清理监听器 - 在动画设置完成后清理相关监听器，防止内存泄漏
      */
     private static final class CleanupCallback implements ViewTreeObserver.OnPreDrawListener,
             View.OnAttachStateChangeListener {
 
-        final Map<View, View.OnLayoutChangeListener> layoutChangeListenerMap;
+        final Map<View, View.OnLayoutChangeListener> layoutChangeListenerMap;//布局变化监听器映射表
         final ViewGroup parent;
 
         CleanupCallback(Map<View, View.OnLayoutChangeListener> listenerMap, ViewGroup parent) {
@@ -1522,15 +1526,18 @@ public class LayoutTransition {
             }
         }
 
+
         @Override
         public void onViewAttachedToWindow(View v) {
         }
 
+        //窗口分离时执行清理
         @Override
         public void onViewDetachedFromWindow(View v) {
             cleanup();
         }
 
+        //预绘制时执行清理，返回 true 允许绘制继续
         @Override
         public boolean onPreDraw() {
             cleanup();

@@ -19,6 +19,7 @@ package android.animation;
 /**
  * This evaluator can be used to perform type interpolation between integer
  * values that represent ARGB colors.
+ * 该求值器可用于在表示 ARGB 颜色的整数值之间执行类型插值。
  */
 public class ArgbEvaluator implements TypeEvaluator {
     private static final ArgbEvaluator sInstance = new ArgbEvaluator();
@@ -50,6 +51,7 @@ public class ArgbEvaluator implements TypeEvaluator {
      * result, derived by separating the start and end values into separate
      * color channels and interpolating each one separately, recombining the
      * resulting values in the same way.
+     * 在两个ARGB颜色值之间执行线性插值计算中间颜色
      */
     public Object evaluate(float fraction, Object startValue, Object endValue) {
         int startInt = (Integer) startValue;

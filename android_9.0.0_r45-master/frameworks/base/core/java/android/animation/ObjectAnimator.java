@@ -66,6 +66,8 @@ import java.lang.ref.WeakReference;
  * </div>
  *
  * @see #setPropertyName(String)
+ * 属性动画支持 - 继承自 ValueAnimator，为对象属性提供动画支持
+ * 目标对象动画 - 对指定目标对象的属性进行动画处理
  *
  */
 public final class ObjectAnimator extends ValueAnimator {

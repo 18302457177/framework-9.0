@@ -21,6 +21,8 @@ package android.animation;
  * Each index into the array is treated as a separate value to interpolate. For example,
  * evaluating <code>{100, 200}</code> and <code>{300, 400}</code> will interpolate the value at
  * the first index between 100 and 300 and the value at the second index value between 200 and 400.
+ * 浮点数组插值 - 在 float[] 数组值之间执行类型插值
+ * 逐元素插值 - 数组中每个索引的值都被视为独立值进行插值
  */
 public class FloatArrayEvaluator implements TypeEvaluator<float[]> {
 

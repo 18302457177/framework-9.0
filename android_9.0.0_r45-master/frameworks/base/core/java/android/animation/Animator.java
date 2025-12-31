@@ -25,6 +25,7 @@ import java.util.ArrayList;
 /**
  * This is the superclass for classes which provide basic support for animations which can be
  * started, ended, and have <code>AnimatorListeners</code> added to them.
+ * 这是为提供基础动画支持的类的超类，这些动画可以启动、结束，并可以添加 AnimatorListener。
  */
 public abstract class Animator implements Cloneable {
 
@@ -213,6 +214,7 @@ public abstract class Animator implements Cloneable {
      * default value is {@link android.view.animation.AccelerateDecelerateInterpolator}.
      *
      * @param value the interpolator to be used by this animation
+     *              设置动画使用的时间插值器
      */
     public abstract void setInterpolator(TimeInterpolator value);
 
@@ -296,6 +298,8 @@ public abstract class Animator implements Cloneable {
      *
      * @param listener the listener to be added to the current set of pause listeners
      * for this animation.
+     * 添加暂停监听器 - 向动画添加暂停/恢复事件的监听器
+     * 列表初始化 - 如果暂停监听器列表未初始化，则创建新的 ArrayList
      */
     public void addPauseListener(AnimatorPauseListener listener) {
         if (mPauseListeners == null) {
@@ -416,6 +420,7 @@ public abstract class Animator implements Cloneable {
      * and PropertyValuesHolder objects to get the start values for its properties.
      * A ValueAnimator object will ignore the request since it does not have enough
      * information (such as a target object) to gather these values.
+     * 设置动画的起始值
      */
     public void setupStartValues() {
     }
@@ -465,6 +470,7 @@ public abstract class Animator implements Cloneable {
     }
 
     // Pulse an animation frame into the animation.
+    //动画帧脉冲 - 将动画帧脉冲发送到动画
     boolean pulseAnimationFrame(long frameTime) {
         // TODO: Need to find a better signal than this. There's a bug in SystemUI that's preventing
         // returning !isStarted() from working.
@@ -638,6 +644,8 @@ public abstract class Animator implements Cloneable {
      *    for this reason.</li>
      * </ol>
      * @hide
+     * 异步运行提示 - 提供是否可以在UI线程之外运行动画的提示
+     * 实际决策 - 动画器仍可能决定在UI线程上运行动画
      */
     public void setAllowRunningAsynchronously(boolean mayRunAsync) {
         // It is up to subclasses to support this, if they can.
@@ -648,6 +656,8 @@ public abstract class Animator implements Cloneable {
      * with the given Animator.
      * <p>
      * When {@link #newInstance()} is called, default implementation clones the Animator.
+     * 常量状态管理 - 创建一个 ConstantState 对象，用于保存 Animator 的共享状态
+     * 配置变化跟踪 - 持有与 Animator 相关的配置参数变化掩码
      */
     private static class AnimatorConstantState extends ConstantState<Animator> {
 

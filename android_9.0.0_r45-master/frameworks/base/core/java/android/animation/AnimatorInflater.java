@@ -55,6 +55,8 @@ import java.util.ArrayList;
  * to use this inflater with an XmlPullParser over a plain XML file at runtime;
  * it only works with an XmlPullParser returned from a compiled resource (R.
  * <em>something</em> file.)
+ * XML动画加载 - 用于将动画XML文件实例化为 Animator 对象
+ * 资源解析 - 从资源ID加载动画并转换为对应的动画实例
  */
 public class AnimatorInflater {
     private static final String TAG = "AnimatorInflater";
@@ -106,7 +108,10 @@ public class AnimatorInflater {
         return loadAnimator(resources, theme, id, 1);
     }
 
-    /** @hide */
+    /** @hide
+     * 加载动画资源 - 从资源ID加载动画对象
+     * 缓存机制 - 首先尝试从缓存中获取动画实例
+     * */
     public static Animator loadAnimator(Resources resources, Theme theme, int id,
             float pathErrorScale) throws NotFoundException {
         final ConfigurationBoundResourceCache<Animator> animatorCache = resources
@@ -254,10 +259,13 @@ public class AnimatorInflater {
      * PathDataEvaluator is used to interpolate between two paths which are
      * represented in the same format but different control points' values.
      * The path is represented as verbs and points for each of the verbs.
+     * 路径数据插值 - 用于在两个相同格式但控制点值不同的路径之间进行插值
+     * 路径动画支持 - 实现路径变形动画效果
      */
     private static class PathDataEvaluator implements TypeEvaluator<PathParser.PathData> {
         private final PathParser.PathData mPathData = new PathParser.PathData();
 
+        //根据进度分数计算插值路径数据     使用 mPathData 作为临时存储进行插值计算
         @Override
         public PathParser.PathData evaluate(float fraction, PathParser.PathData startPathData,
                     PathParser.PathData endPathData) {
@@ -269,6 +277,10 @@ public class AnimatorInflater {
         }
     }
 
+    /**
+     * 创建属性值持有者 - 根据类型数组和值类型创建 PropertyValuesHolder 对象
+     * 类型推断 - 当值类型未定义时自动推断值类型
+     */
     private static PropertyValuesHolder getPVH(TypedArray styledAttributes, int valueType,
             int valueFromId, int valueToId, String propertyName) {
 
@@ -449,6 +461,8 @@ public class AnimatorInflater {
      * @param anim The target Animator which will be updated.
      * @param arrayAnimator TypedArray for the ValueAnimator.
      * @return the PathDataEvaluator.
+     * 路径变形设置 - 为 ValueAnimator 设置路径变形功能
+     * 路径数据解析 - 从 TypedArray 中解析路径数据字符串
      */
     private static TypeEvaluator setupAnimatorForPath(ValueAnimator anim,
              TypedArray arrayAnimator) {
@@ -491,6 +505,8 @@ public class AnimatorInflater {
      * @param getFloats True if the value type is float.
      * @param pixelSize The relative pixel size, used to calculate the
      *                  maximum error for path animations.
+     * 设置 ObjectAnimator 属性 - 从 pathData 设置 ObjectAnimator 的属性或值
+     * 路径动画支持 - 支持沿路径的属性动画
      */
     private static void setupObjectAnimator(ValueAnimator anim, TypedArray arrayObjectAnimator,
             int valueType, float pixelSize) {
@@ -771,6 +787,13 @@ public class AnimatorInflater {
     // When no value type is provided in keyframe, we need to infer the type from the value. i.e.
     // if value is defined in the style of a color value, then the color type is returned.
     // Otherwise, default float type is returned.
+
+    /**
+     * 关键帧值类型推断 - 当关键帧中未提供值类型时，从值中推断类型
+     * 颜色类型检测 - 优先检查是否为颜色类型
+     * 默认浮点类型 - 否则回退到默认的浮点类型
+     * @return
+     */
     private static int inferValueTypeOfKeyframe(Resources res, Theme theme, AttributeSet attrs) {
         int valueType;
         TypedArray a;

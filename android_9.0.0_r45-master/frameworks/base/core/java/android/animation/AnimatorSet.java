@@ -56,6 +56,8 @@ import java.util.List;
  * <a href="{@docRoot}guide/topics/graphics/prop-animation.html#choreography">Property
  * Animation</a> developer guide.</p>
  * </div>
+ * 动画集合管理 - 播放一组 Animator 对象的集合类
+ * 时序控制 - 按照指定顺序播放动画，支持同时、顺序或延迟播放
  */
 public final class AnimatorSet extends Animator implements AnimationHandler.AnimationFrameCallback {
 
@@ -260,6 +262,7 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
      * previous animation ends.
      *
      * @param items The animations that will be started one after another.
+     *              顺序播放动画 - 设置提供的动画按顺序一个接一个地播放
      */
     public void playSequentially(Animator... items) {
         if (items != null) {
@@ -317,6 +320,7 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
      * AnimatorSet).
      *
      * @param target The object being animated
+     * 设置目标对象 - 为当前 AnimatorSet 中所有子动画设置目标对象
      */
     @Override
     public void setTarget(Object target) {
@@ -431,6 +435,7 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
     }
 
     // Force all the animations to end when the duration scale is 0.
+    //强制结束动画 - 当动画时长缩放为0时，强制结束所有动画
     private void forceToEnd() {
         if (mEndCanBeCalled) {
             end();
@@ -1754,13 +1759,17 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
      * any dependencies that are associated with that Animation. This includes
      * both dependencies upon other nodes (in the dependencies list) as
      * well as dependencies of other nodes upon this (in the nodeDependents list).
+     * 动画节点封装 - 封装 Animator 及其依赖关系
+     * 依赖管理 - 管理动画间的父子、兄弟依赖关系
+     * 时序控制 - 记录动画的开始/结束时间
      */
     private static class Node implements Cloneable {
-        Animator mAnimation;
+        Animator mAnimation;//封装的动画对象
 
         /**
          * Child nodes are the nodes associated with animations that will be played immediately
          * after current node.
+         * 子节点列表（当前节点完成后立即播放的动画）
          */
         ArrayList<Node> mChildNodes = null;
 
@@ -1774,12 +1783,14 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
         /**
          * Nodes with animations that are defined to play simultaneously with the animation
          * associated with this current node.
+         * 兄弟节点（与当前节点同时播放的动画）
          */
         ArrayList<Node> mSiblings;
 
         /**
          * Parent nodes are the nodes with animations preceding current node's animation. Parent
          * nodes here are derived from user defined animation sequence.
+         * 父节点（当前节点的前置动画）
          */
         ArrayList<Node> mParents;
 
@@ -1790,6 +1801,7 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
         Node mLatestParent = null;
 
         boolean mParentsAdded = false;
+        //动画开始/结束时间
         long mStartTime = 0;
         long mEndTime = 0;
         long mTotalDuration = 0;
@@ -1875,6 +1887,8 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
      * when the animation should finish. When playing in reverse, start delay will not be a part
      * of the animation. Therefore, reverse() is called at the end event, and animation should end
      * at the delay ended event.
+     * 动画事件封装 - 封装 Node 及其对应的动画事件
+     * 事件时序管理 - 管理动画的开始、延迟结束、结束三种事件的时间点
      */
     private static class AnimationEvent {
         static final int ANIMATION_START = 0;
@@ -1906,14 +1920,17 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
         }
     }
 
+    //播放时间记录 - 存储最后寻找到的播放时间及寻向方向
+    //时间控制 - 管理动画播放位置的控制和反向播放状态
     private class SeekState {
         private long mPlayTime = -1;
-        private boolean mSeekingInReverse = false;
+        private boolean mSeekingInReverse = false;//是否在反向播放中
+        //重置状态到未激活
         void reset() {
             mPlayTime = -1;
             mSeekingInReverse = false;
         }
-
+        //设置播放时间并限制范围
         void setPlayTime(long playTime, boolean inReverse) {
             // TODO: This can be simplified.
 
@@ -1925,6 +1942,7 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
             mSeekingInReverse = inReverse;
         }
 
+        //更新寻向方向
         void updateSeekDirection(boolean inReverse) {
             // Change seek direction without changing the overall fraction
             if (inReverse && getTotalDuration() == DURATION_INFINITE) {
@@ -1945,6 +1963,7 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
 
         /**
          * Returns the playtime assuming the animation is forward playing
+         * 返回正向播放假设下的播放时间
          */
         long getPlayTimeNormalized() {
             if (mReversing) {
@@ -2009,12 +2028,15 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
      * on b, which depends on c, which depends on a) should be avoided. Only create AnimatorSets
      * that can boil down to a simple, one-way relationship of animations starting with, before, and
      * after other, different, animations.</p>
+     * 动画关系构建 - 用于设置 AnimatorSet 中动画间的依赖关系
+     * 链式调用 - 提供流畅的API用于构建动画序列
      */
     public class Builder {
 
         /**
          * This tracks the current node being processed. It is supplied to the play() method
          * of AnimatorSet and passed into the constructor of Builder.
+         * 当前处理的节点
          */
         private Node mCurrentNode;
 
@@ -2036,6 +2058,7 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
          *
          * @param anim The animation that will play when the animation supplied to the
          * {@link AnimatorSet#play(Animator)} method starts.
+         *             设置动画同时播放关系
          */
         public Builder with(Animator anim) {
             Node node = getNodeForAnimation(anim);
@@ -2050,6 +2073,7 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
          *
          * @param anim The animation that will play when the animation supplied to the
          * {@link AnimatorSet#play(Animator)} method ends.
+         *             设置动画在当前节点完成后播放
          */
         public Builder before(Animator anim) {
             Node node = getNodeForAnimation(anim);
@@ -2064,6 +2088,7 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
          *
          * @param anim The animation whose end will cause the animation supplied to the
          * {@link AnimatorSet#play(Animator)} method to play.
+         *             设置当前节点在指定动画完成后开始
          */
         public Builder after(Animator anim) {
             Node node = getNodeForAnimation(anim);
@@ -2078,6 +2103,7 @@ public final class AnimatorSet extends Animator implements AnimationHandler.Anim
          *
          * @param delay The number of milliseconds that should elapse before the
          * animation starts.
+         *              设置延迟指定时间后播放
          */
         public Builder after(long delay) {
             // setup dummy ValueAnimator just to run the clock

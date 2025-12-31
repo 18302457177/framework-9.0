@@ -27,12 +27,28 @@ import java.util.ArrayList;
  * ValueAnimators. This approach ensures that the setting of animation values will happen on the
  * same thread that animations start on, and that all animations will share the same times for
  * calculating their values, which makes synchronizing animations possible.
- *
+ * <p>
  * The handler uses the Choreographer by default for doing periodic callbacks. A custom
  * AnimationFrameCallbackProvider can be set on the handler to provide timing pulse that
  * may be independent of UI frame update. This could be useful in testing.
+ * <p>
+ * 这个自定义的静态处理程序处理所有活动 ValueAnimator 共享的定时脉冲。
+ * 这种方法确保动画数值的设置发生在动画启动的同一线程上，
+ * 并且所有动画将共享相同的时间来计算它们的数值，从而使动画同步成为可能。
+ * <p>
+ * 处理程序默认使用 Choreographer 来执行定期回调。
+ * 可以在处理程序上设置自定义的 AnimationFrameCallbackProvider，
+ * 以提供可能独立于 UI 帧更新的时序脉冲。这在测试中可能会很有用。
  *
  * @hide
+ */
+
+/**
+ * Android 动画系统中的核心管理类
+ * 主要功能
+ * 定时脉冲管理 - 处理所有活动 ValueAnimator 共享的定时脉冲
+ * 线程同步 - 确保动画数值设置发生在动画启动的同一线程上
+ * 时间同步 - 使所有动画共享相同的时间来计算数值，实现动画同步
  */
 public class AnimationHandler {
     /**
@@ -113,6 +129,9 @@ public class AnimationHandler {
      * Note this should only be called when the animation has already registered to receive
      * animation frame callbacks. This callback will be guaranteed to happen *after* the next
      * animation frame callback.
+     * 功能概述
+     * 单次提交回调注册 - 为帧提交时序注册一次性回调
+     * 时序补偿机制 - 用于补偿动画开始时的昂贵遍历操作
      */
     public void addOneShotCommitCallback(final AnimationFrameCallback callback) {
         if (!mCommitCallbacks.contains(callback)) {
@@ -134,6 +153,9 @@ public class AnimationHandler {
         }
     }
 
+    //功能概述
+    //动画帧处理 - 处理所有注册的动画回调，执行基于帧时间的动画更新
+    //时间同步 - 确保所有活动动画使用相同的时间基准进行计算
     private void doAnimationFrame(long frameTime) {
         long currentTime = SystemClock.uptimeMillis();
         final int size = mAnimationCallbacks.size();
@@ -170,6 +192,8 @@ public class AnimationHandler {
      * so that they can start getting frame callbacks.
      *
      * @return true if they have passed the initial delay or have no delay, false otherwise.
+     * 延迟检查 - 检查动画回调是否已到达执行时间
+     * 时间判断 - 判断是否已超过预设的延迟开始时间
      */
     private boolean isCallbackDue(AnimationFrameCallback callback, long currentTime) {
         Long startTime = mDelayedCallbackStartTime.get(callback);
@@ -202,6 +226,10 @@ public class AnimationHandler {
         return getInstance().getProvider().getFrameDelay();
     }
 
+    /*
+    自动取消机制 - 基于 ObjectAnimator 的条件自动取消相关动画
+    动画冲突处理 - 避免动画冲突，确保动画执行的一致性
+*/
     void autoCancelBasedOn(ObjectAnimator objectAnimator) {
         for (int i = mAnimationCallbacks.size() - 1; i >= 0; i--) {
             AnimationFrameCallback cb = mAnimationCallbacks.get(i);
@@ -225,6 +253,11 @@ public class AnimationHandler {
         }
     }
 
+    /**
+     * 有效回调计数 - 统计 mAnimationCallbacks 列表中非空回调的数量
+     * 列表状态检查 - 计算实际有效的动画回调数量
+     * @return
+     */
     private int getCallbackSize() {
         int count = 0;
         int size = mAnimationCallbacks.size();
@@ -238,26 +271,33 @@ public class AnimationHandler {
 
     /**
      * Default provider of timing pulse that uses Choreographer for frame callbacks.
+     * 功能概述
+     * 默认实现 - 作为 AnimationFrameCallbackProvider 接口的默认实现类
+     * 帧同步机制 - 基于 Choreographer 提供与UI帧率同步的定时脉冲
      */
     private class MyFrameCallbackProvider implements AnimationFrameCallbackProvider {
 
         final Choreographer mChoreographer = Choreographer.getInstance();
 
+        //通过 mChoreographer 发送帧回调
         @Override
         public void postFrameCallback(Choreographer.FrameCallback callback) {
             mChoreographer.postFrameCallback(callback);
         }
 
+        // 发送提交回调到 Choreographer.CALLBACK_COMMIT 队列
         @Override
         public void postCommitCallback(Runnable runnable) {
             mChoreographer.postCallback(Choreographer.CALLBACK_COMMIT, runnable, null);
         }
 
+        //时间获取 - 提供帧时间获取和帧延迟控制功能
         @Override
         public long getFrameTime() {
             return mChoreographer.getFrameTime();
         }
 
+        //延迟控制 - 支持帧延迟设置和获取
         @Override
         public long getFrameDelay() {
             return Choreographer.getFrameDelay();
@@ -271,6 +311,7 @@ public class AnimationHandler {
 
     /**
      * Callbacks that receives notifications for animation timing and frame commit timing.
+     * 接收动画时序和帧提交时序通知的回调接口
      */
     interface AnimationFrameCallback {
         /**
@@ -278,6 +319,7 @@ public class AnimationHandler {
          * @param frameTime The frame start time, in the {@link SystemClock#uptimeMillis()} time
          *                  base.
          * @return if the animation has finished.
+         * 基于帧时间执行动画
          */
         boolean doAnimationFrame(long frameTime);
 
@@ -295,6 +337,7 @@ public class AnimationHandler {
          *
          * @param frameTime The frame time after traversals happen, if any, in the
          *                  {@link SystemClock#uptimeMillis()} time base.
+         *                  处理帧提交时间通知
          */
         void commitAnimationFrame(long frameTime);
     }
@@ -304,14 +347,20 @@ public class AnimationHandler {
      * Specifically, we can have a custom implementation of the interface below and provide
      * timing pulse without using Choreographer. That way we could use any arbitrary interval for
      * our timing pulse in the tests.
+     * 可测试性增强 - 为 ValueAnimator 提高可测试性而设计.
+     * 时序脉冲抽象 - 提供与 Choreographer 解耦的时序脉冲机制
      *
      * @hide
      */
     public interface AnimationFrameCallbackProvider {
         void postFrameCallback(Choreographer.FrameCallback callback);
+
         void postCommitCallback(Runnable runnable);
+
         long getFrameTime();
+
         long getFrameDelay();
+
         void setFrameDelay(long delay);
     }
 }

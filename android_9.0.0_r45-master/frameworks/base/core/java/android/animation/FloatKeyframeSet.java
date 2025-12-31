@@ -29,6 +29,8 @@ import java.util.List;
  * int, exists to speed up the getValue() method when there is no custom
  * TypeEvaluator set for the animation, so that values can be calculated without autoboxing to the
  * Object equivalents of these primitive types.</p>
+ * 浮点关键帧集合 - 管理 FloatKeyframe 对象集合
+ * 插值计算 - 为 ValueAnimator 计算关键帧之间的浮点值
  */
 class FloatKeyframeSet extends KeyframeSet implements Keyframes.FloatKeyframes {
     public FloatKeyframeSet(FloatKeyframe... keyframes) {

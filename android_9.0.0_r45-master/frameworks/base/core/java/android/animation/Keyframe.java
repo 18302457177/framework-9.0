@@ -32,6 +32,8 @@ package android.animation;
  * or a data structure that needs to be animated directly (and evaluated using an implementation
  * of {@link TypeEvaluator}), you should stick to using float and int as animations using those
  * types have lower runtime overhead than other types.</p>
+ * 时间值对存储 - 存储动画中时间/值的配对信息
+ * 动画关键帧定义 - 由 ValueAnimator 使用来定义动画过程中目标对象在特定时间点的值
  */
 public abstract class Keyframe implements Cloneable {
     /**
@@ -50,6 +52,7 @@ public abstract class Keyframe implements Cloneable {
 
     /**
      * The time at which mValue will hold true.
+     * 存储关键帧的时间点
      */
     float mFraction;
 
@@ -258,6 +261,7 @@ public abstract class Keyframe implements Cloneable {
 
     /**
      * This internal subclass is used for all types which are not int or float.
+     * 用于处理非 int 或 float 类型的值
      */
     static class ObjectKeyframe extends Keyframe {
 
