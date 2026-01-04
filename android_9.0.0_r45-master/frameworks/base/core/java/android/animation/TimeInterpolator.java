@@ -19,6 +19,8 @@ package android.animation;
 /**
  * A time interpolator defines the rate of change of an animation. This allows animations
  * to have non-linear motion, such as acceleration and deceleration.
+ * 功能：定义动画变化速率的接口
+ * 作用：使动画能够实现非线性运动，如加速和减速效果
  */
 public interface TimeInterpolator {
 
@@ -33,6 +35,7 @@ public interface TimeInterpolator {
      * @return The interpolation value. This value can be more than 1.0 for
      *         interpolators which overshoot their targets, or less than 0 for
      *         interpolators that undershoot their targets.
+     *         将动画已过去的时间分数映射为插值分数
      */
     float getInterpolation(float input);
 }

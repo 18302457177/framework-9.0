@@ -24,6 +24,9 @@ import android.view.animation.AnimationUtils;
  * with this Animator. Instead, it is simply started, after which it proceeds to send out events
  * on every animation frame to its TimeListener (if set), with information about this animator,
  * the total elapsed time, and the elapsed time since the previous animation frame.
+ * 提供时间回调机制：为监听器提供与系统中其他动画器同步的简单回调机制
+ * 无持续时间/插值：此动画器没有持续时间、插值或对象值设置功能
+ * 基于时间的事件发送：启动后在每个动画帧向 TimeListener 发送事件
  */
 public class TimeAnimator extends ValueAnimator {
 
@@ -36,6 +39,7 @@ public class TimeAnimator extends ValueAnimator {
         super.start();
     }
 
+    //基于时间的动画处理
     @Override
     boolean animateBasedOnTime(long currentTime) {
         if (mListener != null) {
@@ -92,6 +96,7 @@ public class TimeAnimator extends ValueAnimator {
          * @param animation The animator sending out the notification.
          * @param totalTime The total time elapsed since the animator started, in milliseconds.
          * @param deltaTime The time elapsed since the previous frame, in milliseconds.
+         * 为 TimeAnimator 提供帧更新回调机制
          */
         void onTimeUpdate(TimeAnimator animation, long totalTime, long deltaTime);
 

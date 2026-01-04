@@ -241,6 +241,7 @@ public final class ObjectAnimator extends ValueAnimator {
      * @param propertyName The name of the property being animated.
      * @param values A set of values that the animation will animate between over time.
      * @return An ObjectAnimator object that is set up to animate between the given values.
+     * 创建整数类型属性动画器：构造并返回一个在整数值之间进行动画的 ObjectAnimator 对象
      */
     public static ObjectAnimator ofInt(Object target, String propertyName, int... values) {
         ObjectAnimator anim = new ObjectAnimator(target, propertyName);
@@ -839,6 +840,7 @@ public final class ObjectAnimator extends ValueAnimator {
         return false;
     }
 
+    //在启动动画前执行自动取消检查。
     @Override
     public void start() {
         AnimationHandler.getInstance().autoCancelBasedOn(this);
@@ -924,6 +926,7 @@ public final class ObjectAnimator extends ValueAnimator {
         return mTarget == null ? null : mTarget.get();
     }
 
+    //设置 ObjectAnimator 的目标对象，该对象的属性将被此动画所动画。
     @Override
     public void setTarget(@Nullable Object target) {
         final Object oldTarget = getTarget();
@@ -974,6 +977,7 @@ public final class ObjectAnimator extends ValueAnimator {
      * of the animated value.</p>
      *
      * @param fraction The elapsed fraction of the animation.
+     * 动画值计算与应用：根据动画进度计算当前值并应用到目标对象的属性上
      */
     @CallSuper
     @Override

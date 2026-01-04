@@ -66,6 +66,7 @@ import java.util.HashMap;
  * <a href="{@docRoot}guide/topics/graphics/prop-animation.html#value-animator">Property
  * Animation</a> developer guide.</p>
  * </div>
+ * 主要提供动画值计算和目标对象设置的简单定时引擎功能。
  */
 @SuppressWarnings("unchecked")
 public class ValueAnimator extends Animator implements AnimationHandler.AnimationFrameCallback {
@@ -285,6 +286,7 @@ public class ValueAnimator extends Animator implements AnimationHandler.Animatio
 
     /**
      * @hide
+     * 设置动画持续时间缩放因子：用于调整所有动画的播放速度
      */
     @TestApi
     public static void setDurationScale(float durationScale) {
@@ -653,6 +655,8 @@ public class ValueAnimator extends Animator implements AnimationHandler.Animatio
      * @param fraction The fraction to which the animation is advanced or rewound. Values
      * outside the range of 0 to the maximum fraction for the animator will be clamped to
      * the correct range.
+     * 设置动画进度：将动画设置到指定的进度分数
+     * 分数范围：0 到动画总分数（包括重复次数）
      */
     public void setCurrentFraction(float fraction) {
         initAnimation();
@@ -709,6 +713,9 @@ public class ValueAnimator extends Animator implements AnimationHandler.Animatio
      *
      * @param fraction fraction to be clamped
      * @return fraction clamped into the range of [0, mRepeatCount + 1]
+     * 限制分数范围：将动画进度分数限制在有效范围内
+     * 处理负值：将小于0的分数设置为0
+     * 处理重复限制：当重复次数不是无限时，限制最大分数为 mRepeatCount + 1
      */
     private float clampFraction(float fraction) {
         if (fraction < 0) {
@@ -962,6 +969,8 @@ public class ValueAnimator extends Animator implements AnimationHandler.Animatio
      *
      * @param value the interpolator to be used by this animation. A value of <code>null</code>
      * will result in linear interpolation.
+     * 设置时间插值器：为动画设置用于计算进度分数的插值器
+     * 处理空值：当传入的插值器为 null 时，自动设置为线性插值器
      */
     @Override
     public void setInterpolator(TimeInterpolator value) {
@@ -1267,6 +1276,7 @@ public class ValueAnimator extends Animator implements AnimationHandler.Animatio
      * Internal only: This tracks whether the animation has gotten on the animation loop. Note
      * this is different than {@link #isRunning()} in that the latter tracks the time after start()
      * is called (or after start delay if any), which may be before the animation loop starts.
+     * 内部动画循环跟踪：用于跟踪动画是否已经进入动画循环
      */
     private boolean isPulsingInternal() {
         return mLastFrameTime >= 0;
@@ -1415,6 +1425,7 @@ public class ValueAnimator extends Animator implements AnimationHandler.Animatio
      * @param frameTime The frame time.
      * @return true if the animation has ended.
      * @hide
+     * 处理动画帧：处理动画的一帧，根据需要调整开始时间
      */
     public final boolean doAnimationFrame(long frameTime) {
         if (mStartTime < 0) {

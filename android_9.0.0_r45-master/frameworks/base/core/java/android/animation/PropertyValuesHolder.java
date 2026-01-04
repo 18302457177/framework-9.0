@@ -751,6 +751,7 @@ public class PropertyValuesHolder implements Cloneable {
      * @param prefix "set" or "get", for the setter or getter.
      * @param valueType The type of parameter passed into the method (null for getter).
      * @return Method the method associated with mPropertyName.
+     * 该方法用于获取指定类的 setter 或 getter 方法，通过缓存机制优化方法查找性能。
      */
     private Method setupSetterOrGetter(Class targetClass,
             HashMap<Class, HashMap<String, Method>> propertyMapMap,
@@ -862,6 +863,7 @@ public class PropertyValuesHolder implements Cloneable {
         }
     }
 
+    //该方法用于将值转换回原始类型，主要用于获取当前属性值或处理空值情况。
     private Object convertBack(Object value) {
         if (mConverter != null) {
             if (!(mConverter instanceof BidirectionalTypeConverter)) {
@@ -880,6 +882,7 @@ public class PropertyValuesHolder implements Cloneable {
      *
      * @param target The target object from which the current value should be extracted.
      * @param kf The keyframe which holds the property name and value.
+     * 该方法用于设置关键帧的值，通过获取目标对象的当前属性值来填充关键帧。
      */
     private void setupValue(Object target, Keyframe kf) {
         if (mProperty != null) {
@@ -1135,6 +1138,8 @@ public class PropertyValuesHolder implements Cloneable {
      * method name.
      * @return String the property name converted to a method name according to the conventions
      * specified above.
+     * 根据属性名和前缀生成方法名
+     * 用于自动生成 setter/getter 方法名
      */
     static String getMethodName(String prefix, String propertyName) {
         if (propertyName == null || propertyName.length() == 0) {
@@ -1151,11 +1156,11 @@ public class PropertyValuesHolder implements Cloneable {
         // Cache JNI functions to avoid looking them up twice
         private static final HashMap<Class, HashMap<String, Long>> sJNISetterPropertyMap =
                 new HashMap<Class, HashMap<String, Long>>();
-        long mJniSetter;
-        private IntProperty mIntProperty;
+        long mJniSetter;//JNI 方法 ID 缓存，用于直接调用目标对象的 setter 方法
+        private IntProperty mIntProperty;//IntProperty 类型的属性对象
 
-        Keyframes.IntKeyframes mIntKeyframes;
-        int mIntAnimatedValue;
+        Keyframes.IntKeyframes mIntKeyframes;//存储整数关键帧数据
+        int mIntAnimatedValue;//当前动画计算出的整数值
 
         public IntPropertyValuesHolder(String propertyName, Keyframes.IntKeyframes keyframes) {
             super(propertyName);
@@ -1202,11 +1207,13 @@ public class PropertyValuesHolder implements Cloneable {
             mIntKeyframes = (Keyframes.IntKeyframes) mKeyframes;
         }
 
+        //根据动画进度计算当前整数值
         @Override
         void calculateValue(float fraction) {
             mIntAnimatedValue = mIntKeyframes.getIntValue(fraction);
         }
 
+        //返回当前计算的动画值
         @Override
         Object getAnimatedValue() {
             return mIntAnimatedValue;
@@ -1225,6 +1232,7 @@ public class PropertyValuesHolder implements Cloneable {
          * to handle turning the value calculated by ValueAnimator into a value set on the object
          * according to the name of the property.
          * @param target The target object on which the value is set
+         *               将计算出的值设置到目标对象
          */
         @Override
         void setAnimatedValue(Object target) {
@@ -1252,6 +1260,7 @@ public class PropertyValuesHolder implements Cloneable {
             }
         }
 
+        //设置目标对象的 setter 方法
         @Override
         void setupSetter(Class targetClass) {
             if (mProperty != null) {
@@ -1657,6 +1666,7 @@ public class PropertyValuesHolder implements Cloneable {
 
     /**
      * Convert from PointF to float[] for multi-float setters along a Path.
+     * 将 PointF 对象转换为 float[] 数组，用于路径动画中的多浮点值设置器
      */
     private static class PointFToFloatArray extends TypeConverter<PointF, float[]> {
         private float[] mCoordinates = new float[2];
@@ -1693,15 +1703,16 @@ public class PropertyValuesHolder implements Cloneable {
 
     /**
      * @hide
+     * 用于存储和管理属性动画相关数据的容器类
      */
     public static class PropertyValues {
         public String propertyName;
         public Class type;
-        public Object startValue;
-        public Object endValue;
+        public Object startValue;//动画起始值
+        public Object endValue;//动画结束值
         public DataSource dataSource = null;
         public interface DataSource {
-            Object getValueAtFraction(float fraction);
+            Object getValueAtFraction(float fraction);//根据动画进度分数获取对应的值
         }
         public String toString() {
             return ("property name: " + propertyName + ", type: " + type + ", startValue: "

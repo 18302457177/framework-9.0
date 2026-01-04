@@ -45,6 +45,10 @@ import java.util.ArrayList;
  * @attr ref android.R.styleable#DrawableStates_state_last
  * @attr ref android.R.styleable#DrawableStates_state_pressed
  * @attr ref android.R.styleable#StateListAnimatorItem_animation
+ * 状态相关动画管理：根据 View 的 drawable 状态运行不同的动画
+ * 状态匹配：当 View 的状态与定义的状态规格匹配时，自动运行对应的动画
+ * 动画切换：支持状态变化时的动画取消和启动新动画
+ * 可通过 XML 文件的 <selector> 元素定义状态动画列表
  */
 public class StateListAnimator implements Cloneable {
 
@@ -272,12 +276,13 @@ public class StateListAnimator implements Cloneable {
 
     /**
      * @hide
+     * 封装状态规格和对应动画器的元组对象
      */
     public static class Tuple {
 
-        final int[] mSpecs;
+        final int[] mSpecs;//状态规格数组
 
-        final Animator mAnimator;
+        final Animator mAnimator;//关联的动画器
 
         private Tuple(int[] specs, Animator animator) {
             mSpecs = specs;
@@ -286,6 +291,7 @@ public class StateListAnimator implements Cloneable {
 
         /**
          * @hide
+         * 获取状态规格
          */
         public int[] getSpecs() {
             return mSpecs;
@@ -293,6 +299,7 @@ public class StateListAnimator implements Cloneable {
 
         /**
          * @hide
+         * 获取动画器
          */
         public Animator getAnimator() {
             return mAnimator;
@@ -304,13 +311,14 @@ public class StateListAnimator implements Cloneable {
      * given Animator.
      * <p>
      * When new instance is called, default implementation clones the Animator.
+     * 创建共享状态，用于缓存和复用 StateListAnimator 实例
      */
     private static class StateListAnimatorConstantState
             extends ConstantState<StateListAnimator> {
 
-        final StateListAnimator mAnimator;
+        final StateListAnimator mAnimator;//源动画器
 
-        @Config int mChangingConf;
+        @Config int mChangingConf;//配置变化掩码
 
         public StateListAnimatorConstantState(StateListAnimator animator) {
             mAnimator = animator;

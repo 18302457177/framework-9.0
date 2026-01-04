@@ -19,6 +19,9 @@ import android.graphics.PointF;
 
 /**
  * This evaluator can be used to perform type interpolation between <code>PointF</code> values.
+ * PointF 类型插值器：实现了 TypeEvaluator<PointF> 接口，用于在两个 PointF 值之间进行类型插值
+ * 线性插值计算：对 PointF 对象的 x、y 分量分别进行线性插值计算
+ * 路径动画支持：常用于路径动画中计算中间坐标点，与 PathKeyframes 配合使用
  */
 public class PointFEvaluator implements TypeEvaluator<PointF> {
 

@@ -23,6 +23,9 @@ package android.animation;
  * system.
  *
  * @see ValueAnimator#setEvaluator(TypeEvaluator)
+ * 支持任意类型的值评估
+ * 自定义动画类型：允许开发者在任意属性类型上创建动画
+ * 自定义评估器：为动画系统无法自动理解的类型提供自定义评估器
  */
 public interface TypeEvaluator<T> {
 

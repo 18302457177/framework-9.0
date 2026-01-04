@@ -24,11 +24,13 @@ import android.view.View;
  * The clipping is implemented efficiently by talking to a private reveal API on View.
  * This hidden class currently only accessed by the {@link android.view.View}.
  *
+ * 圆形裁剪动画：通过动画裁剪圆形来显示 View
+ * 高效实现：通过与 View 上的私有 reveal API 通信来实现裁剪
  * @hide
  */
 public class RevealAnimator extends RenderNodeAnimator {
 
-    private View mClipView;
+    private View mClipView;//要进行裁剪动画的视图
 
     public RevealAnimator(View clipView, int x, int y,
             float startRadius, float endRadius) {
@@ -37,6 +39,7 @@ public class RevealAnimator extends RenderNodeAnimator {
         setTarget(mClipView);
     }
 
+    //动画完成后调用 mClipView.setRevealClip() 关闭裁剪效果
     @Override
     protected void onFinished() {
         mClipView.setRevealClip(false, 0, 0, 0);

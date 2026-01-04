@@ -35,6 +35,7 @@ import java.util.ArrayList;
  * as either an IntKeyframes or FloatKeyframes.
  * </p>
  * @hide
+ * 路径动画处理：将 Path 对象转换为一系列关键帧，用于实现沿路径的动画效果
  */
 public class PathKeyframes implements Keyframes {
     private static final int FRACTION_OFFSET = 0;
@@ -96,6 +97,7 @@ public class PathKeyframes implements Keyframes {
         }
     }
 
+    //区间插值计算：在给定的两个关键帧索引之间进行线性插值，计算指定分数位置的坐标点
     private PointF interpolateInRange(float fraction, int startIndex, int endIndex) {
         int startBase = (startIndex * NUM_COMPONENTS);
         int endBase = (endIndex * NUM_COMPONENTS);
@@ -135,6 +137,7 @@ public class PathKeyframes implements Keyframes {
         return clone;
     }
 
+    //索引位置获取：根据指定索引获取路径上对应的关键帧坐标点
     private PointF pointForIndex(int index) {
         int base = (index * NUM_COMPONENTS);
         int xOffset = base + X_OFFSET;
@@ -143,6 +146,7 @@ public class PathKeyframes implements Keyframes {
         return mTempPointF;
     }
 
+    //线性插值计算：根据给定的比例值在起始值和结束值之间进行线性插值计算
     private static float interpolate(float fraction, float startValue, float endValue) {
         float diff = endValue - startValue;
         return startValue + (diff * fraction);

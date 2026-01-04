@@ -19,6 +19,10 @@ import android.graphics.Rect;
 
 /**
  * This evaluator can be used to perform type interpolation between <code>Rect</code> values.
+ *
+ 矩形插值器：实现了 TypeEvaluator<Rect> 接口，用于在两个 Rect 值之间进行类型插值
+ 线性插值计算：对矩形的四个坐标值（left、top、right、bottom）分别进行线性插值计算
+ 动画支持：主要用于矩形相关的属性动画，如视图大小变化、位置移动等动画效果
  */
 public class RectEvaluator implements TypeEvaluator<Rect> {
 
@@ -67,6 +71,7 @@ public class RectEvaluator implements TypeEvaluator<Rect> {
      * @param endValue   The end Rect
      * @return A linear interpolation between the start and end values, given the
      *         <code>fraction</code> parameter.
+     *         线性插值计算：根据给定比例在起始和结束 Rect 值之间进行插值计算
      */
     @Override
     public Rect evaluate(float fraction, Rect startValue, Rect endValue) {
