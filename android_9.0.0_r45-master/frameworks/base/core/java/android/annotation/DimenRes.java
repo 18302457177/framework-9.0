@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be a dimension resource reference (e.g. {@link android.R.dimen#app_icon_size}).
  *
  * {@hide}
+ * 维度资源标记：标记整数类型的参数、字段或方法返回值应为维度资源引用
  */
 @Documented
 @Retention(SOURCE)

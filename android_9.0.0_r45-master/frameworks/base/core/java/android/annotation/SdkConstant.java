@@ -23,7 +23,14 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Indicates a constant field value should be exported to be used in the SDK tools.
+ * SDK常量导出标记：标记常量字段值应导出供SDK工具使用
  * @hide
+ * 常量类型枚举 SdkConstantType
+ * ACTIVITY_INTENT_ACTION：Activity意图动作
+ * BROADCAST_INTENT_ACTION：广播意图动作
+ * SERVICE_ACTION：服务动作
+ * INTENT_CATEGORY：意图类别
+ * FEATURE：功能特性
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.SOURCE)

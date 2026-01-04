@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be a drawable resource reference (e.g. {@link android.R.attr#alertDialogIcon}).
  *
  * {@hide}
+ * 可绘制资源标记：标记整数类型的参数、字段或方法返回值应为可绘制资源引用
  */
 @Documented
 @Retention(SOURCE)

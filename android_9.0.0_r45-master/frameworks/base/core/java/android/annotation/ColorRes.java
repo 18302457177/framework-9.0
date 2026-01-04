@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be a color resource reference (e.g. {@link android.R.color#black}).
  *
  * {@hide}
+ * 颜色资源标记：标记整数类型的参数、字段或方法返回值应为颜色资源引用
  */
 @Documented
 @Retention(SOURCE)

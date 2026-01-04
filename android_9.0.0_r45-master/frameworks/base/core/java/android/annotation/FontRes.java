@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be a Font resource reference (e.g. R.font.myfont).
  *
  * @hide
+ * 字体资源标记：标记整数类型的参数、字段或方法返回值应为字体资源引用
  */
 @Documented
 @Retention(SOURCE)

@@ -37,6 +37,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * </code></pre>
  *
  * @hide
+ * 整数范围标记：标记被注解的元素应为指定范围内的 int 或 long 值
  */
 @Retention(SOURCE)
 @Target({METHOD,PARAMETER,FIELD,LOCAL_VARIABLE,ANNOTATION_TYPE})

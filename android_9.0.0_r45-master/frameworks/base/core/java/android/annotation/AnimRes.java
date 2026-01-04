@@ -29,6 +29,10 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be an anim resource reference (e.g. {@link android.R.anim#fade_in}).
  *
  * {@hide}
+ * 资源类型标记：标记整数类型的参数、字段或方法返回值应为动画资源引用
+ * 与 AnimatorRes 的区别
+ * AnimRes：用于传统的视图动画资源（android.R.anim）
+ * AnimatorRes：用于属性动画资源（android.R.animator）
  */
 @Documented
 @Retention(SOURCE)

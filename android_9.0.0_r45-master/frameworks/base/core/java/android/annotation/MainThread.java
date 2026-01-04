@@ -43,6 +43,7 @@ import java.lang.annotation.Target;
  * @memberDoc This method must be called from the
  *            {@linkplain Looper#getMainLooper() main thread} of your app.
  * @hide
+ * 主线程标记：标记被注解的方法只能在主线程中调用
  */
 @Retention(SOURCE)
 @Target({METHOD,CONSTRUCTOR,TYPE,PARAMETER})

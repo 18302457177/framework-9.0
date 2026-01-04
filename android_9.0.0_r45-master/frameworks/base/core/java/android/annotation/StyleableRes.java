@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be a styleable resource reference (e.g. {@link android.R.styleable#TextView_text}).
  *
  * {@hide}
+ * 样式资源标记：标记整数类型的参数、字段或方法返回值应为可样式化资源引用
  */
 @Documented
 @Retention(SOURCE)

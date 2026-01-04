@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be a layout resource reference (e.g. {@link android.R.layout#list_content}).
  *
  * {@hide}
+ * 布局资源标记：标记整数类型的参数、字段或方法返回值应为布局资源引用
  */
 @Documented
 @Retention(SOURCE)

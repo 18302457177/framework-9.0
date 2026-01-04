@@ -37,6 +37,7 @@ import java.lang.annotation.Target;
  * </p>
  *
  * @hide
+ * 系统API标记：标记被注解的API供捆绑的系统应用程序使用
  */
 @Target({TYPE, FIELD, METHOD, CONSTRUCTOR, ANNOTATION_TYPE, PACKAGE})
 @Retention(RetentionPolicy.RUNTIME)

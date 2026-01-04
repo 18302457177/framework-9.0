@@ -41,6 +41,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * @see android.graphics.Color
  *
  * @hide
+ * 颜色长整型标记：标记被注解的元素表示打包的颜色长整型值
  */
 @Retention(SOURCE)
 @Target({PARAMETER,METHOD,LOCAL_VARIABLE,FIELD})

@@ -35,6 +35,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * }</pre>
  *
  * @hide
+ * 颜色值标记：标记被注解的元素表示打包的颜色整数值，格式为 AARRGGBB
  */
 @Retention(SOURCE)
 @Target({PARAMETER,METHOD,LOCAL_VARIABLE,FIELD})

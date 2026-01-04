@@ -25,7 +25,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /** Indicates that Lint should treat this type as targeting a given API level, no matter what the
-    project target is. */
+    project target is.
+ API级别目标标记：标记被注解的类型应被视为针对给定的API级别，不管项目目标是什么
+ */
 @Target({TYPE, METHOD, CONSTRUCTOR, FIELD})
 @Retention(RetentionPolicy.CLASS)
 public @interface TargetApi {

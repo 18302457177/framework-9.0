@@ -44,6 +44,7 @@ import java.lang.annotation.Target;
  *
  * @memberDoc This method is safe to call from any thread.
  * @hide
+ * 线程安全标记：标记被注解的方法可以从任意线程调用（即线程安全）
  */
 @Retention(SOURCE)
 @Target({METHOD,CONSTRUCTOR,TYPE,PARAMETER})

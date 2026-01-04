@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be an integer resource reference (e.g. {@link android.R.integer#config_shortAnimTime}).
  *
  * {@hide}
+ * 整数资源标记：标记整数类型的参数、字段或方法返回值应为整数资源引用
  */
 @Documented
 @Retention(SOURCE)

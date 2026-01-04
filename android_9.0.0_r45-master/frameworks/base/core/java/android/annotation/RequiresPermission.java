@@ -76,6 +76,8 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * }</pre>
  *
  * @hide
+ * 权限要求标记：标记被注解的元素需要一个或多个权限
+ * 灵活权限配置：支持单个权限、多个权限组合等不同配置方式
  */
 @Retention(SOURCE)
 @Target({ANNOTATION_TYPE,METHOD,CONSTRUCTOR,FIELD,PARAMETER})
@@ -86,6 +88,7 @@ public @interface RequiresPermission {
      * {@link #allOf()} or {@link #anyOf()} instead.
      * <p>
      * If specified, {@link #anyOf()} and {@link #allOf()} must both be null.
+     * 指定必需的单一权限名称
      */
     String value() default "";
 
@@ -93,6 +96,7 @@ public @interface RequiresPermission {
      * Specifies a list of permission names that are all required.
      * <p>
      * If specified, {@link #anyOf()} and {@link #value()} must both be null.
+     * 指定所有必需的权限名称列表
      */
     String[] allOf() default {};
 
@@ -100,12 +104,14 @@ public @interface RequiresPermission {
      * Specifies a list of permission names where at least one is required
      * <p>
      * If specified, {@link #allOf()} and {@link #value()} must both be null.
+     * 指定至少需要一个权限的名称列表
      */
     String[] anyOf() default {};
 
     /**
      * If true, the permission may not be required in all cases (e.g. it may only be
      * enforced on certain platforms, or for certain call parameters, etc.
+     * 指定权限是否为条件性必需
      */
     boolean conditional() default false;
 
@@ -116,6 +122,7 @@ public @interface RequiresPermission {
      * a permission which depends on the value of the parameter (and typically
      * the corresponding field passed in will be one of a set of constants which have
      * been annotated with a <code>@RequiresPermission</code> annotation.)
+     * 指定读操作所需的权限
      */
     @Target({FIELD, METHOD, PARAMETER})
     @interface Read {
@@ -129,6 +136,7 @@ public @interface RequiresPermission {
      * a permission which depends on the value of the parameter (and typically
      * the corresponding field passed in will be one of a set of constants which have
      * been annotated with a <code>@RequiresPermission</code> annotation.)
+     * 指定写操作所需的权限
      */
     @Target({FIELD, METHOD, PARAMETER})
     @interface Write {

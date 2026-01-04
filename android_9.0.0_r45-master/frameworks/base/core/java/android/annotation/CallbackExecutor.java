@@ -33,6 +33,7 @@ import java.util.concurrent.Executor;
  *           application, you can use {@link Context#getMainExecutor()}. To
  *           dispatch events through a shared thread pool, you can use
  *           {@link AsyncTask#THREAD_POOL_EXECUTOR}.
+ * 回调执行器标记：标记用于分发回调和监听器事件的 Executor 参数
  * @hide
  */
 @Retention(SOURCE)

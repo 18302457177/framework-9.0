@@ -27,6 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /** Indicates that Lint should ignore the specified warnings for the annotated element. */
+//Lint警告抑制标记：标记被注解的元素应忽略指定的Lint警告
 @Target({TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE})
 @Retention(RetentionPolicy.CLASS)
 public @interface SuppressLint {

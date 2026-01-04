@@ -32,6 +32,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to represent a dimension.
  *
  * {@hide}
+ * 维度标记：标记被注解的数值参数、字段或方法返回值应表示一个维度值
  */
 @Documented
 @Retention(SOURCE)

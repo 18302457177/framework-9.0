@@ -35,6 +35,7 @@ import java.lang.annotation.Target;
  * </p>
  *
  * @hide
+ * CTS API标记：标记被注解的API供CTS（兼容性测试套件）使用
  */
 @Target({TYPE, FIELD, METHOD, CONSTRUCTOR, ANNOTATION_TYPE, PACKAGE})
 @Retention(RetentionPolicy.SOURCE)

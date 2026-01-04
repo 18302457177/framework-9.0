@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be an XML resource reference.
  *
  * {@hide}
+ * XML资源标记：标记整数类型的参数、字段或方法返回值应为XML资源引用
  */
 @Documented
 @Retention(SOURCE)

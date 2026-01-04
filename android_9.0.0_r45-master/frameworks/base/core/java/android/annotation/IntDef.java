@@ -47,6 +47,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * </code></pre>
  *
  * @hide
+ * 整数常量定义：标记被注解的整数类型元素表示逻辑类型，其值应为显式命名的常量之一
  */
 @Retention(SOURCE)
 @Target({ANNOTATION_TYPE})

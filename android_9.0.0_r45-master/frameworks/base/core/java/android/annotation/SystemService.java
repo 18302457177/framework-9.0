@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
  * documentation explaining how to obtain a reference to the service.
  *
  * @hide
+ * 系统服务描述标记：标记可通过 Context.getSystemService(Class) 获取的系统服务
  */
 @Retention(SOURCE)
 @Target(TYPE)

@@ -28,6 +28,7 @@ import java.lang.annotation.Target;
  * @memberDoc Value is a non-negative number of bytes.
  * @paramDoc Value is a non-negative number of bytes.
  * @returnDoc Value is a non-negative number of bytes.
+ * 字节数量标记：标记被注解的元素为非负字节数量值
  * @hide
  */
 @Retention(SOURCE)

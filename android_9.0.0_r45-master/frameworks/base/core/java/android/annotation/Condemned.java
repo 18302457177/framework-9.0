@@ -37,6 +37,7 @@ import java.lang.annotation.Target;
  * continue to exist temporarily to support binary compatibility.
  *
  * @hide
+ * 禁止使用标记：标记被注解的程序元素禁止程序员使用
  */
 @Retention(SOURCE)
 @Target(value={CONSTRUCTOR, FIELD, LOCAL_VARIABLE, METHOD, PACKAGE, PARAMETER, TYPE})

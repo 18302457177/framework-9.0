@@ -30,6 +30,7 @@ import java.lang.annotation.RetentionPolicy;
  * <li>The widget extends <code>android.view.ViewGroup</code></li>
  * </ul>
  * @hide
+ * UI组件标记：标记被注解的类是可供应用开发者创建UI的组件
  */
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.SOURCE)

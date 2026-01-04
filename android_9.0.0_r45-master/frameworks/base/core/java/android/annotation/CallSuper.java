@@ -35,6 +35,7 @@ import java.lang.annotation.Target;
  *
  * @memberDoc If you override this method you <em>must</em> call through to the
  *            superclass implementation.
+ *            父类方法调用标记：标记被重写的方法应该同时调用父类方法
  * @hide
  */
 @Retention(SOURCE)

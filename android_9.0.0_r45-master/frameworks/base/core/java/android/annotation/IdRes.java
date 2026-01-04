@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be an id resource reference (e.g. {@link android.R.id#copy}).
  *
  * {@hide}
+ * ID资源标记：标记整数类型的参数、字段或方法返回值应为ID资源引用
  */
 @Documented
 @Retention(SOURCE)

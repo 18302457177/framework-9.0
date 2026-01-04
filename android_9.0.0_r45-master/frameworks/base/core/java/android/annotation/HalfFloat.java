@@ -39,7 +39,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * @see android.util.Half
  * @see android.util.Half#toHalf(float)
  * @see android.util.Half#toFloat(short)
- *
+ *半精度浮点数标记：标记被注解的元素表示半精度浮点数值
  * @hide
  */
 @Retention(SOURCE)

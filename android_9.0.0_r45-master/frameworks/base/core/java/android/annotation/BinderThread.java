@@ -34,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  *  &#64;BinderThread
  *  public BeamShareData createBeamShareData() { ... }
  * </code></pre>
- *
+ * Binder线程标记：标记被注解的方法只能在Binder线程中调用
  * {@hide}
  */
 @Retention(SOURCE)

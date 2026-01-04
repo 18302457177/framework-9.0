@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be a resource reference of any type. If the specific type is known, use
  * one of the more specific annotations instead, such as {@link StringRes} or
  * {@link DrawableRes}.
+ * 通用资源标记：标记整数类型的参数、字段或方法返回值应为任意类型的资源引用
  *
  * {@hide}
  */

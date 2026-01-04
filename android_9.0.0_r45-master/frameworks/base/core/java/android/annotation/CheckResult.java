@@ -34,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  *  s.trim(); // this is probably an error
  *  s = s.trim(); // ok
  * }</pre>
- *
+ * 返回值检查标记：标记被注解的方法返回值通常不应该被忽略
  * @hide
  */
 @Retention(SOURCE)
@@ -53,6 +53,7 @@ public @interface CheckResult {
      *  &#64;CheckResult(suggest="#redirectErrorStream(boolean)")
      *  public boolean redirectErrorStream() { ... }
      * </pre>
+     * 定义建议使用的替代方法名
      */
     String suggest() default "";
 }

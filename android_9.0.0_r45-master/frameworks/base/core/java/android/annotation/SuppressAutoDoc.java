@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
  * for the annotated method, parameter, or field.
  *
  * @hide
+ * 自动生成文档抑制标记：标记被注解的方法、参数或字段应抑制自动生成的文档
  */
 @Retention(SOURCE)
 @Target({TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE})

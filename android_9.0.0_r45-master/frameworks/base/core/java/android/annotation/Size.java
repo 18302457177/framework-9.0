@@ -37,6 +37,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * }</pre>
  *
  * @hide
+ * 尺寸长度标记：标记被注解的元素应具有给定的大小或长度
  */
 @Retention(SOURCE)
 @Target({PARAMETER,LOCAL_VARIABLE,METHOD,FIELD})
@@ -47,6 +48,8 @@ public @interface Size {
     long min() default Long.MIN_VALUE;
     /** A maximum size, inclusive */
     long max() default Long.MAX_VALUE;
-    /** The size must be a multiple of this factor */
+    /** The size must be a multiple of this factor
+     * 大小必须为此因子的倍数
+     * */
     long multiple() default 1;
 }

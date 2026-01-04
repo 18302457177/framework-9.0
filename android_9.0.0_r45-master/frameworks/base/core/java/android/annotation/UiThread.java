@@ -44,6 +44,7 @@ import java.lang.annotation.Target;
  *            this UI element. This is typically the
  *            {@linkplain Looper#getMainLooper() main thread} of your app.
  * @hide
+ * UI线程标记：标记被注解的方法或构造函数只能在UI线程中调用
  */
 @Retention(SOURCE)
 @Target({METHOD,CONSTRUCTOR,TYPE,PARAMETER})

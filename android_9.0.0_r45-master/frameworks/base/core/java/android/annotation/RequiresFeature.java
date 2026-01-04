@@ -32,6 +32,7 @@ import java.lang.annotation.Target;
  *
  * @see PackageManager#hasSystemFeature(String)
  * @hide
+ * 设备特性要求标记：标记被注解的元素需要一个或多个设备特性
  */
 @Retention(SOURCE)
 @Target({TYPE,FIELD,METHOD,CONSTRUCTOR})
@@ -40,6 +41,7 @@ public @interface RequiresFeature {
      * The name of the device feature that is required.
      *
      * @see PackageManager#hasSystemFeature(String)
+     * 必需的设备特性名称
      */
     String value();
 }

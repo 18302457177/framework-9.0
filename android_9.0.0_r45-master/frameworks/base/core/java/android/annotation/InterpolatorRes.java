@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be an interpolator resource reference (e.g. {@link android.R.interpolator#cycle}).
  *
  * {@hide}
+ * 插值器资源标记：标记整数类型的参数、字段或方法返回值应为插值器资源引用
  */
 @Documented
 @Retention(SOURCE)

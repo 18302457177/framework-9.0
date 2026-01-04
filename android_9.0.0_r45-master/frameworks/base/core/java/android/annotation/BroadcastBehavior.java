@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
  * Description of how the annotated broadcast action behaves.
  *
  * @hide
+ * 广播行为描述：描述被注解的广播行为的特征和限制
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.SOURCE)
@@ -36,6 +37,7 @@ public @interface BroadcastBehavior {
      *
      * @see Intent#setPackage(String)
      * @see Intent#setComponent(android.content.ComponentName)
+     * 广播仅发送到明确目标
      */
     boolean explicitOnly() default false;
 
@@ -43,6 +45,7 @@ public @interface BroadcastBehavior {
      * This broadcast will only be delivered to registered receivers.
      *
      * @see Intent#FLAG_RECEIVER_REGISTERED_ONLY
+     * 广播仅发送到已注册的接收器
      */
     boolean registeredOnly() default false;
 
@@ -51,11 +54,13 @@ public @interface BroadcastBehavior {
      * regardless of process state.
      *
      * @see Intent#FLAG_RECEIVER_INCLUDE_BACKGROUND
+     * 广播包含所有 AndroidManifest.xml 接收器，不管进程状态
      */
     boolean includeBackground() default false;
 
     /**
      * This broadcast is protected and can only be sent by the OS.
+     * 广播受保护，只能由系统发送
      */
     boolean protectedBroadcast() default false;
 }

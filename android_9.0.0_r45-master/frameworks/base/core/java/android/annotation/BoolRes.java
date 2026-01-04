@@ -29,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * to be a boolean resource reference.
  *
  * {@hide}
+ * 布尔资源标记：标记整数类型的参数、字段或方法返回值应为布尔资源引用
  */
 @Documented
 @Retention(SOURCE)

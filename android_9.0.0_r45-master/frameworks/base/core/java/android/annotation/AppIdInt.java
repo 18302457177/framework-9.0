@@ -29,6 +29,8 @@ import java.lang.annotation.Target;
  * <em>not</em> the same as a UID.
  *
  * @hide
+ * 多用户应用ID标记：标记被注解的元素为多用户应用ID
+ * 非UID标识：明确区分于UID（用户ID）
  */
 @Retention(SOURCE)
 @Target({METHOD, PARAMETER, FIELD})

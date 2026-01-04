@@ -29,6 +29,7 @@ import java.lang.annotation.Target;
  * @paramDoc Value is a non-negative duration in milliseconds.
  * @returnDoc Value is a non-negative duration in milliseconds.
  * @hide
+ * 毫秒时长标记：标记被注解的元素为非负毫秒时长值
  */
 @Retention(SOURCE)
 @Target({METHOD, PARAMETER, FIELD})

@@ -41,6 +41,7 @@ import static java.lang.annotation.RetentionPolicy.SOURCE;
  * @memberDoc This method may take several seconds to complete, so it should
  *            only be called from a worker thread.
  * @hide
+ * 工作线程标记：标记被注解的方法只能在工作线程中调用
  */
 @Retention(SOURCE)
 @Target({METHOD,CONSTRUCTOR,TYPE,PARAMETER})

@@ -34,6 +34,7 @@ import java.lang.annotation.Target;
  * @returnDoc Value is a non-negative timestamp in the
  *            {@link SystemClock#elapsedRealtime()} time base.
  * @hide
+ * 时间戳标记：标记被注解的元素为基于 SystemClock.elapsedRealtime() 时间基准的非负时间戳
  */
 @Retention(SOURCE)
 @Target({METHOD, PARAMETER, FIELD})
