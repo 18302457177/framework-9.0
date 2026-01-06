@@ -35,6 +35,12 @@ import java.util.List;
  * a freeze or the distance bewteen two freee periods, February 29th is also ignored.
  *
  * @see SystemUpdatePolicy#setFreezePeriods
+ * 表示一个年度重复的冻结期，用于系统更新策略中的冻结时段管理
+ * 主要功能
+ * 日期计算: 计算冻结期长度和跨年处理
+ * 日期判断: 判断指定日期是否在冻结期内
+ * 区间合并: 对多个冻结期进行排序、去重和合并
+ * 验证功能: 验证冻结期是否符合系统更新策略约束
  */
 public class FreezePeriod {
     private static final String TAG = "FreezePeriod";
@@ -94,7 +100,9 @@ public class FreezePeriod {
         return getEffectiveEndDay() - mStartDay + 1;
     }
 
-    /** @hide */
+    /** @hide
+     * 判断冻结期是否跨年
+     * */
     boolean isWrapped() {
         return mEndDay < mStartDay;
     }
@@ -102,6 +110,7 @@ public class FreezePeriod {
     /**
      * Returns the effective end day, taking wrapping around year-end into consideration
      * @hide
+     * 获取考虑跨年情况的有效结束天数
      */
     int getEffectiveEndDay() {
         if (!isWrapped()) {
@@ -111,7 +120,9 @@ public class FreezePeriod {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 判断指定日期是否在冻结期内
+     * */
     boolean contains(LocalDate localDate) {
         final int daysOfYear = dayOfYearDisregardLeapYear(localDate);
         if (!isWrapped()) {
@@ -124,7 +135,9 @@ public class FreezePeriod {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 判断冻结期是否在指定日期之后开始
+     * */
     boolean after(LocalDate localDate) {
         return mStartDay > dayOfYearDisregardLeapYear(localDate);
     }
@@ -136,6 +149,7 @@ public class FreezePeriod {
      * include now, the returned dates represents the next future interval.
      * The result will always have the same month and dayOfMonth value as the non-instantiated
      * interval itself.
+     * 将冻结期转换为真实日历日期，基于给定的当前日期
      * @hide
      */
     Pair<LocalDate, LocalDate> toCurrentOrFutureRealDates(LocalDate now) {
@@ -180,7 +194,9 @@ public class FreezePeriod {
                 + LocalDate.ofYearDay(DUMMY_YEAR, mEndDay).format(formatter);
     }
 
-    /** @hide */
+    /** @hide
+     * 将年中天数转换为 MonthDay 对象
+     * */
     private static MonthDay dayOfYearToMonthDay(int dayOfYear) {
         LocalDate date = LocalDate.ofYearDay(DUMMY_YEAR, dayOfYear);
         return MonthDay.of(date.getMonth(), date.getDayOfMonth());
@@ -189,6 +205,7 @@ public class FreezePeriod {
     /**
      * Treat the supplied date as in a non-leap year and return its day of year.
      * @hide
+     * 将给定日期转换为非闰年的年中天数
      */
     private static int dayOfYearDisregardLeapYear(LocalDate date) {
         return date.withYear(DUMMY_YEAR).getDayOfYear();
@@ -198,6 +215,7 @@ public class FreezePeriod {
      * Compute the number of days between first (inclusive) and second (exclusive),
      * treating all years in between as non-leap.
      * @hide
+     * 计算两个日期之间的天数差
      */
     public static int distanceWithoutLeapYear(LocalDate first, LocalDate second) {
         return dayOfYearDisregardLeapYear(first) - dayOfYearDisregardLeapYear(second)
@@ -216,6 +234,7 @@ public class FreezePeriod {
      *     2. No two intervals should overlap or touch
      *     3. At most one wrapped Interval remains, and it will be at the end of the list
      * @hide
+     * 对冻结期列表进行排序、去重和合并操作
      */
     static List<FreezePeriod> canonicalizePeriods(List<FreezePeriod> intervals) {
         boolean[] taken = new boolean[DAYS_IN_YEAR];
@@ -258,6 +277,7 @@ public class FreezePeriod {
      * apart.
      *
      * @hide
+     * 验证提供的冻结期是否满足 SystemUpdatePolicy 中设置的约束条件
      */
     static void validatePeriods(List<FreezePeriod> periods) {
         List<FreezePeriod> allPeriods = FreezePeriod.canonicalizePeriods(periods);
@@ -298,6 +318,7 @@ public class FreezePeriod {
      * period, the maximum freeze length or the minimum freeze separation should not be violated.
      *
      * @hide
+     * 验证当前冻结期在考虑设备经历的先前冻结期的情况下是否仍然合法
      */
     static void validateAgainstPreviousFreezePeriod(List<FreezePeriod> periods,
             LocalDate prevPeriodStart, LocalDate prevPeriodEnd, LocalDate now) {

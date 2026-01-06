@@ -39,51 +39,57 @@ import java.util.Objects;
  * at which time new batch of logs can be collected via
  * {@link DevicePolicyManager#retrieveSecurityLogs}. {@link SecurityEvent} describes the type and
  * format of security logs being collected.
+ * 安全日志管理: 定义了Android系统中安全相关日志的结构和类型
+ * 日志事件分类: 提供了多种安全事件类型的常量定义
  */
 public class SecurityLog {
 
     private static final String PROPERTY_LOGGING_ENABLED = "persist.logd.security";
 
-    /** @hide */
+    /** @hide
+     * 为安全日志标签提供编译时类型检查，确保使用的标签值是预定义的有效值
+     * */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "TAG_" }, value = {
-            TAG_ADB_SHELL_INTERACTIVE,
-            TAG_ADB_SHELL_CMD,
-            TAG_SYNC_RECV_FILE,
-            TAG_SYNC_SEND_FILE,
+            TAG_ADB_SHELL_INTERACTIVE,//ADB交互式shell打开
+            TAG_ADB_SHELL_CMD,//ADB命令执行
+            TAG_SYNC_RECV_FILE,//ADB文件拉取
+            TAG_SYNC_SEND_FILE,//ADB文件推送
             TAG_APP_PROCESS_START,
-            TAG_KEYGUARD_DISMISSED,
+            TAG_KEYGUARD_DISMISSED,//键盘锁解除
             TAG_KEYGUARD_DISMISS_AUTH_ATTEMPT,
-            TAG_KEYGUARD_SECURED,
-            TAG_OS_STARTUP,
-            TAG_OS_SHUTDOWN,
+            TAG_KEYGUARD_SECURED,//键盘锁锁定
+            TAG_OS_STARTUP,//系统启动
+            TAG_OS_SHUTDOWN,//系统关闭
             TAG_LOGGING_STARTED,
             TAG_LOGGING_STOPPED,
             TAG_MEDIA_MOUNT,
             TAG_MEDIA_UNMOUNT,
             TAG_LOG_BUFFER_SIZE_CRITICAL,
-            TAG_PASSWORD_EXPIRATION_SET,
-            TAG_PASSWORD_COMPLEXITY_SET,
+            TAG_PASSWORD_EXPIRATION_SET,//密码过期时间设置
+            TAG_PASSWORD_COMPLEXITY_SET,//密码复杂度设置
             TAG_PASSWORD_HISTORY_LENGTH_SET,
             TAG_MAX_SCREEN_LOCK_TIMEOUT_SET,
             TAG_MAX_PASSWORD_ATTEMPTS_SET,
             TAG_KEYGUARD_DISABLED_FEATURES_SET,
             TAG_REMOTE_LOCK,
-            TAG_USER_RESTRICTION_ADDED,
-            TAG_USER_RESTRICTION_REMOVED,
+            TAG_USER_RESTRICTION_ADDED,//用户限制添加
+            TAG_USER_RESTRICTION_REMOVED,//用户限制移除
             TAG_WIPE_FAILURE,
-            TAG_KEY_GENERATED,
+            TAG_KEY_GENERATED,//密钥生成
             TAG_KEY_IMPORT,
             TAG_KEY_DESTRUCTION,
-            TAG_CERT_AUTHORITY_INSTALLED,
+            TAG_CERT_AUTHORITY_INSTALLED,//证书颁发机构安装
             TAG_CERT_AUTHORITY_REMOVED,
             TAG_CRYPTO_SELF_TEST_COMPLETED,
             TAG_KEY_INTEGRITY_VIOLATION,
-            TAG_CERT_VALIDATION_FAILURE,
+            TAG_CERT_VALIDATION_FAILURE,//证书验证失败
     })
     public @interface SecurityLogTag {}
 
-    /** @hide */
+    /** @hide
+     * 为安全日志级别提供编译时类型检查，确保使用的级别值是预定义的有效值
+     * */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "LEVEL_" }, value = {
             LEVEL_INFO,
@@ -467,9 +473,10 @@ public class SecurityLog {
 
     /**
      * A class representing a security event log entry.
+     * 表示安全事件日志条目
      */
     public static final class SecurityEvent implements Parcelable {
-        private Event mEvent;
+        private Event mEvent;//存储底层事件数据
         private long mId;
 
         /**
@@ -578,6 +585,7 @@ public class SecurityLog {
         }
 
         // Success/failure if present is encoded as an integer in the first (0th) element of data.
+        //检查安全事件中的操作是否成功
         private boolean getSuccess() {
             final Object data = getData();
             if (data == null || !(data instanceof Object[])) {
@@ -635,6 +643,7 @@ public class SecurityLog {
     /**
      * Retrieve all security logs and return immediately.
      * @hide
+     * 立即检索所有安全日志
      */
     public static native void readEvents(Collection<SecurityEvent> output) throws IOException;
 
@@ -658,6 +667,7 @@ public class SecurityLog {
      * nanoseconds. This method will block until either the last log earlier than the given
      * timestamp is about to be pruned, or after a 2-hour timeout has passed.
      * @hide
+     * 检索时间戳大于或等于指定时间戳（纳秒）的所有安全日志
      */
     public static native void readEventsOnWrapping(long timestamp, Collection<SecurityEvent> output)
             throws IOException;

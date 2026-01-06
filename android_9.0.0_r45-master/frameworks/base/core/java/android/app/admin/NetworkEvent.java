@@ -23,6 +23,8 @@ import android.os.Parcelable;
 
 /**
  * An abstract class that represents a network event.
+ * 作为网络事件的抽象基类，用于表示各种类型的网络活动事件
+ * 提供网络事件的通用属性和方法定义
  */
 public abstract class NetworkEvent implements Parcelable {
 
@@ -54,6 +56,7 @@ public abstract class NetworkEvent implements Parcelable {
     /**
      * Returns the package name of the UID that performed the query, as returned by
      * {@link PackageManager#getNameForUid}.
+     * 获取执行网络查询的UID对应的包名
      */
     public String getPackageName() {
         return mPackageName;
@@ -62,6 +65,7 @@ public abstract class NetworkEvent implements Parcelable {
     /**
      * Returns the timestamp of the event being reported in milliseconds, the difference between
      * the time the event was reported and midnight, January 1, 1970 UTC.
+     * 获取事件报告的时间戳
      */
     public long getTimestamp() {
         return mTimestamp;

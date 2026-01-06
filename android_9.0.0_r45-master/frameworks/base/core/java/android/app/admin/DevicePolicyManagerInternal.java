@@ -25,12 +25,17 @@ import java.util.List;
  * Device policy manager local system service interface.
  *
  * @hide Only for use within the system server.
+ * 提供设备策略管理器的本地系统服务接口
+ * 系统服务接口: 仅在系统服务器内部使用，为系统服务提供设备策略管理功能
+ * 跨配置文件小部件管理: 管理跨配置文件小部件提供程序的白名单包
+ * 策略检查: 检查应用是否为活跃设备管理员并具有特定策略
  */
 public abstract class DevicePolicyManagerInternal {
 
     /**
      * Listener for changes in the white-listed packages to show cross-profile
      * widgets.
+     * 监听跨配置文件小部件显示白名单包变化的回调接口
      */
     public interface OnCrossProfileWidgetProvidersChangeListener {
 
@@ -77,6 +82,7 @@ public abstract class DevicePolicyManagerInternal {
      * @param uid App uid.
      * @param reqPolicy Required policy, for policies see {@link DevicePolicyManager}.
      * @return true if the uid is an active admin with the given policy.
+     * 检查指定UID的应用是否是其用户的活跃设备管理员并具有指定策略
      */
     public abstract boolean isActiveAdminWithPolicy(int uid, int reqPolicy);
 
@@ -114,6 +120,7 @@ public abstract class DevicePolicyManagerInternal {
      * <p>
      * Profile owner on the primary user will never be considered as affiliated as there is no
      * device owner to be affiliated with.
+     * 检查指定用户/配置文件是否与设备关联
      */
     public abstract boolean isUserAffiliatedWithDevice(int userId);
 
@@ -121,6 +128,7 @@ public abstract class DevicePolicyManagerInternal {
      * Reports that a profile has changed to use a unified or separate credential.
      *
      * @param userId User ID of the profile.
+     *               报告配置文件已更改为使用统一或独立的凭据
      */
     public abstract void reportSeparateProfileChallengeChanged(@UserIdInt int userId);
 
@@ -130,6 +138,7 @@ public abstract class DevicePolicyManagerInternal {
      * of the previous password.
      *
      * @param userId The user in question
+     * 检查用户是否可能以不受信任的方式重置密码
      */
     public abstract boolean canUserHaveUntrustedCredentialReset(@UserIdInt int userId);
 
@@ -145,6 +154,7 @@ public abstract class DevicePolicyManagerInternal {
     /**
      * @return cached version of DPM policies that can be accessed without risking deadlocks.
      * Do not call it directly. Use {@link DevicePolicyCache#getInstance()} instead.
+     * 获取设备策略管理器的缓存实例
      */
     protected abstract DevicePolicyCache getDevicePolicyCache();
 }

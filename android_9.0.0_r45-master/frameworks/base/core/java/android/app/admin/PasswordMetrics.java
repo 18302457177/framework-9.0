@@ -29,16 +29,18 @@ import java.lang.annotation.RetentionPolicy;
  * password meets the requirements.
  *
  * {@hide}
+ * 表示用于判断密码是否满足要求的指标集合
+ * 提供密码强度评估的量化数据
  */
 public class PasswordMetrics implements Parcelable {
     // Maximum allowed number of repeated or ordered characters in a sequence before we'll
     // consider it a complex PIN/password.
     public static final int MAX_ALLOWED_SEQUENCE = 3;
 
-    public int quality = DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED;
-    public int length = 0;
-    public int letters = 0;
-    public int upperCase = 0;
+    public int quality = DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED;//密码质量等级（如未指定、字母、数字等）
+    public int length = 0;//密码总长度
+    public int letters = 0;//字母总数
+    public int upperCase = 0;//大写字母数
     public int lowerCase = 0;
     public int numeric = 0;
     public int symbols = 0;
@@ -107,6 +109,7 @@ public class PasswordMetrics implements Parcelable {
         }
     };
 
+    //分析给定密码的字符组成并计算其密码强度指标
     public static PasswordMetrics computeForPassword(@NonNull String password) {
         // Analyse the characters used
         int letters = 0;
@@ -222,6 +225,7 @@ public class PasswordMetrics implements Parcelable {
         return maxLength;
     }
 
+    //用于约束字符分类的整数值
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "CHAR_" }, value = {
             CHAR_UPPER_CASE,
@@ -243,6 +247,7 @@ public class PasswordMetrics implements Parcelable {
         return CHAR_SYMBOL;
     }
 
+    //获取指定字符分类中允许的最大差值，用于序列检测算法
     private static int maxDiffCategory(@CharacterCatagory int category) {
         switch (category) {
             case CHAR_LOWER_CASE:

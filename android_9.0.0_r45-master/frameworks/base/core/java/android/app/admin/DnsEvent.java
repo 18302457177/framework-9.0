@@ -30,20 +30,22 @@ import java.util.List;
  *
  * <p>It contains information about the originating app as well as the DNS hostname and resolved
  * IP addresses.
+ * DNS事件表示: 代表通过标准网络栈发起的DNS查找事件
+ * 信息记录: 包含发起应用信息、DNS主机名和解析的IP地址
  */
 public final class DnsEvent extends NetworkEvent implements Parcelable {
 
     /** The hostname that was looked up. */
-    private final String mHostname;
+    private final String mHostname;//被查找的主机名
 
     /** Contains (possibly a subset of) the IP addresses returned. */
-    private final String[] mIpAddresses;
+    private final String[] mIpAddresses;//包含(可能的子集)返回的IP地址
 
     /**
      * The number of IP addresses returned from the DNS lookup event. May be different from the
      * length of ipAddresses if there were too many addresses to log.
      */
-    private final int mIpAddressesCount;
+    private final int mIpAddressesCount;//DNS查找事件返回的IP地址数量
 
     /** @hide */
     public DnsEvent(String hostname, String[] ipAddresses, int ipAddressesCount,

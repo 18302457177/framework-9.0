@@ -45,6 +45,11 @@ import android.os.IBinder;
  *
  * <p>Note the process may still be killed if the system is under heavy memory pressure, in which
  * case the process will be re-started later.
+ * 服务基类: 为设备所有者/配置文件所有者可选择性拥有的服务提供基类
+ * 主要功能
+ * 保持前台状态: 尝试保持绑定连接，使设备/配置文件所有者始终被认为在前台运行
+ * 广播接收: 用于接收隐式广播（Android 8.0后清单接收器无法接收的广播）
+ * 进程常驻: 通过运行时注册的广播接收器配合，确保进程始终运行
  */
 public class DeviceAdminService extends Service {
     private final IDeviceAdminServiceImpl mImpl;

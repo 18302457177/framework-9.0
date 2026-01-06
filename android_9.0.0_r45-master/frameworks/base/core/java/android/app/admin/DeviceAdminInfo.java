@@ -48,6 +48,7 @@ import java.util.HashMap;
 /**
  * This class is used to specify meta information of a device administrator
  * component.
+ * 设备管理员元信息封装：用于指定设备管理员组件的元信息
  */
 public final class DeviceAdminInfo implements Parcelable {
     static final String TAG = "DeviceAdminInfo";
@@ -179,12 +180,12 @@ public final class DeviceAdminInfo implements Parcelable {
 
     /** @hide */
     public static class PolicyInfo {
-        public final int ident;
-        public final String tag;
-        public final int label;
-        public final int description;
-        public final int labelForSecondaryUsers;
-        public final int descriptionForSecondaryUsers;
+        public final int ident;//策略标识符，对应各种 USES_POLICY_* 常量
+        public final String tag;//XML 中使用的策略标签名
+        public final int label;//策略的显示标签资源ID
+        public final int description;//策略描述资源ID
+        public final int labelForSecondaryUsers;//二级用户显示标签资源ID
+        public final int descriptionForSecondaryUsers;//二级用户描述资源ID
 
         public PolicyInfo(int ident, String tag, int label, int description) {
             this(ident, tag, label, description, label, description);
@@ -201,10 +202,17 @@ public final class DeviceAdminInfo implements Parcelable {
         }
     }
 
+    //存储策略的显示顺序，定义在UI中展示策略的顺序
     static ArrayList<PolicyInfo> sPoliciesDisplayOrder = new ArrayList<PolicyInfo>();
+    //通过标签名映射到策略标识符，用于解析XML中的策略标签
     static HashMap<String, Integer> sKnownPolicies = new HashMap<String, Integer>();
+    //通过策略标识符映射到 PolicyInfo 对象，用于反向查找
     static SparseArray<PolicyInfo> sRevKnownPolicies = new SparseArray<PolicyInfo>();
 
+    /**
+     * 初始化策略列表: 为各种策略创建 PolicyInfo 对象并添加到 sPoliciesDisplayOrder
+     * 建立映射关系: 将策略标签和标识符分别添加到 sKnownPolicies 和 sRevKnownPolicies 中
+     */
     static {
         sPoliciesDisplayOrder.add(new PolicyInfo(USES_POLICY_WIPE_DATA, "wipe-data",
                 com.android.internal.R.string.policylab_wipeData,
@@ -473,6 +481,7 @@ public final class DeviceAdminInfo implements Parcelable {
 
     /**
      * Return true if this administrator can be a target in an ownership transfer.
+     * 判断此设备管理员是否可以作为所有权转移的目标
      */
     public boolean supportsTransferOwnership() {
         return mSupportsTransferOwnership;

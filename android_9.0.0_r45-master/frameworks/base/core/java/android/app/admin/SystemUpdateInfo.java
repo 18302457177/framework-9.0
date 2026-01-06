@@ -32,6 +32,8 @@ import java.util.Objects;
 
 /**
  * A class containing information about a pending system update.
+ * 系统更新信息容器: 包含待处理系统更新的相关信息
+ * 更新时间记录: 记录更新首次可用的时间戳
  */
 public final class SystemUpdateInfo implements Parcelable {
 
@@ -50,7 +52,9 @@ public final class SystemUpdateInfo implements Parcelable {
      */
     public static final int SECURITY_PATCH_STATE_TRUE = 2;
 
-    /** @hide */
+    /** @hide
+     * 为安全补丁状态提供编译时类型检查，确保使用的值是预定义的有效值
+     * */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "SECURITY_PATCH_STATE_" }, value = {
             SECURITY_PATCH_STATE_FALSE,
@@ -78,7 +82,9 @@ public final class SystemUpdateInfo implements Parcelable {
         mSecurityPatchState = in.readInt();
     }
 
-    /** @hide */
+    /** @hide
+     * 根据接收时间创建 SystemUpdateInfo 对象
+     * */
     @Nullable
     public static SystemUpdateInfo of(long receivedTime) {
         return receivedTime == -1
@@ -105,6 +111,7 @@ public final class SystemUpdateInfo implements Parcelable {
      * Gets whether the update is a security patch.
      * @return {@link #SECURITY_PATCH_STATE_FALSE}, {@link #SECURITY_PATCH_STATE_TRUE}, or
      *         {@link #SECURITY_PATCH_STATE_UNKNOWN}.
+     *         获取系统更新是否为安全补丁的状态信息
      */
     @SecurityPatchState
     public int getSecurityPatchState() {

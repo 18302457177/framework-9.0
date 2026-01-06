@@ -70,6 +70,29 @@ import java.lang.annotation.RetentionPolicy;
  * <a href="{@docRoot}guide/topics/admin/device-admin.html">Device Administration</a>
  * developer guide.</p>
  * </div>
+ * 用于实现设备管理组件的基类
+ * 1. 设备管理功能
+ * ·作为设备管理员组件的基础类，用于管理设备策略和安全设置
+ * ·提供对 DevicePolicyManager API 的访问权限，允许执行受保护的设备管理操作
+ * 2. 系统事件监听
+ * ·监听和处理系统发送的设备管理相关广播事件，如：
+ * ··ACTION_DEVICE_ADMIN_ENABLED - 管理员启用
+ * ··ACTION_DEVICE_ADMIN_DISABLED - 管理员禁用
+ * ··ACTION_PASSWORD_CHANGED - 密码更改
+ * ··ACTION_PASSWORD_FAILED - 密码验证失败等
+ * 3. 策略执行
+ * ·允许管理员设置密码策略、设备加密、应用限制等安全策略
+ * ·监控设备安全状态，如密码强度、失败尝试次数等
+ * 4. 生命周期管理
+ * ·处理设备管理员的启用/禁用生命周期
+ * ·提供在不同状态转换时的回调方法，如 onEnabled()、onDisabled() 等
+ * 5. 用户交互
+ * ·支持在管理员被禁用时向用户提供警告信息
+ * ·处理锁屏任务模式、系统更新通知等用户场景
+ * 6. 企业级功能
+ * ·支持托管配置文件和设备的管理
+ * ·提供安全日志、网络日志等企业级监控功能
+ * ·支持设备所有权转移等高级管理功能
  */
 public class DeviceAdminReceiver extends BroadcastReceiver {
     private static String TAG = "DevicePolicy";
@@ -399,6 +422,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      *
      * @see #EXTRA_BUGREPORT_FAILURE_REASON
      * @hide
+     * 用于定义bugreport失败的原因代码。
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "BUGREPORT_FAILURE_" }, value = {
@@ -525,6 +549,8 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      * Retrieve the ComponentName describing who this device administrator is, for
      * use in {@link DevicePolicyManager} APIs that require the administrator to
      * identify itself.
+     * 获取组件名称: 返回描述当前设备管理员的 ComponentName 对象
+     * 缓存机制: 使用成员变量 mWho 缓存结果，避免重复创建
      */
     public ComponentName getWho(Context context) {
         if (mWho != null) {
@@ -546,6 +572,8 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      *
      * @param context The running context as per {@link #onReceive}.
      * @param intent The received intent as per {@link #onReceive}.
+     * 设备管理员启用回调: 当设备管理员首次被启用时调用此方法
+     * 触发条件: 接收到 ACTION_DEVICE_ADMIN_ENABLED 广播时执行
      */
     public void onEnabled(Context context, Intent intent) {
     }
@@ -686,6 +714,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      *
      * @deprecated From {@link android.os.Build.VERSION_CODES#O}, use
      *             {@link #onPasswordExpiring(Context, Intent, UserHandle)} instead.
+     *             密码过期通知回调: 当设备或配置文件挑战密码即将过期或已过期时定期调用此方法
      */
     @Deprecated
     public void onPasswordExpiring(Context context, Intent intent) {
@@ -742,6 +771,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      *
      * @param context The running context as per {@link #onReceive}.
      * @param intent The received intent as per {@link #onReceive}.
+     * 托管配置文件/设备配置完成回调: 当托管配置文件或托管设备的配置成功完成时调用此方法
      */
     public void onProfileProvisioningComplete(Context context, Intent intent) {
     }
@@ -753,6 +783,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      * @param context The running context as per {@link #onReceive}.
      * @param intent The received intent as per {@link #onReceive}.
      * @deprecated Do not use
+     * 在托管设备配置过程中，允许设备初始化程序执行用户设置步骤的回调方法
      */
     @Deprecated
     @SystemApi
@@ -765,6 +796,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      * @param context The running context as per {@link #onReceive}.
      * @param intent The received intent as per {@link #onReceive}.
      * @param pkg If entering, the authorized package using lock task mode, otherwise null.
+     * 锁任务模式进入回调: 当设备进入锁任务模式时调用此方法
      */
     public void onLockTaskModeEntering(Context context, Intent intent, String pkg) {
     }
@@ -790,6 +822,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      * @param alias The alias preselected by the client, or null.
      * @return The private key alias to return and grant access to.
      * @see KeyChain#choosePrivateKeyAlias
+     * 私钥别名选择回调: 允许此接收器为身份验证选择私钥和证书对的别名
      */
     public String onChoosePrivateKeyAlias(Context context, Intent intent, int uid, Uri uri,
             String alias) {
@@ -827,6 +860,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      * @param context The running context as per {@link #onReceive}.
      * @param intent The received intent as per {@link #onReceive}.
      * @see DevicePolicyManager#requestBugreport
+     * 当设备用户取消分享bugreport时调用此方法
      */
     public void onBugreportSharingDeclined(Context context, Intent intent) {
     }
@@ -934,6 +968,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      * @param context The running context as per {@link #onReceive}.
      * @param intent The received intent as per {@link #onReceive}.
      * @param startedUser The {@link UserHandle} of the user that has just been started.
+     * 当用户或配置文件被启动时调用此方法
      */
     public void onUserStarted(Context context, Intent intent, @NonNull UserHandle startedUser) {
     }
@@ -958,6 +993,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      * @param context The running context as per {@link #onReceive}.
      * @param intent The received intent as per {@link #onReceive}.
      * @param switchedUser The {@link UserHandle} of the user that has just been switched to.
+     * 用户/配置文件切换回调: 当切换到某个用户或配置文件时调用此方法
      */
     public void onUserSwitched(Context context, Intent intent, @NonNull UserHandle switchedUser) {
     }
@@ -971,6 +1007,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      *
      * @param context the running context as per {@link #onReceive}
      * @param bundle the data to be passed to the new owner
+     * 所有权转移完成回调: 当所有权成功转移完成时，在新分配的所有者上调用此方法
      */
     public void onTransferOwnershipComplete(@NonNull Context context,
             @Nullable PersistableBundle bundle) {
@@ -992,6 +1029,7 @@ public class DeviceAdminReceiver extends BroadcastReceiver {
      * @param context the running context as per {@link #onReceive}
      * @param user the {@link UserHandle} of the affiliated user
      * @see DevicePolicyManager#transferOwnership(ComponentName, ComponentName, PersistableBundle)
+     * 设备所有者回调: 当设备所有者的一个关联配置文件的所有权被转移时调用此方法
      */
     public void onTransferAffiliatedProfileOwnershipComplete(Context context, UserHandle user) {
     }

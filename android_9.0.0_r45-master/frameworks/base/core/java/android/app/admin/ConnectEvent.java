@@ -28,6 +28,8 @@ import java.net.UnknownHostException;
  * <p>It contains information about the originating app as well as the remote TCP endpoint.
  *
  * <p>Support both IPv4 and IPv6 connections.
+ * TCP连接事件表示：代表通过标准网络栈发起的TCP连接事件
+ * 信息封装：包含发起连接的应用信息以及远程TCP端点信息
  */
 public final class ConnectEvent extends NetworkEvent implements Parcelable {
 
@@ -52,6 +54,7 @@ public final class ConnectEvent extends NetworkEvent implements Parcelable {
         this.mId = in.readLong();
     }
 
+    //IP地址解析：将存储的IP地址字符串转换为 InetAddress 对象
     public InetAddress getInetAddress() {
         try {
             // ipAddress is already an address, not a host name, no DNS resolution will happen.
@@ -62,6 +65,7 @@ public final class ConnectEvent extends NetworkEvent implements Parcelable {
         }
     }
 
+    //返回目标TCP连接的端口号
     public int getPort() {
         return mPort;
     }

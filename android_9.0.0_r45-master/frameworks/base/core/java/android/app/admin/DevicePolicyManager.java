@@ -120,6 +120,9 @@ import java.util.concurrent.Executor;
  * For more information about managing policies for device administration, read the <a href=
  * "{@docRoot}guide/topics/admin/device-admin.html">Device Administration</a> developer
  * guide. </div>
+ * 设备策略管理: 用于管理设备上强制执行的策略的公共接口
+ * 设备管理员: 大多数客户端必须注册为系统中的设备管理员
+ * 所有权类型: 设备管理员可以注册为配置文件所有者或设备所有者
  */
 @SystemService(Context.DEVICE_POLICY_SERVICE)
 @RequiresFeature(PackageManager.FEATURE_DEVICE_ADMIN)
@@ -1435,13 +1438,14 @@ public class DevicePolicyManager {
 
     /**
      * @hide
+     * 用户配置状态
      */
     @IntDef(prefix = { "STATE_USER_" }, value = {
-            STATE_USER_UNMANAGED,
-            STATE_USER_SETUP_INCOMPLETE,
-            STATE_USER_SETUP_COMPLETE,
-            STATE_USER_SETUP_FINALIZED,
-            STATE_USER_PROFILE_COMPLETE
+            STATE_USER_UNMANAGED,//当前用户无管理（默认状态）
+            STATE_USER_SETUP_INCOMPLETE,//管理部分设置，用户设置需要完成
+            STATE_USER_SETUP_COMPLETE,//管理部分设置，用户设置已完成
+            STATE_USER_SETUP_FINALIZED,//管理设置并激活在当前用户上
+            STATE_USER_PROFILE_COMPLETE//管理部分设置在托管配置文件上
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UserProvisioningState {}
@@ -1613,6 +1617,20 @@ public class DevicePolicyManager {
      * conditions.
      *
      * @hide
+     * CODE_OK: 配置被允许
+     * CODE_HAS_DEVICE_OWNER: 设备已有设备所有者
+     * CODE_USER_HAS_PROFILE_OWNER: 用户有配置文件所有者
+     * CODE_USER_NOT_RUNNING: 用户未运行
+     * CODE_USER_SETUP_COMPLETED: 用户设置已完成
+     * CODE_NOT_SYSTEM_USER: 不是系统用户
+     * CODE_HAS_PAIRED: 设备已配对
+     * CODE_MANAGED_USERS_NOT_SUPPORTED: 不支持托管用户
+     * CODE_SYSTEM_USER: 系统用户
+     * CODE_CANNOT_ADD_MANAGED_PROFILE: 无法添加托管配置文件
+     * CODE_NOT_SYSTEM_USER_SPLIT: 非系统用户分拆
+     * CODE_DEVICE_ADMIN_NOT_SUPPORTED: 不支持设备管理员
+     * CODE_SPLIT_SYSTEM_USER_DEVICE_SYSTEM_USER: 分拆系统用户设备系统用户
+     * CODE_ADD_MANAGED_PROFILE_DISALLOWED: 添加托管配置文件被禁止
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "CODE_" }, value = {
@@ -1709,6 +1727,14 @@ public class DevicePolicyManager {
      * Flags supplied to {@link #setLockTaskFeatures(ComponentName, int)}.
      *
      * @hide
+     * 锁任务模式功能
+     * LOCK_TASK_FEATURE_NONE: 禁用所有可配置的SystemUI功能
+     * LOCK_TASK_FEATURE_SYSTEM_INFO: 启用状态栏系统信息区域
+     * LOCK_TASK_FEATURE_NOTIFICATIONS: 启用通知
+     * LOCK_TASK_FEATURE_HOME: 启用Home按钮
+     * LOCK_TASK_FEATURE_OVERVIEW: 启用概览按钮和概览屏幕
+     * LOCK_TASK_FEATURE_GLOBAL_ACTIONS: 启用全局操作对话框
+     * LOCK_TASK_FEATURE_KEYGUARD: 启用键锁
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true, prefix = { "LOCK_TASK_FEATURE_" }, value = {
@@ -1733,7 +1759,13 @@ public class DevicePolicyManager {
     public static final String ACTION_DEVICE_ADMIN_SERVICE
             = "android.app.action.DEVICE_ADMIN_SERVICE";
 
-    /** @hide */
+    /** @hide
+     * 认证ID类型
+     * ID_TYPE_BASE_INFO: 指定设备应认证其制造商详细信息
+     * ID_TYPE_SERIAL: 指定设备应认证其序列号
+     * ID_TYPE_IMEI: 指定设备应认证其IMEI
+     * ID_TYPE_MEID: 指定设备应认证其MEID
+     * */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true, prefix = {"ID_TYPE_"}, value = {
         ID_TYPE_BASE_INFO,
@@ -1874,6 +1906,7 @@ public class DevicePolicyManager {
      * Used by package administration code to determine if a package can be stopped
      * or uninstalled.
      * @hide
+     * 检查指定包名的应用是否包含活跃的设备管理员组件
      */
     @SystemApi
     @RequiresPermission(android.Manifest.permission.INTERACT_ACROSS_USERS_FULL)
@@ -1884,6 +1917,7 @@ public class DevicePolicyManager {
     /**
      * Used by package administration code to determine if a package can be stopped
      * or uninstalled.
+     * 检查指定包名的应用是否包含活跃的设备管理员组件
      * @hide
      */
     public boolean packageHasActiveAdmins(String packageName, int userId) {
@@ -1929,6 +1963,7 @@ public class DevicePolicyManager {
      *            active administrator, or an exception will be thrown.
      * @param usesPolicy Which uses-policy to check, as defined in {@link DeviceAdminInfo}.
      * @throws SecurityException if {@code admin} is not an active administrator.
+     * 检查指定的设备管理员是否已被授予特定的设备策略权限
      */
     public boolean hasGrantedPolicy(@NonNull ComponentName admin, int usesPolicy) {
         throwIfParentInstance("hasGrantedPolicy");
@@ -1946,6 +1981,7 @@ public class DevicePolicyManager {
      * Returns true if the Profile Challenge is available to use for the given profile user.
      *
      * @hide
+     * 检查指定的配置文件用户是否允许使用独立的配置文件挑战
      */
     public boolean isSeparateProfileChallengeAllowed(int userHandle) {
         if (mService != null) {
@@ -2093,6 +2129,7 @@ public class DevicePolicyManager {
      *            {@link #PASSWORD_QUALITY_ALPHANUMERIC} or {@link #PASSWORD_QUALITY_COMPLEX}.
      * @throws SecurityException if {@code admin} is not an active administrator or if {@code admin}
      *             does not use {@link DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD}
+     *             密码强度
      */
     public void setPasswordQuality(@NonNull ComponentName admin, int quality) {
         if (mService != null) {
@@ -2561,6 +2598,7 @@ public class DevicePolicyManager {
      *            0 means there is no restriction.
      * @throws SecurityException if {@code admin} is not an active administrator or {@code admin}
      *             does not use {@link DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD}
+     *             密码最少非字母字符数
      */
     public void setPasswordMinimumNonLetter(@NonNull ComponentName admin, int length) {
         if (mService != null) {
@@ -2786,6 +2824,7 @@ public class DevicePolicyManager {
      * @throws SecurityException if the calling application does not own an active administrator
      *             that uses {@link DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD}
      * @throws IllegalStateException if the user is not unlocked.
+     * 检查当前用户设置的密码是否满足设备策略管理器要求的策略条件
      */
     public boolean isActivePasswordSufficient() {
         if (mService != null) {
@@ -2808,6 +2847,7 @@ public class DevicePolicyManager {
      * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
      * @throws SecurityException if {@code admin} is not a profile owner of a managed profile.
      * @see UserManager#DISALLOW_UNIFIED_PASSWORD
+     * 当由托管配置文件的配置文件所有者调用时，如果配置文件与其父用户使用统一的挑战（unified challenge），则返回 true
      */
     public boolean isUsingUnifiedPassword(@NonNull ComponentName admin) {
         throwIfParentInstance("isUsingUnifiedPassword");
@@ -2830,6 +2870,7 @@ public class DevicePolicyManager {
      * @return Returns true if the password would meet the current requirements, else false.
      * @throws SecurityException if {@code userHandle} is not a managed profile.
      * @hide
+     * 检查当前用户设置的配置文件密码是否满足父用户及其配置文件的管理员所要求的策略要求（如质量、最小长度等）
      */
     public boolean isProfileActivePasswordSufficientForParent(int userHandle) {
         if (mService != null) {
@@ -2923,6 +2964,7 @@ public class DevicePolicyManager {
      * @throws SecurityException if {@code admin} is not an active administrator or does not use
      *             both {@link DeviceAdminInfo#USES_POLICY_WATCH_LOGIN} and
      *             {@link DeviceAdminInfo#USES_POLICY_WIPE_DATA}.
+     *             最大失败密码次数以执行擦除
      */
     public void setMaximumFailedPasswordsForWipe(@NonNull ComponentName admin, int num) {
         if (mService != null) {
@@ -3194,6 +3236,7 @@ public class DevicePolicyManager {
      *            is no restriction.
      * @throws SecurityException if {@code admin} is not an active administrator or it does not use
      *             {@link DeviceAdminInfo#USES_POLICY_FORCE_LOCK}
+     *             限制用户可以设置的屏幕锁定时间长度，立即生效
      */
     public void setMaximumTimeToLock(@NonNull ComponentName admin, long timeMs) {
         if (mService != null) {
@@ -3267,6 +3310,7 @@ public class DevicePolicyManager {
      *         {@link #KEYGUARD_DISABLE_TRUST_AGENTS}.
      *
      * @throws SecurityException if {@code admin} is not a device or profile owner.
+     * 控制用户必须使用密码、PIN或图案等强认证方式的时间间隔
      */
     public void setRequiredStrongAuthTimeout(@NonNull ComponentName admin,
             long timeoutMs) {
@@ -3321,7 +3365,9 @@ public class DevicePolicyManager {
      */
     public static final int FLAG_EVICT_CREDENTIAL_ENCRYPTION_KEY = 1;
 
-    /** @hide */
+    /** @hide
+     * 标识锁屏时的标志位选项。
+     * */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true, prefix = { "FLAG_EVICT_" }, value = {
             FLAG_EVICT_CREDENTIAL_ENCRYPTION_KEY
@@ -3413,6 +3459,7 @@ public class DevicePolicyManager {
      *            {@link #WIPE_EXTERNAL_STORAGE} and {@link #WIPE_RESET_PROTECTION_DATA}.
      * @throws SecurityException if the calling application does not own an active administrator
      *             that uses {@link DeviceAdminInfo#USES_POLICY_WIPE_DATA}
+     *             请求清除所有用户数据
      */
     public void wipeData(int flags) {
         throwIfParentInstance("wipeData");
@@ -3550,6 +3597,7 @@ public class DevicePolicyManager {
      * @param proxyInfo The a {@link ProxyInfo} object defining the new global HTTP proxy. A
      *            {@code null} value will clear the global HTTP proxy.
      * @throws SecurityException if {@code admin} is not the device owner.
+     * 设置网络无关的全局HTTP代理
      */
     public void setRecommendedGlobalProxy(@NonNull ComponentName admin, @Nullable ProxyInfo
             proxyInfo) {
@@ -3840,6 +3888,7 @@ public class DevicePolicyManager {
      * this certificate.
      *
      * @hide
+     * 表示用户已收到安装通知、了解风险、查看了证书并仍希望将证书保留在设备上
      */
     public boolean approveCaCert(String alias, int userHandle, boolean approval) {
         if (mService != null) {
@@ -3856,6 +3905,7 @@ public class DevicePolicyManager {
      * Check whether a CA certificate has been approved by the device user.
      *
      * @hide
+     * 检查CA证书是否已获设备用户批准
      */
     public boolean isCaCertApproved(String alias, int userHandle) {
         if (mService != null) {
@@ -4032,6 +4082,7 @@ public class DevicePolicyManager {
      *         owner.
      * @see #setDelegatedScopes
      * @see #DELEGATION_CERT_INSTALL
+     * 由设备所有者、配置文件所有者或委托的证书安装程序调用，用于安装证书和对应的私钥
      */
     public boolean installKeyPair(@Nullable ComponentName admin, @NonNull PrivateKey privKey,
             @NonNull Certificate cert, @NonNull String alias) {
@@ -4385,6 +4436,7 @@ public class DevicePolicyManager {
      * @param scopes The groups of privileged APIs whose access should be granted to
      *            {@code delegatedPackage}.
      * @throws SecurityException if {@code admin} is not a device or a profile owner.
+     * 由配置文件所有者或设备所有者调用，向另一个应用授予访问特权API的权限
      */
      public void setDelegatedScopes(@NonNull ComponentName admin, @NonNull String delegatePackage,
             @NonNull List<String> scopes) {
@@ -4472,6 +4524,7 @@ public class DevicePolicyManager {
      * @throws NameNotFoundException if {@code vpnPackage} is not installed.
      * @throws UnsupportedOperationException if {@code vpnPackage} exists but does not support being
      *         set as always-on, or if always-on VPN is not available.
+     *         由设备所有者或配置文件所有者调用，为当前用户通过特定应用配置始终开启的VPN连接
      */
     public void setAlwaysOnVpnPackage(@NonNull ComponentName admin, @Nullable String vpnPackage,
             boolean lockdownEnabled)
@@ -4698,6 +4751,7 @@ public class DevicePolicyManager {
      *            subsequently created users will be ephemeral.
      * @throws SecurityException if {@code admin} is not a device owner.
      * @hide
+     * 由设备所有者调用，设置设备上创建的所有用户是否应为临时用户
      */
     public void setForceEphemeralUsers(
             @NonNull ComponentName admin, boolean forceEphemeralUsers) {
@@ -4773,6 +4827,8 @@ public class DevicePolicyManager {
      *            {@link #KEYGUARD_DISABLE_IRIS}.
      * @throws SecurityException if {@code admin} is not an active administrator or does not user
      *             {@link DeviceAdminInfo#USES_POLICY_DISABLE_KEYGUARD_FEATURES}
+     *             由管理设备的应用调用，用于禁用键锁自定义功能（如小部件等）
+     *             根据提供的功能列表禁用相应的键锁功能
      */
     public void setKeyguardDisabledFeatures(@NonNull ComponentName admin, int which) {
         if (mService != null) {
@@ -4929,6 +4985,7 @@ public class DevicePolicyManager {
     /**
      * Should be called when keyguard has been dismissed.
      * @hide
+     * 在键锁被解除时调用此方法
      */
     public void reportKeyguardDismissed(int userHandle) {
         if (mService != null) {
@@ -5020,6 +5077,7 @@ public class DevicePolicyManager {
      * @param packageName the package name of the app, to compare with the registered device owner
      * app, if any.
      * @return whether or not the package is registered as the device owner app.
+     * 判断特定包是否已注册为设备所有者应用
      */
     public boolean isDeviceOwnerApp(String packageName) {
         throwIfParentInstance("isDeviceOwnerApp");
@@ -5051,7 +5109,7 @@ public class DevicePolicyManager {
 
     /**
      * @return device owner component name, only when it's running on the calling user.
-     *
+     *获取当前调用用户上的设备所有者组件名称
      * @hide
      */
     public ComponentName getDeviceOwnerComponentOnCallingUser() {
@@ -5060,7 +5118,7 @@ public class DevicePolicyManager {
 
     /**
      * @return device owner component name, even if it's running on a different user.
-     *
+     *获取设备所有者组件名称，即使该组件运行在不同的用户上
      * @hide
      */
     @SystemApi
@@ -5394,6 +5452,7 @@ public class DevicePolicyManager {
      * @throws SecurityException if {@code admin} is not a device or profile owner.
      * @see #setDelegatedScopes
      * @see #DELEGATION_PACKAGE_ACCESS
+     * 由设备所有者或配置文件所有者调用以暂停此用户的包
      */
     public @NonNull String[] setPackagesSuspended(@NonNull ComponentName admin,
             @NonNull String[] packageNames, boolean suspended) {
@@ -5535,6 +5594,7 @@ public class DevicePolicyManager {
      * @return the human readable name of the organisation associated with this DPM or {@code null}
      *         if one is not set.
      * @throws IllegalArgumentException if the userId is invalid.
+     * 获取与此设备策略管理器(DPM)关联的组织的可读名称
      */
     public @Nullable String getProfileOwnerName() throws IllegalArgumentException {
         if (mService != null) {
@@ -5588,6 +5648,7 @@ public class DevicePolicyManager {
      * @param filter The IntentFilter for which a default handler is added.
      * @param activity The Activity that is added as default intent handler.
      * @throws SecurityException if {@code admin} is not a device or profile owner.
+     * 由配置文件所有者或设备所有者调用，设置系统选择的默认活动来处理匹配给定 IntentFilter 的意图
      */
     public void addPersistentPreferredActivity(@NonNull ComponentName admin, IntentFilter filter,
             @NonNull ComponentName activity) {
@@ -5611,6 +5672,7 @@ public class DevicePolicyManager {
      * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
      * @param packageName The name of the package for which preferences are removed.
      * @throws SecurityException if {@code admin} is not a device or profile owner.
+     * 由配置文件所有者或设备所有者调用，用于移除与指定包关联的所有持久性意图处理程序首选项
      */
     public void clearPackagePersistentPreferredActivities(@NonNull ComponentName admin,
             String packageName) {
@@ -5633,7 +5695,7 @@ public class DevicePolicyManager {
      * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
      * @param packageName The name of the package to set as the default SMS application.
      * @throws SecurityException if {@code admin} is not a device owner.
-     *
+     * 由设备所有者调用以设置默认短信应用程序
      * @hide
      */
     public void setDefaultSmsApplication(@NonNull ComponentName admin, String packageName) {
@@ -5666,6 +5728,7 @@ public class DevicePolicyManager {
      *
      * @deprecated From {@link android.os.Build.VERSION_CODES#O}. Use {@link #setDelegatedScopes}
      * with the {@link #DELEGATION_APP_RESTRICTIONS} scope instead.
+     * 由配置文件所有者或设备所有者调用，用于授予某个包管理应用程序限制的权限
      */
     @Deprecated
     public void setApplicationRestrictionsManagingPackage(@NonNull ComponentName admin,
@@ -5694,6 +5757,7 @@ public class DevicePolicyManager {
      *
      * @deprecated From {@link android.os.Build.VERSION_CODES#O}. Use {@link #getDelegatePackages}
      * with the {@link #DELEGATION_APP_RESTRICTIONS} scope instead.
+     * 由配置文件所有者或设备所有者调用，用于获取当前用户的应用程序限制管理包
      */
     @Deprecated
     @Nullable
@@ -5815,6 +5879,7 @@ public class DevicePolicyManager {
      *        bundle.
      * @throws SecurityException if {@code admin} is not an active administrator or does not use
      *             {@link DeviceAdminInfo#USES_POLICY_DISABLE_KEYGUARD_FEATURES}
+     * 为信任代理组件设置配置功能列表
      */
     public void setTrustAgentConfiguration(@NonNull ComponentName admin,
             @NonNull ComponentName target, PersistableBundle configuration) {
@@ -5874,6 +5939,7 @@ public class DevicePolicyManager {
      * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
      * @param disabled If true caller-Id information in the managed profile is not displayed.
      * @throws SecurityException if {@code admin} is not a profile owner.
+     * 由托管配置文件的配置文件所有者调用，用于设置是否在父配置文件中显示来自托管配置文件的呼叫者ID信息（对于呼入电话）
      */
     public void setCrossProfileCallerIdDisabled(@NonNull ComponentName admin, boolean disabled) {
         throwIfParentInstance("setCrossProfileCallerIdDisabled");
@@ -5935,6 +6001,7 @@ public class DevicePolicyManager {
      * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
      * @param disabled If true contacts search in the managed profile is not displayed.
      * @throws SecurityException if {@code admin} is not a profile owner.
+     * 由托管配置文件的配置文件所有者调用，用于设置是否在父配置文件中显示来自托管配置文件的联系人搜索结果（对于呼入电话）
      */
     public void setCrossProfileContactsSearchDisabled(@NonNull ComponentName admin,
             boolean disabled) {
@@ -5993,6 +6060,7 @@ public class DevicePolicyManager {
      * Start Quick Contact on the managed profile for the user, if the policy allows.
      *
      * @hide
+     * 在托管配置文件中启动快速联系人功能（Quick Contact），但仅在策略允许的情况下
      */
     public void startManagedQuickContact(String actualLookupKey, long actualContactId,
             boolean isContactIdIgnored, long directoryId, Intent originalIntent) {
@@ -6028,6 +6096,7 @@ public class DevicePolicyManager {
      * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
      * @param disabled If true, bluetooth devices cannot access enterprise contacts.
      * @throws SecurityException if {@code admin} is not a profile owner.
+     * 由托管配置文件的配置文件所有者调用，用于设置蓝牙设备是否可以访问企业联系人
      */
     public void setBluetoothContactSharingDisabled(@NonNull ComponentName admin, boolean disabled) {
         throwIfParentInstance("setBluetoothContactSharingDisabled");
@@ -6151,6 +6220,7 @@ public class DevicePolicyManager {
      * @return {@code true} if the operation succeeded, or {@code false} if the list didn't
      *         contain every enabled non-system accessibility service.
      * @throws SecurityException if {@code admin} is not a device or profile owner.
+     * 由配置文件所有者或设备所有者调用，用于设置允许的AccessibilityService
      */
     public boolean setPermittedAccessibilityServices(@NonNull ComponentName admin,
             List<String> packageNames) {
@@ -6430,6 +6500,7 @@ public class DevicePolicyManager {
      * @return List of package names to keep cached.
      * @see #setDelegatedScopes
      * @see #DELEGATION_KEEP_UNINSTALLED_PACKAGES
+     * 获取即使没有用户当前安装也要保留APK格式的应用程序列表
      */
     public @Nullable List<String> getKeepUninstalledPackages(@Nullable ComponentName admin) {
         throwIfParentInstance("getKeepUninstalledPackages");
@@ -6551,6 +6622,7 @@ public class DevicePolicyManager {
 
     /**
      * @hide
+     * 用于类型安全地表示用户创建和管理的标志位选项，主要用于在创建和管理用户时指定各种行为选项。
      */
     @IntDef(flag = true, prefix = { "SKIP_", "MAKE_USER_", "START_", "LEAVE_" }, value = {
             SKIP_SETUP_WIZARD,
@@ -6729,6 +6801,7 @@ public class DevicePolicyManager {
      * @see #switchUser(ComponentName, UserHandle)
      * @see #startUserInBackground(ComponentName, UserHandle)
      * @see #stopUser(ComponentName, UserHandle)
+     * 用于列出设备上的所有次要用户
      */
     public List<UserHandle> getSecondaryUsers(@NonNull ComponentName admin) {
         throwIfParentInstance("getSecondaryUsers");
@@ -7005,6 +7078,7 @@ public class DevicePolicyManager {
      * @see #setDelegatedScopes
      * @see #isAffiliatedUser
      * @see #DELEGATION_PACKAGE_ACCESS
+     * 安装已在另一个用户中安装的现有包，或通过 setKeepUninstalledPackages 移除后保留的包
      */
     public boolean installExistingPackage(@NonNull ComponentName admin, String packageName) {
         throwIfParentInstance("installExistingPackage");
@@ -7038,6 +7112,7 @@ public class DevicePolicyManager {
      * @param disabled The boolean indicating that account management will be disabled (true) or
      *            enabled (false).
      * @throws SecurityException if {@code admin} is not a device or profile owner.
+     *
      */
     public void setAccountManagementDisabled(@NonNull ComponentName admin, String accountType,
             boolean disabled) {
@@ -7102,6 +7177,7 @@ public class DevicePolicyManager {
      * @see DeviceAdminReceiver#onLockTaskModeEntering(Context, Intent, String)
      * @see DeviceAdminReceiver#onLockTaskModeExiting(Context, Intent)
      * @see UserManager#DISALLOW_CREATE_WINDOWS
+     * 设置哪些包可以进入锁定任务模式（lock task mode）
      */
     public void setLockTaskPackages(@NonNull ComponentName admin, @NonNull String[] packages)
             throws SecurityException {
@@ -7255,9 +7331,9 @@ public class DevicePolicyManager {
 
     /** @hide */
     @StringDef({
-            Settings.System.SCREEN_BRIGHTNESS_MODE,
-            Settings.System.SCREEN_BRIGHTNESS,
-            Settings.System.SCREEN_OFF_TIMEOUT
+            Settings.System.SCREEN_BRIGHTNESS_MODE,//屏幕亮度模式设置
+            Settings.System.SCREEN_BRIGHTNESS,//屏幕亮度设置
+            Settings.System.SCREEN_OFF_TIMEOUT//屏幕关闭超时设置
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemSettingsWhitelist {}
@@ -7412,6 +7488,7 @@ public class DevicePolicyManager {
      * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
      * @param on {@code true} to mute master volume, {@code false} to turn mute off.
      * @throws SecurityException if {@code admin} is not a device or profile owner.
+     * 用于设置主音量静音开启或关闭
      */
     public void setMasterVolumeMuted(@NonNull ComponentName admin, boolean on) {
         throwIfParentInstance("setMasterVolumeMuted");
@@ -7455,6 +7532,7 @@ public class DevicePolicyManager {
      * @throws SecurityException if {@code admin} is not a device or profile owner.
      * @see #setDelegatedScopes
      * @see #DELEGATION_BLOCK_UNINSTALL
+     * 更改用户是否可以卸载某个包的权限设置
      */
     public void setUninstallBlocked(@Nullable ComponentName admin, String packageName,
             boolean uninstallBlocked) {
@@ -7511,6 +7589,7 @@ public class DevicePolicyManager {
      * @throws SecurityException if {@code admin} is not a profile owner.
      * @see #removeCrossProfileWidgetProvider(android.content.ComponentName, String)
      * @see #getCrossProfileWidgetProviders(android.content.ComponentName)
+     * 用于启用来自指定包的小部件提供程序在父配置文件中可用
      */
     public boolean addCrossProfileWidgetProvider(@NonNull ComponentName admin, String packageName) {
         throwIfParentInstance("addCrossProfileWidgetProvider");
@@ -7685,6 +7764,7 @@ public class DevicePolicyManager {
      * secondary user that is affiliated with the device.
      * @see #isAffiliatedUser
      * @see #getSecondaryUsers
+     * 由设备所有者或与设备关联的二级用户的配置文件所有者调用，完全禁用键锁(keyguard)
      */
     public boolean setKeyguardDisabled(@NonNull ComponentName admin, boolean disabled) {
         throwIfParentInstance("setKeyguardDisabled");
@@ -8044,6 +8124,7 @@ public class DevicePolicyManager {
      * @param message Short message to be displayed to the user in settings or null to clear the
      *            existing message.
      * @throws SecurityException if {@code admin} is not an active administrator.
+     * 设置简短支持消息
      */
     public void setShortSupportMessage(@NonNull ComponentName admin,
             @Nullable CharSequence message) {
@@ -8288,6 +8369,7 @@ public class DevicePolicyManager {
      * profile or secondary user that is not affiliated with the device.
      * @see #isAffiliatedUser
      * @see DeviceAdminReceiver#onSecurityLogsAvailable
+     * retrieve检索
      */
     public @Nullable List<SecurityEvent> retrieveSecurityLogs(@NonNull ComponentName admin) {
         throwIfParentInstance("retrieveSecurityLogs");
@@ -8343,6 +8425,7 @@ public class DevicePolicyManager {
      * @param packageNames the list of package names to be restricted.
      * @return a list of package names which could not be restricted.
      * @throws SecurityException if {@code admin} is not a device or profile owner.
+     * 限制指定包使用计量数据(metered data)
      */
     public @NonNull List<String> setMeteredDataDisabledPackages(@NonNull ComponentName admin,
             @NonNull List<String> packageNames) {
@@ -8446,6 +8529,7 @@ public class DevicePolicyManager {
      * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
      * @param color The 24bit (0xRRGGBB) representation of the color to be used.
      * @throws SecurityException if {@code admin} is not a profile owner.
+     * 设置用于自定义的颜色
      */
     public void setOrganizationColor(@NonNull ComponentName admin, int color) {
         throwIfParentInstance("setOrganizationColor");
@@ -8640,6 +8724,8 @@ public class DevicePolicyManager {
      *
      * @throws IllegalArgumentException if {@code ids} is null or contains an empty string.
      * @see #isAffiliatedUser
+     * 指示控制设备或配置文件所有者的实体
+     * 当两个用户/配置文件的设备或配置文件所有者设置的ID集合相交时，它们被认为是关联的
      */
     public void setAffiliationIds(@NonNull ComponentName admin, @NonNull Set<String> ids) {
         throwIfParentInstance("setAffiliationIds");
@@ -8689,6 +8775,7 @@ public class DevicePolicyManager {
      * to be started
      * @param packageName the package to check for
      * @return whether the uninstall intent for {@code packageName} is pending
+     * 检查指定包名的应用程序卸载操作是否正在当前用户的队列中等待执行
      */
     public boolean isUninstallInQueue(String packageName) {
         try {
@@ -8701,6 +8788,7 @@ public class DevicePolicyManager {
     /**
      * @hide
      * @param packageName the package containing active DAs to be uninstalled
+     *                    卸载包含活跃设备管理员(DA)的软件包
      */
     public void uninstallPackageWithActiveAdmins(String packageName) {
         try {
@@ -8818,6 +8906,7 @@ public class DevicePolicyManager {
      * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
      * @param enabled {@code true} to enable the backup service, {@code false} to disable it.
      * @throws SecurityException if {@code admin} is not a device owner.
+     * 允许设备所有者启用或禁用备份服务
      */
     public void setBackupServiceEnabled(@NonNull ComponentName admin, boolean enabled) {
         throwIfParentInstance("setBackupServiceEnabled");
@@ -8862,6 +8951,7 @@ public class DevicePolicyManager {
      * @return {@code true} if the backup transport was successfully set; {@code false} otherwise.
      * @throws SecurityException if {@code admin} is not a device owner.
      * @hide
+     * 设置强制备份传输
      */
     @WorkerThread
     public boolean setMandatoryBackupTransport(
@@ -9057,6 +9147,7 @@ public class DevicePolicyManager {
      * <ul>
      * <li>Both belong to the same package name.
      * <li>Both users are affiliated. See {@link #setAffiliationIds}.
+     * 获取可绑定设备管理员服务的目标用户句柄列表
      * </ul>
      */
     public @NonNull List<UserHandle> getBindDeviceAdminTargetUsers(@NonNull ComponentName admin) {
@@ -9236,6 +9327,7 @@ public class DevicePolicyManager {
     /**
      * Callback used in {@link #clearApplicationUserData}
      * to indicate that the clearing of an application's user data is done.
+     * 当应用程序用户数据清除操作完成时进行通知
      */
     public interface OnClearApplicationUserDataListener {
         /**
@@ -9301,6 +9393,7 @@ public class DevicePolicyManager {
      * @throws SecurityException if {@code admin} is not a device owner nor a profile owner
      * @throws IllegalArgumentException if {@code admin} or {@code target} is {@code null}, they
      * are components in the same package or {@code target} is not an active admin
+     * 将当前管理员的所有策略迁移到新管理员，整个操作是原子性的 - 要么完全转移，要么完全不执行
      */
     public void transferOwnership(@NonNull ComponentName admin, @NonNull ComponentName target,
             @Nullable PersistableBundle bundle) {
@@ -9421,6 +9514,7 @@ public class DevicePolicyManager {
      * @throws SecurityException if {@code admin} is not a device owner.
      *
      * @see #setOverrideApnsEnabled(ComponentName, boolean)
+     * 允许设备所有者添加自定义的网络接入点配置
      */
     public int addOverrideApn(@NonNull ComponentName admin, @NonNull ApnSetting apnSetting) {
         throwIfParentInstance("addOverrideApn");
@@ -9570,6 +9664,7 @@ public class DevicePolicyManager {
      * @see #transferOwnership
      * @see DeviceAdminReceiver#onTransferOwnershipComplete(Context, PersistableBundle)
      * @throws SecurityException if the caller is not a device or profile owner.
+     * 返回与 transferOwnership 方法中传递的相同 bundle 参数
      */
     @Nullable
     public PersistableBundle getTransferOwnershipBundle() {

@@ -24,6 +24,7 @@ import com.android.server.LocalServices;
  * can be accessed from any place without risking dead locks.
  *
  * @hide
+ * 策略缓存: 存储由 DevicePolicyManager 维护的设备策略副本
  */
 public abstract class DevicePolicyCache {
     protected DevicePolicyCache() {
@@ -40,6 +41,7 @@ public abstract class DevicePolicyCache {
 
     /**
      * See {@link DevicePolicyManager#getScreenCaptureDisabled}
+     * 检查指定用户的屏幕截图是否被禁用
      */
     public abstract boolean getScreenCaptureDisabled(@UserIdInt int userHandle);
 

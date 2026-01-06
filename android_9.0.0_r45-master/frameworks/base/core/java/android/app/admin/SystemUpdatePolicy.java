@@ -80,15 +80,19 @@ import java.util.stream.Collectors;
  *
  * @see DevicePolicyManager#setSystemUpdatePolicy
  * @see DevicePolicyManager#getSystemUpdatePolicy
+ * 系统更新策略控制: 确定设备上何时安装 OTA（Over-The-Air）系统更新
+ * 策略设置: 只有运行在设备所有者模式下的设备策略控制器（DPC）才能设置设备的更新策略
  */
 public final class SystemUpdatePolicy implements Parcelable {
     private static final String TAG = "SystemUpdatePolicy";
 
-    /** @hide */
+    /** @hide
+     * 为系统更新策略类型提供编译时类型检查，确保使用的值是预定义的有效值
+     * */
     @IntDef(prefix = { "TYPE_" }, value = {
-            TYPE_INSTALL_AUTOMATIC,
-            TYPE_INSTALL_WINDOWED,
-            TYPE_POSTPONE
+            TYPE_INSTALL_AUTOMATIC,//自动安装策略，系统更新可用时立即自动安装
+            TYPE_INSTALL_WINDOWED,//定时窗口安装策略，在每日维护窗口期间自动安装系统更新
+            TYPE_POSTPONE//推迟安装策略，将系统更新安装推迟最多30天
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface SystemUpdatePolicyType {}
@@ -382,6 +386,7 @@ public final class SystemUpdatePolicy implements Parcelable {
      *
      * @return the start of the maintenance window measured as the number of minutes from midnight,
      * or -1 if the policy does not have a maintenance window.
+     * 获取维护窗口的开始时间
      */
     public int getInstallWindowStart() {
         if (mPolicyType == TYPE_INSTALL_WINDOWED) {
@@ -411,6 +416,7 @@ public final class SystemUpdatePolicy implements Parcelable {
      * 2. Valid maintenance window if applicable
      * 3. Valid freeze periods
      * @hide
+     * 验证当前对象是否表示一个有效的系统更新策略
      */
     public boolean isValid() {
         try {
@@ -426,6 +432,7 @@ public final class SystemUpdatePolicy implements Parcelable {
      * Validate the type and maintenance window (if applicable) of this policy object,
      * throws {@link IllegalArgumentException} if it's invalid.
      * @hide
+     * 验证当前策略对象的类型和维护窗口（如适用）
      */
     public void validateType() {
         if (mPolicyType == TYPE_INSTALL_AUTOMATIC || mPolicyType == TYPE_POSTPONE) {
@@ -466,6 +473,7 @@ public final class SystemUpdatePolicy implements Parcelable {
      * @throws ValidationFailedException if the supplied freeze periods do not meet the
      *         requirement set above
      * @return this instance
+     * 在当前策略上配置冻结周期列表
      */
     public SystemUpdatePolicy setFreezePeriods(List<FreezePeriod> freezePeriods) {
         FreezePeriod.validatePeriods(freezePeriods);
@@ -500,6 +508,7 @@ public final class SystemUpdatePolicy implements Parcelable {
     /**
      * Returns time (in milliseconds) until the start of the next freeze period, assuming now
      * is not within a freeze period.
+     * 计算到下一个冻结周期开始的时间（以毫秒为单位）
      */
     private long timeUntilNextFreezePeriod(long now) {
         List<FreezePeriod> sortedPeriods = FreezePeriod.canonicalizePeriods(mFreezePeriods);
@@ -526,7 +535,9 @@ public final class SystemUpdatePolicy implements Parcelable {
         FreezePeriod.validatePeriods(mFreezePeriods);
     }
 
-    /** @hide */
+    /** @hide
+     * 验证当前冻结周期与之前的冻结周期是否冲突
+     * */
     public void validateAgainstPreviousFreezePeriod(LocalDate prevPeriodStart,
             LocalDate prevPeriodEnd, LocalDate now) {
         FreezePeriod.validateAgainstPreviousFreezePeriod(mFreezePeriods, prevPeriodStart,
@@ -549,21 +560,23 @@ public final class SystemUpdatePolicy implements Parcelable {
      *
      * This is an internal API for system update clients.
      * @hide
+     * 安装选项表示: 表示系统更新客户端应该如何处理传入的系统更新
+     * 有效时间管理: 指定操作在当前系统更新策略下有效的时长
      */
     @SystemApi
     public static class InstallationOption {
         /** @hide */
         @IntDef(prefix = { "TYPE_" }, value = {
-                TYPE_INSTALL_AUTOMATIC,
-                TYPE_PAUSE,
-                TYPE_POSTPONE
+                TYPE_INSTALL_AUTOMATIC,//系统更新应立即自动安装，无需用户干预
+                TYPE_PAUSE,//系统更新应无限期推迟直到进一步通知
+                TYPE_POSTPONE//系统更新应推迟最多30天
         })
         @Retention(RetentionPolicy.SOURCE)
         @interface InstallationOptionType {}
 
         @InstallationOptionType
-        private final int mType;
-        private long mEffectiveTime;
+        private final int mType;//使用 @InstallationOptionType 注解的安装选项类型
+        private long mEffectiveTime;//选项有效的时长（毫秒）
 
         InstallationOption(@InstallationOptionType int type, long effectiveTime) {
             this.mType = type;
@@ -583,12 +596,15 @@ public final class SystemUpdatePolicy implements Parcelable {
          * Returns how long the current installation option in effective for, starting from the time
          * of query.
          * @return the effective time in milliseconds.
+         * 返回当前安装选项从查询时间开始的有效时长
          */
         public long getEffectiveTime() {
             return mEffectiveTime;
         }
 
-        /** @hide */
+        /** @hide
+         * 限制有效时间，取当前时间和传入时间的最小值
+         * */
         protected void limitEffectiveTime(long otherTime) {
             mEffectiveTime = Long.min(mEffectiveTime, otherTime);
         }
@@ -629,6 +645,7 @@ public final class SystemUpdatePolicy implements Parcelable {
         return option;
     }
 
+    //获取指定时间的安装选项，不考虑冻结周期的影响
     private InstallationOption getInstallationOptionRegardlessFreezeAt(long when) {
         if (mPolicyType == TYPE_INSTALL_AUTOMATIC || mPolicyType == TYPE_POSTPONE) {
             return new InstallationOption(mPolicyType, Long.MAX_VALUE);
@@ -658,6 +675,7 @@ public final class SystemUpdatePolicy implements Parcelable {
         }
     }
 
+    //处理闰年2月29日的日期转换
     private static LocalDate roundUpLeapDay(LocalDate date) {
         if (date.isLeapYear() && date.getMonthValue() == 2 && date.getDayOfMonth() == 28) {
             return date.plusDays(1);
