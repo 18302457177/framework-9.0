@@ -31,7 +31,8 @@ import java.io.IOException;
  * We no longer back up wallpapers with this helper, but we do need to process restores
  * of legacy backup payloads.  We just take the restored image as-is and apply it as the
  * system wallpaper using the public "set the wallpaper" API.
- *
+ *遗留备份恢复：处理遗留备份载荷的恢复操作，不再用于备份壁纸
+ * 壁纸恢复：将恢复的壁纸图像应用为系统壁纸
  * @hide
  */
 public class WallpaperBackupHelper extends FileBackupHelperBase implements BackupHelper {

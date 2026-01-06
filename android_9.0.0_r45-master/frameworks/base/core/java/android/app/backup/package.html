@@ -3,7 +3,10 @@
 <p>Contains the backup and restore functionality available to
 applications. If a user wipes the data on their device or upgrades to a new Android-powered
 device, all applications that have enabled backup can restore the user's previous data when the
-application is reinstalled.</p>
+application is reinstalled.
+    包含可供应用使用的备份和恢复功能。如果用户清除了设备上的数据或升级到新的 Android 设备，
+    所有已启用备份的应用在重新安装时都可以恢复用户之前的数据。
+</p>
 
 <p>For more information, see the <a
 href="{@docRoot}guide/topics/data/backup.html">Data Backup</a> guide.</p>
@@ -17,13 +20,22 @@ or {@link android.app.backup.BackupAgentHelper}. The {@link
 android.app.backup.BackupAgentHelper} class provides a wrapper around {@link
 android.app.backup.BackupAgent} that simplifies the procedures to implement a backup agent by
 employing backup helpers such as {@link android.app.backup.SharedPreferencesBackupHelper} and
-{@link android.app.backup.FileBackupHelper}.</p>
+{@link android.app.backup.FileBackupHelper}.
+    所有备份和还原操作都由 BackupManager 控制。每个希望启用备份并在远程存储中保存其数据的应用程序都必须实现一个备份代理。
+    备份代理可以通过扩展 BackupAgent 或 BackupAgentHelper 来构建。
+    BackupAgentHelper 类为 BackupAgent 提供了一个包装器，通过使用 SharedPreferencesBackupHelper 和 FileBackupHelper 等备份助手，简化了实现备份代理的过程。</p>
 
 <p>The backup APIs let applications:</p>
 <ul>
-  <li>Perform backup of arbitrary data to remote storage</li>
-  <li>Easily perform backup of {@link android.content.SharedPreferences} and files</li>
-  <li>Restore the data saved to remote storage</li>
+  <li>Perform backup of arbitrary data to remote storage
+      将任意数据备份到远程存储
+  </li>
+  <li>Easily perform backup of {@link android.content.SharedPreferences} and files
+      轻松备份 SharedPreferences 和文件
+  </li>
+  <li>Restore the data saved to remote storage
+      恢复保存到远程存储的数据
+  </li>
 </ul>
 
 </BODY>

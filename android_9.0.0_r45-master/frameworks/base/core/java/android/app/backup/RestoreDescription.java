@@ -28,6 +28,9 @@ import android.os.Parcelable;
  * @see BackupTransport#nextRestorePackage()
  *
  * @hide
+ * 恢复数据描述：描述指定包的可用恢复数据信息
+ * 传输响应：由 BackupTransport 在响应恢复请求时返回
+ * 数据类型标识：包含恢复数据的类型信息
  */
 @SystemApi
 public class RestoreDescription implements Parcelable {

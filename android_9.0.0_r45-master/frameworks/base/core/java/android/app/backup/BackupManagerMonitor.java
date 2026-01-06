@@ -29,6 +29,8 @@ import android.os.Bundle;
  * These callbacks will run on the binder thread.
  *
  * @hide
+ * 重要事件回调：用于接收备份/恢复操作期间的重要事件
+ * 详细错误信息：提供比 BackupObserver 更详细的失败原因
  */
 @SystemApi
 public class BackupManagerMonitor {

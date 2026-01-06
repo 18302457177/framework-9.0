@@ -65,6 +65,8 @@ import java.io.File;
  * and
  * {@link BackupAgent#onRestore(BackupDataInput, int, android.os.ParcelFileDescriptor) BackupAgent.onRestore()}
  * callbacks to the SharedPreferencesBackupHelper as appropriate.
+ * 共享偏好设置备份助手：用于与 BackupAgentHelper 配合管理 SharedPreferences 的备份
+ * 增量备份：每次备份时，只备份自上次备份以来发生变化的命名共享偏好设置
  */
 public class SharedPreferencesBackupHelper extends FileBackupHelperBase implements BackupHelper {
     private static final String TAG = "SharedPreferencesBackupHelper";

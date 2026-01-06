@@ -89,6 +89,7 @@ public class FullBackup {
 
     /**
      * @hide
+     * 将应用程序数据备份为tar格式
      */
     static public native int backupToTar(String packageName, String domain,
             String linkdomain, String rootpath, String path, FullBackupDataOutput output);
@@ -96,6 +97,7 @@ public class FullBackup {
     private static final Map<String, BackupScheme> kPackageBackupSchemeMap =
             new ArrayMap<String, BackupScheme>();
 
+    //获取指定应用的备份方案
     static synchronized BackupScheme getBackupScheme(Context context) {
         BackupScheme backupSchemeForPackage =
                 kPackageBackupSchemeMap.get(context.getPackageName());
@@ -211,6 +213,8 @@ public class FullBackup {
         }
     }
 
+    //备份方案管理：解析和管理应用程序的备份策略配置
+    //路径映射：将语义域标识符映射到实际的物理路径
     @VisibleForTesting
     public static class BackupScheme {
         private final File FILES_DIR;
@@ -242,6 +246,7 @@ public class FullBackup {
 
         /**
          * Parse out the semantic domains into the correct physical location.
+         * 将语义领域解析到正确的物理位置。
          */
         String tokenToDirectoryPath(String domainToken) {
             try {
@@ -287,7 +292,7 @@ public class FullBackup {
             }
 
         }
-
+        //将共享域标识符转换为对应的存储卷路径
         private String sharedDomainToPath(String domain) throws IOException {
             // already known to start with SHARED_PREFIX, so we just look after that
             final String volume = domain.substring(FullBackup.SHARED_PREFIX.length());
@@ -299,6 +304,7 @@ public class FullBackup {
             return null;
         }
 
+        //获取存储卷列表
         private StorageVolume[] getVolumeList() {
             if (mStorageManager != null) {
                 if (mVolumes == null) {
@@ -318,10 +324,11 @@ public class FullBackup {
          * Note: since our parsing codepaths were the same for <include /> and <exclude /> tags,
          * this structure is also used for <exclude /> tags to preserve that, however you can expect
          * the getRequiredFlags() to always return 0 for exclude rules.
+         * 表示在 <include /> 规则中指定的路径属性，以及包含可选的传输标志
          */
         public static class PathWithRequiredFlags {
-            private final String mPath;
-            private final int mRequiredFlags;
+            private final String mPath;//路径信息
+            private final int mRequiredFlags;//所需的传输标志
 
             public PathWithRequiredFlags(String path, int requiredFlags) {
                 mPath = path;
@@ -399,6 +406,7 @@ public class FullBackup {
          * Each of these paths specifies a file that the client has explicitly included in their
          * backup set. If this map is empty we will back up the entire data directory (including
          * managed external storage).
+         * 获取包含路径的映射，该映射包含域到文件路径对(包含必需传输标志)的映射
          */
         public synchronized Map<String, Set<PathWithRequiredFlags>>
                 maybeParseAndGetCanonicalIncludePaths() throws IOException, XmlPullParserException {
@@ -411,6 +419,7 @@ public class FullBackup {
         /**
          * @return A set of (canonical paths; requiredFlags=0) that are to be excluded from the
          * backup/restore set.
+         * 获取需要从备份/恢复集中排除的路径集合
          */
         public synchronized ArraySet<PathWithRequiredFlags> maybeParseAndGetCanonicalExcludePaths()
                 throws IOException, XmlPullParserException {
@@ -420,6 +429,7 @@ public class FullBackup {
             return mExcludes;
         }
 
+        //解析备份方案配置，初始化包含和排除路径映射
         private void maybeParseBackupSchemeLocked() throws IOException, XmlPullParserException {
             // This not being null is how we know that we've tried to parse the xml already.
             mIncludes = new ArrayMap<String, Set<PathWithRequiredFlags>>();
@@ -671,6 +681,7 @@ public class FullBackup {
          * @param filePathFromXml parsed from xml. Not sanitised before calling this function so may
          *                        be null.
          * @return The canonical path of the file specified or null if no such file exists.
+         * 从XML中解析出规范文件路径
          */
         private File extractCanonicalFile(File domain, String filePathFromXml) {
             if (filePathFromXml == null) {
@@ -697,6 +708,7 @@ public class FullBackup {
         /**
          * @param domain parsed from xml. Not sanitised before calling this function so may be null.
          * @return The directory relevant to the domain specified.
+         * 根据从XML解析出的域标识符，返回对应的目录路径
          */
         private File getDirectoryForCriteriaDomain(String domain) {
             if (TextUtils.isEmpty(domain)) {
@@ -728,6 +740,7 @@ public class FullBackup {
         /**
          * Let's be strict about the type of xml the client can write. If we see anything untoward,
          * throw an XmlPullParserException.
+         * 验证XML标签内容，确保客户端编写的XML符合规范
          */
         private void validateInnerTagContents(XmlPullParser parser) throws XmlPullParserException {
             if (parser == null) {

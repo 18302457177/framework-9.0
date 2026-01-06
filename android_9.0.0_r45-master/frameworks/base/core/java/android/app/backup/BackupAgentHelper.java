@@ -51,6 +51,8 @@ import java.io.IOException;
  * @see BackupHelper
  * @see FileBackupHelper
  * @see SharedPreferencesBackupHelper
+ * 备份代理辅助类：提供了一个便捷的 BackupAgent 包装类
+ * 数据集管理：自动管理备份数据中的异构数据集，每个数据集通过唯一的键前缀标识
  */
 public class BackupAgentHelper extends BackupAgent {
     static final String TAG = "BackupAgentHelper";

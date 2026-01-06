@@ -25,16 +25,19 @@ import android.os.Parcelable;
  * Used in {@link BackupObserver#onUpdate(String, BackupProgress)}
  *
  * @hide
+ * 提供全数据备份当前进度的信息
  */
 @SystemApi
 public class BackupProgress implements Parcelable {
 
     /**
      * Expected size of data in full backup.
+     * 全备份中预期的数据大小
      */
     public final long bytesExpected;
     /**
      * Amount of backup data that is already saved in backup.
+     * 已保存到备份中的数据量
      */
     public final long bytesTransferred;
 

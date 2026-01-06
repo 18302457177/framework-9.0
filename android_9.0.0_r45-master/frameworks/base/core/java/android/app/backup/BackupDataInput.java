@@ -59,6 +59,8 @@ import java.io.IOException;
  *         } // ... etc.
  *    }
  * }</pre>
+ * 结构化接口：为 BackupAgent 提供从备份数据集中读取信息的结构化接口
+ * 恢复数据读取：通过 onRestore() 方法读取备份数据
  */
 public class BackupDataInput {
     long mBackupReader;
@@ -66,6 +68,8 @@ public class BackupDataInput {
     private EntityHeader mHeader = new EntityHeader();
     private boolean mHeaderReady;
 
+    //实体头部信息封装：用于存储备份数据实体的头部信息
+    //数据结构定义：定义了实体的键和数据大小两个核心属性
     private static class EntityHeader {
         String key;
         int dataSize;
@@ -81,7 +85,10 @@ public class BackupDataInput {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 资源清理：在对象被垃圾回收前清理本地资源
+     * 本地资源释放：调用本地方法释放 mBackupReader 指向的本地资源
+     * */
     @Override
     protected void finalize() throws Throwable {
         try {
@@ -99,6 +106,8 @@ public class BackupDataInput {
      * @return <code>true</code> when there is an entity ready for consumption from the
      *    restore stream, <code>false</code> if the restore stream has been fully consumed.
      * @throws IOException if an error occurred while reading the restore stream
+     * 提取实体头部：从恢复流中提取下一个实体头部信息
+     * 状态管理：更新内部状态以准备处理当前实体
      */
     public boolean readNextHeader() throws IOException {
         int result = readNextHeader_native(mBackupReader, mHeader);
@@ -159,6 +168,8 @@ public class BackupDataInput {
      * @return The number of bytes of data read.  Once all of the data for this entity
      *    has been read, further calls to this method will return zero.
      * @throws IOException if an error occurred when trying to read the restore data stream
+     * 读取实体数据：从恢复流中读取记录的原始数据
+     * 分块处理：支持将数据分块读取，无需一次性读取全部数据
      */
     public int readEntityData(byte[] data, int offset, int size) throws IOException {
         if (mHeaderReady) {
@@ -180,6 +191,8 @@ public class BackupDataInput {
      * restore operation.
      *
      * @throws IOException if an error occurred when trying to read the restore data stream
+     * 跳过实体数据：消费当前实体的数据而不将其提取到缓冲区中
+     * 数据丢弃：高效地跳过不需要处理的实体数据
      */
     public void skipEntityData() throws IOException {
         if (mHeaderReady) {
@@ -189,7 +202,9 @@ public class BackupDataInput {
         }
     }
 
+    //本地构造方法，用于初始化备份读取器
     private native static long ctor(FileDescriptor fd);
+    //本地析构方法，用于释放备份读取器资源
     private native static void dtor(long mBackupReader);
 
     private native int readNextHeader_native(long mBackupReader, EntityHeader entity);

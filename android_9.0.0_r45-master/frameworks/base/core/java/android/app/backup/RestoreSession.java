@@ -31,6 +31,7 @@ import android.util.Log;
 /**
  * Interface for managing a restore session.
  * @hide
+ * 恢复会话管理：提供管理恢复会话的接口
  */
 @SystemApi
 public class RestoreSession {

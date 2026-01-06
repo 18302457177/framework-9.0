@@ -6,6 +6,7 @@ import android.os.ParcelFileDescriptor;
  * Provides the interface through which a {@link BackupAgent} writes entire files
  * to a full backup data set, via its {@link BackupAgent#onFullBackup(FullBackupDataOutput)}
  * method.
+ * 提供接口：为 BackupAgent 提供写入完整文件到完整备份数据集的接口
  */
 public class FullBackupDataOutput {
     // Currently a name-scoping shim around BackupDataOutput
@@ -19,6 +20,7 @@ public class FullBackupDataOutput {
      * value can vary for each operation.
      *
      * @see BackupDataOutput#getQuota()
+     * 功能：返回当前备份操作的应用程序配额（以字节为单位）
      */
     public long getQuota() {
         return mQuota;
@@ -72,7 +74,9 @@ public class FullBackupDataOutput {
     /** @hide */
     public BackupDataOutput getData() { return mData; }
 
-    /** @hide - used for measurement pass */
+    /** @hide - used for measurement pass
+     * 用于测量过程中累加备份数据大小
+     * */
     public void addSize(long size) {
         if (size > 0) {
             mSize += size;

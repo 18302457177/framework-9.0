@@ -61,6 +61,8 @@ import java.io.IOException;
  * }</pre>
  *
  * @see BackupAgent
+ * 结构化接口：为 BackupAgent 提供向备份数据集提交信息的结构化接口
+ * 备份数据写入：通过 onBackup() 方法提交备份数据
  */
 public class BackupDataOutput {
 
@@ -100,6 +102,7 @@ public class BackupDataOutput {
      * value can vary for each operation.
      *
      * @see FullBackupDataOutput#getQuota()
+     * 返回当前备份操作的应用程序配额（以字节为单位）
      */
     public long getQuota() {
         return mQuota;

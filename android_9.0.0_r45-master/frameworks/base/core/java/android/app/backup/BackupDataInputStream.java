@@ -34,6 +34,7 @@ import java.io.IOException;
  *
  * @see BackupAgentHelper
  * @see BackupHelper
+ * 流式接口：提供类似 InputStream 的接口来访问恢复操作中的实体数据
  */
 public class BackupDataInputStream extends InputStream {
 

@@ -38,6 +38,7 @@ import java.util.zip.InflaterInputStream;
  * and compression on the wire.
  *
  * @hide
+ * 用于编写底层数据为固定字节数组块集合的 BackupHelper 的工具类
  */
 public abstract class BlobBackupHelper implements BackupHelper {
     private static final String TAG = "BlobBackupHelper";
@@ -60,6 +61,7 @@ public abstract class BlobBackupHelper implements BackupHelper {
      *
      * @return A byte array containing the data blob that the caller wishes to store,
      *     or {@code null} if the current state is empty or undefined.
+     *     生成并返回包含描述当前数据状态的备份载荷的字节数组
      */
     abstract protected byte[] getBackupPayload(String key);
 
@@ -72,6 +74,7 @@ public abstract class BlobBackupHelper implements BackupHelper {
      *
      * @param payload The byte array that was passed to {@link #getBackupPayload()}
      *     on the ancestral device.
+     *                处理从备份中恢复的字节数组，将其应用到当前系统中
      */
     abstract protected void applyRestoredPayload(String key, byte[] payload);
 
@@ -86,6 +89,7 @@ public abstract class BlobBackupHelper implements BackupHelper {
      *     [String] key
      *     [Long]   blob checksum, calculated after compression
      */
+    //从文件描述符中读取旧的备份状态信息
     @SuppressWarnings("resource")
     private ArrayMap<String, Long> readOldState(ParcelFileDescriptor oldStateFd) {
         final ArrayMap<String, Long> state = new ArrayMap<String, Long>();
@@ -157,6 +161,7 @@ public abstract class BlobBackupHelper implements BackupHelper {
     }
 
     // Also versions the deflated blob internally in case we need to revise it
+    //压缩字节数组数据并添加版本信息
     private byte[] deflate(byte[] data) {
         byte[] result = null;
         if (data != null) {
@@ -182,6 +187,7 @@ public abstract class BlobBackupHelper implements BackupHelper {
     }
 
     // Returns null if inflation failed
+    //解压缩字节数组数据并验证版本
     private byte[] inflate(byte[] compressedData) {
         byte[] result = null;
         if (compressedData != null) {
@@ -215,6 +221,7 @@ public abstract class BlobBackupHelper implements BackupHelper {
         return result;
     }
 
+    //计算字节数组的CRC32校验和
     private long checksum(byte[] buffer) {
         if (buffer != null) {
             try {

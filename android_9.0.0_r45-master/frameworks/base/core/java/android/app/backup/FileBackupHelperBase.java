@@ -49,6 +49,13 @@ class FileBackupHelperBase {
     /**
      * Check the parameters so the native code doesn't have to throw all the exceptions
      * since it's easier to do that from Java.
+     * 参数验证：在调用本地代码前验证参数，避免本地代码抛出异常
+     * 空文件检查：如果 files 数组长度为0则直接返回
+     * 路径验证：确保所有文件路径都是绝对路径（以/开头）
+     * 长度检查：验证 files 和 keys 数组长度相等
+     * 文件描述符处理：获取 oldState 和 newState 的文件描述符
+     * 本地调用：调用 performBackup_native 执行实际备份操作
+     * 错误处理：如果本地方法返回非0值，抛出运行时异常表示备份失败
      */
     static void performBackup_checked(ParcelFileDescriptor oldState, BackupDataOutput data,
             ParcelFileDescriptor newState, String[] files, String[] keys) {

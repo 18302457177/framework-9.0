@@ -24,10 +24,14 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
-/** @hide */
+/** @hide
+ * 助手调度器：管理多个 BackupHelper 的分发和执行
+ * 备份恢复调度：协调多个助手的备份和恢复操作
+ * */
 public class BackupHelperDispatcher {
     private static final String TAG = "BackupHelperDispatcher";
 
+    //头部信息封装：用于封装备份数据块的头部信息
     private static class Header {
         int chunkSize; // not including the header
         String keyPrefix;
@@ -76,6 +80,7 @@ public class BackupHelperDispatcher {
         }
     }
 
+    //执行单个备份操作：执行单个 BackupHelper 的备份操作
     private void doOneBackup(ParcelFileDescriptor oldState, BackupDataOutput data,
             ParcelFileDescriptor newState, Header header, BackupHelper helper) 
             throws IOException {
@@ -139,10 +144,13 @@ public class BackupHelperDispatcher {
         }
     }
 
+    //从文件描述符中读取头部信息
     private static native int readHeader_native(Header h, FileDescriptor fd);
+    //跳过指定字节数的数据块
     private static native int skipChunk_native(FileDescriptor fd, int bytesToSkip);
-
+    //在文件中为头部信息分配空间
     private static native int allocateHeader_native(Header h, FileDescriptor fd);
+    //将头部信息写入文件的指定位置
     private static native int writeHeader_native(Header h, FileDescriptor fd, int pos);
 }
 

@@ -194,6 +194,7 @@ public class BackupManager {
     private Context mContext;
     private static IBackupManager sService;
 
+    //服务绑定检查：检查并初始化备份管理器服务的Binder连接
     private static void checkServiceBinder() {
         if (sService == null) {
             sService = IBackupManager.Stub.asInterface(
@@ -218,6 +219,7 @@ public class BackupManager {
      * new changes to its data.  A backup operation using your application's
      * {@link android.app.backup.BackupAgent} subclass will be scheduled when you
      * call this method.
+     * 通知Android备份系统应用程序希望备份其数据的新更改
      */
     public void dataChanged() {
         checkServiceBinder();
@@ -434,6 +436,7 @@ public class BackupManager {
      *   failure or if no transport is currently active, this method returns {@code null}.
      *
      * @hide
+     * 获取当前传输方式：识别当前选定的备份传输方式
      */
     @SystemApi
     @RequiresPermission(android.Manifest.permission.BACKUP)
@@ -628,6 +631,7 @@ public class BackupManager {
      * @return Whether this app is eligible for backup.
      *
      * @hide
+     * 检查应用备份资格：询问框架指定的应用是否符合备份条件
      */
     @SystemApi
     @RequiresPermission(android.Manifest.permission.BACKUP)
@@ -771,6 +775,7 @@ public class BackupManager {
      * Intent, String)}.
      * @param transportName The name of the registered transport.
      * @hide
+     * 获取数据管理UI意图：返回指定传输方式的数据管理UI的 Intent
      */
     @SystemApi
     @TestApi
@@ -813,14 +818,16 @@ public class BackupManager {
      * We wrap incoming binder calls with a private class implementation that
      * redirects them into main-thread actions.  This serializes the backup
      * progress callbacks nicely within the usual main-thread lifecycle pattern.
+     * Binder调用包装：包装传入的Binder调用，将回调重定向到主线程执行
+        回调序列化：在主线程生命周期模式内序列化备份进度回调
      */
     private class BackupObserverWrapper extends IBackupObserver.Stub {
         final Handler mHandler;
         final BackupObserver mObserver;
 
-        static final int MSG_UPDATE = 1;
-        static final int MSG_RESULT = 2;
-        static final int MSG_FINISHED = 3;
+        static final int MSG_UPDATE = 1;//处理备份进度更新
+        static final int MSG_RESULT = 2;//处理备份结果
+        static final int MSG_FINISHED = 3;//处理备份完成事件
 
         BackupObserverWrapper(Context context, BackupObserver observer) {
             mHandler = new Handler(context.getMainLooper()) {
@@ -867,6 +874,7 @@ public class BackupManager {
         }
     }
 
+    //异步回调包装：包装 SelectBackupTransportCallback 的异步回调，确保回调在主线程中执行
     private class SelectTransportListenerWrapper extends ISelectBackupTransportCallback.Stub {
 
         private final Handler mHandler;
@@ -898,6 +906,7 @@ public class BackupManager {
         }
     }
 
+    //监控器包装器：包装 BackupManagerMonitor 对象，用于处理备份管理器的重要事件
     private class BackupManagerMonitorWrapper extends IBackupManagerMonitor.Stub {
         final BackupManagerMonitor mMonitor;
 

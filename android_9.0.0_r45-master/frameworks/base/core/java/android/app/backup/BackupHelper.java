@@ -34,6 +34,7 @@ import android.os.ParcelFileDescriptor;
  * @see BackupAgentHelper
  * @see FileBackupHelper
  * @see SharedPreferencesBackupHelper
+ * 定义了 BackupAgentHelper 在分发备份和恢复操作给已安装的助手时使用的调用接口
  */
 public interface BackupHelper {
     /**
@@ -68,6 +69,7 @@ public interface BackupHelper {
      *            empty file. The application should record the final backup
      *            state here after writing the requested data to the <code>data</code>
      *            output stream.
+     * 执行备份操作：根据 oldState 确定需要备份的应用内容，将其写入 data，并在 newState 中填入当前完整的状态
      */
     public void performBackup(ParcelFileDescriptor oldState, BackupDataOutput data,
             ParcelFileDescriptor newState);
@@ -82,6 +84,7 @@ public interface BackupHelper {
      * <code>data</code>.</p>
      *
      * @param data An open {@link BackupDataInputStream} from which the backup data can be read.
+     * 恢复单个实体：由 BackupAgentHelper 调用以从恢复数据集中恢复单个实体
      */
     public void restoreEntity(BackupDataInputStream data);
 
@@ -102,6 +105,7 @@ public interface BackupHelper {
      *
      * @param newState A {@link android.os.ParcelFileDescriptor} to which the new state will be
      * written.
+     * 写入备份状态：在恢复操作后，写入与助手处理的数据相对应的备份状态文件
      */
     public void writeNewStateDescription(ParcelFileDescriptor newState);
 }

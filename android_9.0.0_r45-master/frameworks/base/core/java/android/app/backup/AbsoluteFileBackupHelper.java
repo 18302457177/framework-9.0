@@ -27,13 +27,14 @@ import java.io.File;
  * subpaths of getFilesDir()
  *
  * @hide
+ * 文件备份助手：用于备份和恢复指定绝对路径的文件
  */
 public class AbsoluteFileBackupHelper extends FileBackupHelperBase implements BackupHelper {
     private static final String TAG = "AbsoluteFileBackupHelper";
     private static final boolean DEBUG = false;
 
     Context mContext;
-    String[] mFiles;
+    String[] mFiles;//需要备份/恢复的文件路径数组
 
     /**
      * Construct a helper for backing up / restoring the files at the given absolute locations
@@ -53,6 +54,9 @@ public class AbsoluteFileBackupHelper extends FileBackupHelperBase implements Ba
      * Based on oldState, determine which of the files from the application's data directory
      * need to be backed up, write them to the data stream, and fill in newState with the
      * state as it exists now.
+     * 执行备份操作
+     * 验证恢复数据的键是否在文件列表中
+     * 将数据写入对应文件
      */
     public void performBackup(ParcelFileDescriptor oldState, BackupDataOutput data,
             ParcelFileDescriptor newState) {
@@ -62,6 +66,9 @@ public class AbsoluteFileBackupHelper extends FileBackupHelperBase implements Ba
 
     /**
      * Restore one absolute file entity from the restore stream
+     * 执行恢复操作
+     * 验证恢复数据的键是否在文件列表中
+     * 将数据写入对应文件
      */
     public void restoreEntity(BackupDataInputStream data) {
         if (DEBUG) Log.d(TAG, "got entity '" + data.getKey() + "' size=" + data.size());

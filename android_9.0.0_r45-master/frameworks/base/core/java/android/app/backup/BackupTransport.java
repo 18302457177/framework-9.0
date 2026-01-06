@@ -30,6 +30,10 @@ import com.android.internal.backup.IBackupTransport;
  * and its implementations.
  *
  * @hide
+ * 传输管理：提供备份传输的命名、配置、数据管理等基础功能
+ * 备份操作：支持键值备份和全数据备份的传输操作
+ * 恢复操作：支持从备份数据中恢复应用数据
+ * 状态管理：管理备份传输的状态和错误处理
  */
 @SystemApi
 public class BackupTransport {
@@ -133,6 +137,8 @@ public class BackupTransport {
      *
      * @return A string describing the destination to which the transport is currently
      *         sending data.  This method should not return null.
+     * 提供目的地描述：按需提供一个单行字符串，用于向用户显示当前的后端目的地信息
+     * 账户信息展示：例如，对于可以将备份数据与任意用户账户关联的传输方式，应该在此包含当前活动账户的名称
      */
     public String currentDestinationString() {
         throw new UnsupportedOperationException(
@@ -187,6 +193,7 @@ public class BackupTransport {
      * @return A unique name, suitable for use as a file or directory name, that the
      *         Backup Manager could use to disambiguate state files associated with
      *         different backup transports.
+     * 本地存储目录名：询问传输服务在本地设备存储中保存备份状态文件的位置
      */
     public String transportDirName() {
         throw new UnsupportedOperationException(
@@ -314,6 +321,7 @@ public class BackupTransport {
      *
      * @return Descriptions of the set of restore images available for this device,
      *   or null if an error occurred (the attempt should be rescheduled).
+     *   获取可用恢复集：获取当前在此传输方式上可用的所有备份集
      **/
     public RestoreSet[] getAvailableRestoreSets() {
         return null;
@@ -552,6 +560,7 @@ public class BackupTransport {
      * @param isFullBackup If set, transport should return limit for full data backup, otherwise
      *                     for key-value backup.
      * @return Current limit on backup size in bytes.
+     * 查询备份配额：询问传输服务当前包的备份大小配额限制
      */
     public long getBackupQuota(String packageName, boolean isFullBackup) {
         return Long.MAX_VALUE;
@@ -608,6 +617,8 @@ public class BackupTransport {
      *    current stream cleanly, or {@link #TRANSPORT_ERROR} to indicate a serious
      *    transport-level failure.  If the transport reports an error here, the entire restore
      *    operation will immediately be finished with no further attempts to restore app data.
+     *    中止全量恢复操作：当操作系统在处理 RestoreDescription.TYPE_FULL_STREAM 数据恢复时遇到错误时，
+     *    调用此方法通知传输服务放弃当前包的数据下载
      */
     public int abortFullRestore() {
         return BackupTransport.TRANSPORT_OK;

@@ -23,6 +23,9 @@ import android.annotation.SystemApi;
  * methods will all be called on your application's main thread.
  *
  * @hide
+ * 备份进度回调：用于接收备份操作期间的进度报告
+ * 主线程回调：所有方法都在应用程序的主线程上调用
+ * 备份状态监控：提供备份过程中的进度更新、单个包备份结果和整体备份完成状态
  */
 @SystemApi
 public abstract class BackupObserver {
@@ -32,6 +35,7 @@ public abstract class BackupObserver {
      *
      * @param currentBackupPackage The name of the package that now being backuped.
      * @param backupProgress Current progress of backup for the package.
+     * 报告备份进度，告知已保存多少备份数据以及预期备份多少数据
      */
     public void onUpdate(String currentBackupPackage, BackupProgress backupProgress) {
     }

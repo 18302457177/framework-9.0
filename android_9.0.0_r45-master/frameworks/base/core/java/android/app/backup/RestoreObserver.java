@@ -37,6 +37,7 @@ public abstract class RestoreObserver {
      *   {@code null}.
      *
      * @hide
+     * 提供当前传输中可用的恢复数据集列表
      */
     @SystemApi
     public void restoreSetsAvailable(RestoreSet[] result) {
@@ -47,6 +48,7 @@ public abstract class RestoreObserver {
      *
      * @param numPackages The total number of packages being processed in
      *   this restore operation.
+     *                    恢复操作开始时的回调，提供待处理的包总数
      */
     public void restoreStarting(int numPackages) {
     }
@@ -63,6 +65,7 @@ public abstract class RestoreObserver {
      *   restored.  This may be non-monotonic; it is intended purely as a rough
      *   indication of the backup manager's progress through the overall restore process.
      * @param currentPackage The name of the package now being restored.
+     *                       当前正在恢复的包的进度更新
      */
     public void onUpdate(int nowBeingRestored, String currentPackage) {
     }
@@ -73,6 +76,7 @@ public abstract class RestoreObserver {
      *
      * @param error Zero on success; a nonzero error code if the restore operation
      *   as a whole failed.
+     *              恢复过程完成时的回调，包含操作结果状态
      */
     public void restoreFinished(int error) {
     }
