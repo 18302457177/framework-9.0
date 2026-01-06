@@ -11,6 +11,8 @@ import android.os.Parcelable;
  * Holds information about the content an application is viewing, to hand to an
  * assistant at the user's request.  This is filled in by
  * {@link android.app.Activity#onProvideAssistContent Activity.onProvideAssistContent}.
+ * 协助内容传递：用于存储应用程序正在查看的内容信息，以便在用户请求时传递给助手（assistant）
+ * 数据封装：将当前 Activity 的上下文信息、URI、结构化数据等封装起来
  */
 public class AssistContent implements Parcelable {
     private boolean mIsAppProvidedIntent = false;
@@ -81,6 +83,8 @@ public class AssistContent implements Parcelable {
      * Optional additional content items that are involved with
      * the current UI.  Access to this content will be granted to the assistant as if you
      * are sending it through an Intent with {@link Intent#FLAG_GRANT_READ_URI_PERMISSION}.
+     * 设置附加内容项：用于存储与当前 UI 相关的可选附加内容项
+     * 数据类型：参数类型为 ClipData，通常包含剪贴板数据
      */
     public void setClipData(ClipData clip) {
         mClipData = clip;
@@ -97,6 +101,8 @@ public class AssistContent implements Parcelable {
      * Sets optional structured data regarding the content being viewed. The provided data
      * must be a string represented with <a href="http://json-ld.org/">JSON-LD</a> using the
      * <a href="http://schema.org/">schema.org</a> vocabulary.
+     * 设置结构化数据：用于存储关于当前查看内容的可选结构化数据
+     * 数据格式要求：必须使用 JSON-LD 格式表示，并使用 schema.org 词汇表
      */
     public void setStructuredData(String structuredData) {
         mStructuredData = structuredData;
@@ -117,6 +123,7 @@ public class AssistContent implements Parcelable {
      * off the device into other environments to acesss the same data as is currently
      * being shown in the app; if the app does not have such a representation, it should
      * leave the null and only report the local intent and clip data.
+     * 用于关联当前显示给用户的数据的Web URI
      */
     public void setWebUri(Uri uri) {
         mIsAppProvidedWebUri = true;
@@ -136,6 +143,8 @@ public class AssistContent implements Parcelable {
      * {@link android.app.Activity#onProvideAssistContent Activity.onProvideAssistContent}. If not,
      * the Intent was automatically set based on
      * {@link android.app.Activity#getIntent Activity.getIntent}.
+     * 判断Web URI来源：返回当前的 getWebUri 是否在 Activity.onProvideAssistContent 中明确提供
+     * 区分设置方式：如果返回 false，则表示 Uri 是基于 Activity.getIntent 自动设置的
      */
     public boolean isAppProvidedWebUri() {
         return mIsAppProvidedWebUri;

@@ -58,6 +58,8 @@ import java.util.List;
  *
  * <p>To learn about using Autofill in your app, read the
  * <a href="/guide/topics/text/autofill">Autofill Framework</a> guides.
+ * 自动创建辅助数据：从平台的辅助和自动填充实现中自动创建辅助数据
+ * 结构化数据表示：表示应用程序界面的结构化信息，用于辅助和自动填充功能
  */
 public class AssistStructure implements Parcelable {
     static final String TAG = "AssistStructure";
@@ -91,7 +93,9 @@ public class AssistStructure implements Parcelable {
     static final int TRANSACTION_XFER = Binder.FIRST_CALL_TRANSACTION+1;
     static final String DESCRIPTOR = "android.app.AssistStructure";
 
-    /** @hide */
+    /** @hide
+     * 用于设置辅助数据获取的开始时间。
+     * */
     public void setAcquisitionStartTime(long acquisitionStartTime) {
         mAcquisitionStartTime = acquisitionStartTime;
     }
@@ -133,6 +137,17 @@ public class AssistStructure implements Parcelable {
         return mAcquisitionEndTime;
     }
 
+    /**
+     * 1. 数据传输通道
+     * 作为 AssistStructure 的发送通道，支持跨进程数据传输
+     * 持有一个 AssistStructure 对象的引用 (mAssistStructure)
+     * 2. 远程调用处理
+     * 重写了 onTransact 方法处理远程调用
+     * 只处理 TRANSACTION_XFER 事务（数据传输事务）
+     * 3. 分段传输支持
+     * 首次传输：创建新的 ParcelTransferWriter 并写入完整数据
+     * 续传处理：如果传入了有效的 ParcelTransferWriter token，则继续写入剩余数据
+     */
     final static class SendChannel extends Binder {
         volatile AssistStructure mAssistStructure;
 
@@ -140,6 +155,7 @@ public class AssistStructure implements Parcelable {
             mAssistStructure = as;
         }
 
+        //用于处理跨进程调用事务，专门处理 AssistStructure 数据传输。
         @Override protected boolean onTransact(int code, Parcel data, Parcel reply, int flags)
                 throws RemoteException {
             if (code == TRANSACTION_XFER) {
@@ -174,23 +190,24 @@ public class AssistStructure implements Parcelable {
         }
     }
 
+    //用于在遍历视图树时管理栈中的视图节点信息。
     final static class ViewStackEntry {
-        ViewNode node;
-        int curChild;
-        int numChildren;
+        ViewNode node;//当前栈中的 ViewNode 对象
+        int curChild;//当前正在处理的子节点索引
+        int numChildren;//子节点总数
     }
-
+    //用于将 AssistStructure 数据写入 Parcel 中。
     final static class ParcelTransferWriter extends Binder {
-        final boolean mWriteStructure;
-        int mCurWindow;
+        final boolean mWriteStructure;//是否写入结构数据的标志
+        int mCurWindow;//当前窗口索引和总窗口数
         int mNumWindows;
-        final ArrayList<ViewStackEntry> mViewStack = new ArrayList<>();
-        ViewStackEntry mCurViewStackEntry;
-        int mCurViewStackPos;
-        int mNumWrittenWindows;
+        final ArrayList<ViewStackEntry> mViewStack = new ArrayList<>();//用于遍历视图树的栈
+        ViewStackEntry mCurViewStackEntry;//当前栈顶的视图栈条目
+        int mCurViewStackPos;//当前视图栈位置
+        int mNumWrittenWindows;//已写入的窗口数和视图数
         int mNumWrittenViews;
         final float[] mTmpMatrix = new float[9];
-        final boolean mSanitizeOnWrite;
+        final boolean mSanitizeOnWrite;//写入时是否清理数据的标志
 
         ParcelTransferWriter(AssistStructure as, Parcel out) {
             mSanitizeOnWrite = as.mSanitizeOnWrite;
@@ -246,6 +263,7 @@ public class AssistStructure implements Parcelable {
             return false;
         }
 
+        //将视图节点压入栈中
         void pushViewStackEntry(ViewNode node, int pos) {
             ViewStackEntry entry;
             if (pos >= mViewStack.size()) {
@@ -262,6 +280,7 @@ public class AssistStructure implements Parcelable {
             mCurViewStackEntry = entry;
         }
 
+        //写入单个视图节点
         void writeView(ViewNode child, Parcel out, PooledStringWriter pwriter, int levelAdj) {
             if (DEBUG_PARCEL) Log.d(TAG, "write view: at " + out.dataPosition()
                     + ", windows=" + mNumWrittenWindows
@@ -282,6 +301,7 @@ public class AssistStructure implements Parcelable {
             }
         }
 
+        //写入下一个条目
         boolean writeNextEntryToParcel(AssistStructure as, Parcel out, PooledStringWriter pwriter) {
             // Write next view node if appropriate.
             if (mCurViewStackEntry != null) {
@@ -428,9 +448,10 @@ public class AssistStructure implements Parcelable {
         }
     }
 
+    //用于存储视图文本信息的数据结构类，用于在 AssistStructure 中表示视图节点的文本相关属性。
     final static class ViewNodeText {
-        CharSequence mText;
-        float mTextSize;
+        CharSequence mText;//文本内容
+        float mTextSize;//文本大小
         int mTextStyle;
         int mTextColor = ViewNode.TEXT_COLOR_UNDEFINED;
         int mTextBackgroundColor = ViewNode.TEXT_COLOR_UNDEFINED;
@@ -482,15 +503,18 @@ public class AssistStructure implements Parcelable {
 
     /**
      * Describes a window in the assist data.
+     * 用于描述辅助数据中窗口信息的数据结构类，代表一个窗口在 AssistStructure 中的内容。
      */
     static public class WindowNode {
+        //窗口在屏幕上的坐标
         final int mX;
         final int mY;
+        //窗口的宽度和高度
         final int mWidth;
         final int mHeight;
-        final CharSequence mTitle;
-        final int mDisplayId;
-        final ViewNode mRoot;
+        final CharSequence mTitle;//窗口标题
+        final int mDisplayId;//显示设备ID
+        final ViewNode mRoot;//根视图节点
 
         WindowNode(AssistStructure assist, ViewRootImpl root, boolean forAutoFill, int flags) {
             View view = root.getView();
@@ -537,6 +561,7 @@ public class AssistStructure implements Parcelable {
             mRoot = new ViewNode(reader, 0);
         }
 
+        //解析自动填充标志位
         int resolveViewAutofillFlags(Context context, int fillRequestFlags) {
             return (fillRequestFlags & FillRequest.FLAG_MANUAL_REQUEST) != 0
                         || context.isAutofillCompatibilityEnabled()
@@ -607,6 +632,7 @@ public class AssistStructure implements Parcelable {
 
     /**
      * Describes a single view in the assist data.
+     * 描述单个视图节点的数据结构类，用于存储和传递视图的完整信息。
      */
     static public class ViewNode {
         /**
@@ -984,6 +1010,7 @@ public class AssistStructure implements Parcelable {
          * If {@link #getId()} is a resource identifier, this is the entry name of that
          * identifier.  See {@link android.view.ViewStructure#setId ViewStructure.setId}
          * for more information.
+         * 用于获取视图节点的资源标识符条目名称
          */
         public String getIdEntry() {
             return mIdEntry;
@@ -1040,7 +1067,9 @@ public class AssistStructure implements Parcelable {
             return mAutofillValue;
         }
 
-        /** @hide **/
+        /** @hide
+         * 用于设置自动填充覆盖对象
+         * **/
         public void setAutofillOverlay(AutofillOverlay overlay) {
             mAutofillOverlay = overlay;
         }
@@ -1070,7 +1099,9 @@ public class AssistStructure implements Parcelable {
             return mInputType;
         }
 
-        /** @hide */
+        /** @hide
+         * 用于检查视图节点的数据是否经过清理处理
+         * */
         public boolean isSanitized() {
             return mSanitized;
         }
@@ -1096,6 +1127,7 @@ public class AssistStructure implements Parcelable {
 
         /**
          * Returns the left edge of this view, in pixels, relative to the left edge of its parent.
+         * 用于获取视图节点相对于其父视图的左边缘位置
          */
         public int getLeft() {
             return mX;
@@ -1145,6 +1177,7 @@ public class AssistStructure implements Parcelable {
          *
          * <p>It's only relevant when the {@link AssistStructure} is used for assist purposes,
          * not for autofill purposes.
+         * 用于获取应用于此视图的变换矩阵
          */
         public Matrix getTransformation() {
             return mMatrix;
@@ -1157,6 +1190,7 @@ public class AssistStructure implements Parcelable {
          *
          * <p>It's only relevant when the {@link AssistStructure} is used for assist purposes,
          * not for autofill purposes.
+         * 用于获取视图的视觉海拔值
          */
         public float getElevation() {
             return mElevation;
@@ -1184,6 +1218,7 @@ public class AssistStructure implements Parcelable {
 
         /**
          * Returns true if assist data has been blocked starting at this node in the hierarchy.
+         * 用于检查从当前节点开始的辅助数据是否被阻止
          */
         public boolean isAssistBlocked() {
             return (mFlags&ViewNode.FLAGS_ASSIST_BLOCKED) != 0;
@@ -1221,6 +1256,7 @@ public class AssistStructure implements Parcelable {
         /**
          * Returns true if this node currently had accessibility focus at the time that the
          * structure was collected.
+         * 用于检查视图节点在收集结构信息时是否具有无障碍焦点
          */
         public boolean isAccessibilityFocused() {
             return (mFlags&ViewNode.FLAGS_ACCESSIBILITY_FOCUSED) != 0;
@@ -1235,6 +1271,7 @@ public class AssistStructure implements Parcelable {
 
         /**
          * Returns true if this node is currently in a checked state.
+         * 检查视图节点当前是否处于选中状态
          */
         public boolean isChecked() {
             return (mFlags&ViewNode.FLAGS_CHECKED) != 0;
@@ -1256,6 +1293,7 @@ public class AssistStructure implements Parcelable {
 
         /**
          * Returns true if this node is opaque.
+         * 用于检查视图节点是否是不透明的
          */
         public boolean isOpaque() { return (mFlags&ViewNode.FLAGS_OPAQUE) != 0; }
 
@@ -1302,6 +1340,7 @@ public class AssistStructure implements Parcelable {
          *
          * @return domain-only part of the document. For example, if the full URL is
          * {@code https://example.com/login?user=my_user}, it returns {@code example.com}.
+         * 用于获取当前视图所代表的HTML文档的域名部分
          */
         @Nullable public String getWebDomain() {
             return mWebDomain;
@@ -1331,6 +1370,7 @@ public class AssistStructure implements Parcelable {
          *
          * @return scheme-only part of the document. For example, if the full URL is
          * {@code https://example.com/login?user=my_user}, it returns {@code https}.
+         * 用于获取当前视图所代表的HTML文档的协议部分
          */
         @Nullable public String getWebScheme() {
             return mWebScheme;
@@ -1369,6 +1409,7 @@ public class AssistStructure implements Parcelable {
          *
          * <p>It's only relevant when the {@link AssistStructure} is used for assist purposes,
          * not for autofill purposes.
+         * 用于获取当前文本选择的起始位置
          */
         public int getTextSelectionStart() {
             return mText != null ? mText.mTextSelectionStart : -1;
@@ -1446,6 +1487,7 @@ public class AssistStructure implements Parcelable {
          *
          * <p>It's only relevant when the {@link AssistStructure} is used for assist purposes,
          * not for autofill purposes.
+         * 用于获取文本中每行的字符偏移量数组
          */
         public int[] getTextLineCharOffsets() {
             return mText != null ? mText.mLineCharOffsets : null;
@@ -1469,6 +1511,7 @@ public class AssistStructure implements Parcelable {
          *
          * <p>It's only relevant when the {@link AssistStructure} is used for autofill purposes,
          * not for assist purposes.
+         * 用于获取与视图关联的文本的标识符条目名称
          */
         @Nullable
         public String getTextIdEntry() {
@@ -1511,6 +1554,7 @@ public class AssistStructure implements Parcelable {
          *
          * <p>It's only relevant when the {@link AssistStructure} is used for autofill purposes,
          * not for assist purposes.
+         * 用于获取与节点关联文本的最小宽度。
          */
         public int getMinTextEms() {
             return mMinEms;
@@ -1551,7 +1595,7 @@ public class AssistStructure implements Parcelable {
 
     /**
      * POJO used to override some autofill-related values when the node is parcelized.
-     *
+     *用于在节点序列化时覆盖一些自动填充相关的值。
      * @hide
      */
     static public class AutofillOverlay {
@@ -1559,10 +1603,21 @@ public class AssistStructure implements Parcelable {
         public AutofillValue value;
     }
 
+    /**
+     * 1. 视图结构构建器
+     * 实现 ViewStructure 接口：作为 ViewStructure 的具体实现，用于构建视图节点的结构信息
+     * 桥接作用：将实际的视图信息转换为 AssistStructure 可以理解的 ViewNode 结构
+     * 2. 数据收集与转换
+     * 数据收集：在视图遍历过程中收集视图的属性信息（位置、尺寸、文本、ID、类名等）
+     * 数据转换：将收集到的视图信息转换为 ViewNode 对象的相应字段
+     * 3. 视图层次结构构建
+     * 子节点管理：通过 newChild() 和 asyncNewChild() 方法构建视图树的层次结构
+     * 异步支持：支持异步构建子节点，通过 mPendingAsyncChildren 列表管理异步子节点
+     */
     static class ViewNodeBuilder extends ViewStructure {
-        final AssistStructure mAssist;
-        final ViewNode mNode;
-        final boolean mAsync;
+        final AssistStructure mAssist;//关联的 AssistStructure 对象
+        final ViewNode mNode;//当前正在构建的 ViewNode
+        final boolean mAsync;//标识是否为异步构建
 
         ViewNodeBuilder(AssistStructure assist, ViewNode node, boolean async) {
             mAssist = assist;
@@ -1903,6 +1958,7 @@ public class AssistStructure implements Parcelable {
             mNode.mMaxLength = maxLength;
         }
 
+        //设置视图节点的数据敏感性状态
         @Override
         public void setDataIsSensitive(boolean sensitive) {
             mNode.mSanitized = !sensitive;
@@ -2070,6 +2126,7 @@ public class AssistStructure implements Parcelable {
      *
      * <p>Used just on autofill.
      * @hide
+     * 在将 AssistStructure 写入 Parcel 之前对结构进行清理的辅助方法
      */
     public void sanitizeForParceling(boolean sanitize) {
         mSanitizeOnWrite = sanitize;
@@ -2258,7 +2315,9 @@ public class AssistStructure implements Parcelable {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 确保 AssistStructure 对象的数据已加载
+     * */
     public void ensureData() {
         if (mHaveData) {
             return;
@@ -2268,6 +2327,7 @@ public class AssistStructure implements Parcelable {
         reader.go();
     }
 
+    //等待异步子节点构建完成，最多等待5秒
     boolean waitForReady() {
         boolean skipStructure = false;
         synchronized (this) {
