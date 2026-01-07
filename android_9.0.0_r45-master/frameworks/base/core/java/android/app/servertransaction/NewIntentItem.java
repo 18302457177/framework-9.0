@@ -30,6 +30,8 @@ import java.util.Objects;
 /**
  * New intent message.
  * @hide
+ * Intent 传递：处理新 Intent 的传递操作
+ * 暂停控制：通过 mPause 字段控制是否需要暂停
  */
 public class NewIntentItem extends ClientTransactionItem {
 

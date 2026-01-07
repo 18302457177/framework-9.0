@@ -28,6 +28,8 @@ import android.os.Trace;
 /**
  * Request to move an activity to paused state.
  * @hide
+ * 暂停操作：处理 Activity 的暂停状态转换请求
+ * 生命周期管理：目标状态为 ON_PAUSE
  */
 public class PauseActivityItem extends ActivityLifecycleItem {
 

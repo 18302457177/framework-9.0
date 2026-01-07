@@ -38,6 +38,10 @@ import java.util.Objects;
  * @see ClientTransactionItem
  * @see ActivityLifecycleItem
  * @hide
+ * 事务容器：作为持有消息序列的容器，可发送到客户端
+ * 消息序列管理：包含回调列表和最终生命周期状态
+ * 回调列表：mActivityCallbacks 存储 ClientTransactionItem 列表
+ * 生命周期管理：mLifecycleStateRequest 指定客户端活动的最终生命周期状态
  */
 public class ClientTransaction implements Parcelable, ObjectPoolItem {
 

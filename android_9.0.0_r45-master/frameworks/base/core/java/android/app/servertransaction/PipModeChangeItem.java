@@ -26,6 +26,7 @@ import java.util.Objects;
 /**
  * Picture in picture mode change message.
  * @hide
+ * 画中画模式变更消息：专门处理画中画（Picture-in-Picture）模式变更的通知消息
  */
 // TODO(lifecycler): Remove the use of this and just use the configuration change message to
 // communicate multi-window mode change with WindowConfiguration.

@@ -26,6 +26,8 @@ import java.util.Objects;
 /**
  * App configuration change message.
  * @hide
+ * 配置变更处理：管理应用的配置变更操作
+ * 配置信息存储：通过 mConfiguration 字段存储配置信息
  */
 public class ConfigurationChangeItem extends ClientTransactionItem {
 

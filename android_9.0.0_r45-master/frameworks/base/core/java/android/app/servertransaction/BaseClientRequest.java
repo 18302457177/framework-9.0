@@ -32,6 +32,7 @@ public interface BaseClientRequest extends ObjectPoolItem {
      *
      * @param client Target client handler.
      * @param token  Target activity token.
+     *               执行前的准备阶段
      */
     default void preExecute(ClientTransactionHandler client, IBinder token) {
     }
@@ -41,6 +42,7 @@ public interface BaseClientRequest extends ObjectPoolItem {
      * @param client Target client handler.
      * @param token Target activity token.
      * @param pendingActions Container that may have data pending to be used.
+     *                       请求执行阶段
      */
     void execute(ClientTransactionHandler client, IBinder token,
             PendingTransactionActions pendingActions);
@@ -50,6 +52,7 @@ public interface BaseClientRequest extends ObjectPoolItem {
      * @param client Target client handler.
      * @param token Target activity token.
      * @param pendingActions Container that may have data pending to be used.
+     *                       执行后的清理阶段
      */
     default void postExecute(ClientTransactionHandler client, IBinder token,
             PendingTransactionActions pendingActions) {

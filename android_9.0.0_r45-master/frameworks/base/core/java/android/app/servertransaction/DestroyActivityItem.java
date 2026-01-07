@@ -26,6 +26,8 @@ import android.os.Trace;
 /**
  * Request to destroy an activity.
  * @hide
+ * 销毁操作：处理 Activity 的销毁请求
+ * 生命周期管理：目标状态为 ON_DESTROY
  */
 public class DestroyActivityItem extends ActivityLifecycleItem {
 

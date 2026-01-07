@@ -36,7 +36,8 @@ import com.android.internal.util.IndentingPrintWriter;
  * {@link android.app.servertransaction.ClientTransaction}.
  * An instance of this class is passed to each individual transaction item, so it can use some
  * information from previous steps or add some for the following steps.
- *
+ * 信息共享：实例被传递给每个事务项，使其能够使用前序步骤的信息或为后续步骤添加信息
+ * 状态管理：管理恢复实例状态、调用 onPostCreate 等标志
  * @hide
  */
 public class PendingTransactionActions {
@@ -51,6 +52,7 @@ public class PendingTransactionActions {
     }
 
     /** Reset the state of the instance to default, non-initialized values. */
+    //重置状态：将 PendingTransactionActions 实例的状态重置为默认的未初始化值
     public void clear() {
         mRestoreInstanceState = false;
         mCallOnPostCreate = false;
@@ -110,13 +112,15 @@ public class PendingTransactionActions {
         mReportRelaunchToWM = reportToWm;
     }
 
-    /** Reports to server about activity stop. */
+    /** Reports to server about activity stop.
+     * 负责向服务器报告 Activity 停止状态
+     * */
     public static class StopInfo implements Runnable {
         private static final String TAG = "ActivityStopInfo";
 
-        private ActivityClientRecord mActivity;
-        private Bundle mState;
-        private PersistableBundle mPersistentState;
+        private ActivityClientRecord mActivity;//表示被停止的 Activity
+        private Bundle mState;//保存 Activity 状态
+        private PersistableBundle mPersistentState;//保存持久化状态
         private CharSequence mDescription;
 
         public void setActivity(ActivityClientRecord activity) {
@@ -135,6 +139,7 @@ public class PendingTransactionActions {
             mDescription = description;
         }
 
+        //报告停止状态
         @Override
         public void run() {
             // Tell activity manager we have been stopped.

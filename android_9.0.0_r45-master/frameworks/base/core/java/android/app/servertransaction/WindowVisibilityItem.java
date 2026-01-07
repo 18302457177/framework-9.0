@@ -26,6 +26,7 @@ import android.os.Trace;
 /**
  * Window visibility change message.
  * @hide
+ * 通过 mShowWindow 字段控制窗口的显示或隐藏
  */
 public class WindowVisibilityItem extends ClientTransactionItem {
 

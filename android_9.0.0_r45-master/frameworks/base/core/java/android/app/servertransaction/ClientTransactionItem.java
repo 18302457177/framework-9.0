@@ -29,6 +29,11 @@ import android.os.Parcelable;
  * @see ClientTransaction
  * @see com.android.server.am.ClientLifecycleManager
  * @hide
+ * 回调消息基类：作为可调度和执行的客户端回调消息的抽象基类
+ * 消息类型：代表可发送到客户端的回调消息，如：
+ * Activity 配置变更
+ * 多窗口模式变更
+ * Activity 结果传递等
  */
 public abstract class ClientTransactionItem implements BaseClientRequest, Parcelable {
 

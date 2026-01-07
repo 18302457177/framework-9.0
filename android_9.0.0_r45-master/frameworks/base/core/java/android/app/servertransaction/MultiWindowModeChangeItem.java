@@ -26,6 +26,8 @@ import java.util.Objects;
 /**
  * Multi-window mode change message.
  * @hide
+ * 模式切换处理：处理 Activity 在多窗口模式和全屏模式之间的切换
+ * 状态标识：通过 mIsInMultiWindowMode 字段标识是否处于多窗口模式
  */
 // TODO(lifecycler): Remove the use of this and just use the configuration change message to
 // communicate multi-window mode change with WindowConfiguration.

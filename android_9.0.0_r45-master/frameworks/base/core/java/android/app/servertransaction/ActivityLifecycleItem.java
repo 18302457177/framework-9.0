@@ -24,19 +24,21 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Request for lifecycle state that an activity should reach.
  * @hide
+ * 状态管理：定义 Activity 生命周期状态的枚举和管理
+ * 目标状态：通过抽象方法 getTargetState() 获取目标生命周期状态
  */
 public abstract class ActivityLifecycleItem extends ClientTransactionItem {
 
     @IntDef(prefix = { "UNDEFINED", "PRE_", "ON_" }, value = {
-            UNDEFINED,
-            PRE_ON_CREATE,
-            ON_CREATE,
-            ON_START,
-            ON_RESUME,
-            ON_PAUSE,
-            ON_STOP,
-            ON_DESTROY,
-            ON_RESTART
+            UNDEFINED,//未定义状态 (-1)
+            PRE_ON_CREATE,//预创建状态 (0)
+            ON_CREATE,//创建状态 (1)
+            ON_START,//启动状态 (2)
+            ON_RESUME,//恢复状态 (3)
+            ON_PAUSE,//暂停状态 (4)
+            ON_STOP,//停止状态 (5)
+            ON_DESTROY,//销毁状态 (6)
+            ON_RESTART//重启状态 (7)
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LifecycleState{}

@@ -36,6 +36,7 @@ import java.util.List;
 /**
  * Helper class for {@link TransactionExecutor} that contains utils for lifecycle path resolution.
  * @hide
+ * 为 TransactionExecutor 提供生命周期路径解析工具的辅助类
  */
 public class TransactionExecutorHelper {
     // A penalty applied to path with destruction when looking for the shortest one.
@@ -54,6 +55,7 @@ public class TransactionExecutorHelper {
      * state.
      * <p>NOTE: The returned value is used internally in this class and is not a copy. It's contents
      * may change after calling other methods of this class.</p>
+     * 路径计算：计算 Activity 从起始状态到结束状态的生命周期状态转换路径
      */
     @VisibleForTesting
     public IntArray getLifecyclePath(int start, int finish, boolean excludeLastState) {
@@ -122,6 +124,7 @@ public class TransactionExecutorHelper {
      * @param postExecutionState Post execution state to compute for.
      * @return One of states that precede the provided post-execution state, or
      *         {@link ActivityLifecycleItem#UNDEFINED} if there is not path.
+     *         预执行状态选择：选择在给定的后执行状态之前，需要最少生命周期转换就能到达的状态
      */
     @VisibleForTesting
     public int getClosestPreExecutionState(ActivityClientRecord r,
@@ -169,6 +172,7 @@ public class TransactionExecutorHelper {
     }
 
     /** Get the lifecycle state request to match the current state in the end of a transaction. */
+    //生命周期请求生成：根据当前状态生成匹配的生命周期请求，用于事务结束时的状态匹配
     public static ActivityLifecycleItem getLifecycleRequestForCurrentState(ActivityClientRecord r) {
         final int prevState = r.getLifecycleState();
         final ActivityLifecycleItem lifecycleItem;
@@ -192,6 +196,7 @@ public class TransactionExecutorHelper {
     /**
      * Check if there is a destruction involved in the path. We want to avoid a lifecycle sequence
      * that involves destruction and recreation if there is another path.
+     * 路径销毁检测：检查给定的生命周期路径中是否包含销毁状态
      */
     private static boolean pathInvolvesDestruction(IntArray lifecycleSequence) {
         final int size = lifecycleSequence.size();
@@ -213,6 +218,8 @@ public class TransactionExecutorHelper {
      *   Configuration - ActivityResult - Configuration - ActivityResult
      * index 1 will be returned, because ActivityResult request on position 1 will be the last
      * request that moves activity to the RESUMED state where it will eventually end.
+     * 查找最后请求状态的回调：返回执行后会使 Activity 处于最终状态的最后一个回调项的索引
+     * 反向搜索：从回调列表的末尾向前搜索，找到最靠近开头的请求最终状态的回调
      */
     static int lastCallbackRequestingState(ClientTransaction transaction) {
         final List<ClientTransactionItem> callbacks = transaction.getCallbacks();

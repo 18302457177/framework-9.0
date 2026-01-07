@@ -30,6 +30,8 @@ import java.util.Objects;
 /**
  * Activity configuration changed callback.
  * @hide
+ * 配置变更处理：处理 Activity 的配置变更事件
+ * 事务执行：在客户端事务中执行配置变更操作
  */
 public class ActivityConfigurationChangeItem extends ClientTransactionItem {
 

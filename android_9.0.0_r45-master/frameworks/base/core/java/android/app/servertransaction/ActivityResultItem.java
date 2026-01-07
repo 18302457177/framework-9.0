@@ -31,6 +31,8 @@ import java.util.Objects;
 /**
  * Activity result delivery callback.
  * @hide
+ * 结果传递：处理 Activity 结果的传递操作
+ * 结果列表管理：通过 mResultInfoList 字段管理多个 ResultInfo 对象
  */
 public class ActivityResultItem extends ClientTransactionItem {
 

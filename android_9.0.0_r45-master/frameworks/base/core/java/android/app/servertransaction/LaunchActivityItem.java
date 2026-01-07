@@ -42,6 +42,8 @@ import java.util.Objects;
 /**
  * Request to launch an activity.
  * @hide
+ * 启动操作：处理 Activity 的启动请求
+ * 参数传递：携带启动 Activity 所需的各种参数信息
  */
 public class LaunchActivityItem extends ClientTransactionItem {
 

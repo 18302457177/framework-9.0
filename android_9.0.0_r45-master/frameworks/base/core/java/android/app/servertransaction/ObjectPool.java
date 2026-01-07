@@ -23,6 +23,7 @@ import java.util.Map;
 /**
  * An object pool that can provide reused objects if available.
  * @hide
+ * 对象池实现：提供可重用对象的对象池
  */
 class ObjectPool {
 

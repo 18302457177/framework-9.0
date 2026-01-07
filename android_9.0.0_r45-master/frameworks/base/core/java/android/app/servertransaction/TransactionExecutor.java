@@ -39,6 +39,7 @@ import java.util.List;
 /**
  * Class that manages transaction execution in the correct order.
  * @hide
+ * 事务执行管理器：负责管理事务按正确顺序执行的类
  */
 public class TransactionExecutor {
 
@@ -124,6 +125,7 @@ public class TransactionExecutor {
     }
 
     /** Transition to the final state if requested by the transaction. */
+    //生命周期状态执行：执行事务中请求的最终生命周期状态转换
     private void executeLifecycleState(ClientTransaction transaction) {
         final ActivityLifecycleItem lifecycleItem = transaction.getLifecycleStateRequest();
         if (lifecycleItem == null) {
@@ -148,7 +150,9 @@ public class TransactionExecutor {
         lifecycleItem.postExecute(mTransactionHandler, token, mPendingActions);
     }
 
-    /** Transition the client between states. */
+    /** Transition the client between states.
+     * 状态转换方法：用于在客户端不同状态之间进行转换的便捷方法
+     * */
     @VisibleForTesting
     public void cycleToPath(ActivityClientRecord r, int finish) {
         cycleToPath(r, finish, false /* excludeLastState */);
@@ -168,6 +172,7 @@ public class TransactionExecutor {
     }
 
     /** Transition the client through previously initialized state sequence. */
+    //生命周期序列执行：执行客户端通过预先初始化的状态序列进行转换
     private void performLifecycleSequence(ActivityClientRecord r, IntArray path) {
         final int size = path.size();
         for (int i = 0, state; i < size; i++) {

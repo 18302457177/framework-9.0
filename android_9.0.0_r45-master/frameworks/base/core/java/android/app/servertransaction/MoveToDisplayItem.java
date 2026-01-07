@@ -29,6 +29,7 @@ import java.util.Objects;
 /**
  * Activity move to a different display message.
  * @hide
+ * Activity 移动显示消息：专门处理 Activity 移动到不同显示器的消息
  */
 public class MoveToDisplayItem extends ClientTransactionItem {
 

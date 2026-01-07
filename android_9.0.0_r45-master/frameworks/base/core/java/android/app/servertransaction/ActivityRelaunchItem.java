@@ -35,6 +35,8 @@ import java.util.Objects;
 /**
  * Activity relaunch callback.
  * @hide
+ * 重启处理：处理 Activity 的重启操作
+ * 状态管理：管理重启相关的状态信息，包括待处理结果、新 Intent、配置变更等
  */
 public class ActivityRelaunchItem extends ClientTransactionItem {
 
@@ -52,12 +54,16 @@ public class ActivityRelaunchItem extends ClientTransactionItem {
      */
     private ActivityThread.ActivityClientRecord mActivityClientRecord;
 
+    //预执行阶段：实现 ClientTransactionItem 接口的 preExecute 方法
+    //准备重启：为 Activity 重启操作准备必要的数据和状态
     @Override
     public void preExecute(ClientTransactionHandler client, IBinder token) {
         mActivityClientRecord = client.prepareRelaunchActivity(token, mPendingResults,
                 mPendingNewIntents, mConfigChanges, mConfig, mPreserveWindow);
     }
 
+    //记录验证：检查 mActivityClientRecord 是否为 null
+    //执行取消：如果记录未初始化，记录调试日志并返回，取消重启操作
     @Override
     public void execute(ClientTransactionHandler client, IBinder token,
             PendingTransactionActions pendingActions) {

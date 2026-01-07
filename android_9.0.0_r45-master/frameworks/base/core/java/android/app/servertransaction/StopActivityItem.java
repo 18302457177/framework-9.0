@@ -26,6 +26,7 @@ import android.os.Trace;
 /**
  * Request to move an activity to stopped state.
  * @hide
+ * 停止操作：处理 Activity 的停止状态转换请求
  */
 public class StopActivityItem extends ActivityLifecycleItem {
 

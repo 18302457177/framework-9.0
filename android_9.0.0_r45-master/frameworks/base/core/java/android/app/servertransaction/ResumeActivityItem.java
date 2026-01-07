@@ -28,6 +28,7 @@ import android.os.Trace;
 /**
  * Request to move an activity to resumed state.
  * @hide
+ * Activity 恢复请求：专门用于请求将 Activity 移动到恢复（resumed）状态的事务项
  */
 public class ResumeActivityItem extends ActivityLifecycleItem {
 
