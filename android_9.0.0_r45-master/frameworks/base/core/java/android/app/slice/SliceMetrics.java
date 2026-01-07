@@ -31,6 +31,7 @@ import com.android.internal.logging.nano.MetricsProto.MetricsEvent;
  * not need to reference this class.
  *
  * @see androidx.slice.widget.SliceView
+ * 可见性统计：通过 logVisible() 和 logHidden() 方法记录切片的显示/隐藏状态
  */
 public class SliceMetrics {
 
@@ -50,6 +51,7 @@ public class SliceMetrics {
 
     /**
      * To be called whenever the slice becomes visible to the user.
+     * 记录可见性：当切片对用户变得可见时调用此方法
      */
     public void logVisible() {
         synchronized (mLogMaker)  {
@@ -82,6 +84,7 @@ public class SliceMetrics {
      *
      * @param actionType The type of the event.
      * @param subSlice The URI of the sub-slice that is the subject of the interaction.
+     * 当用户通过切片执行离散操作时调用此方法
      */
     public void logTouch(int actionType, @NonNull Uri subSlice) {
         synchronized (mLogMaker)  {

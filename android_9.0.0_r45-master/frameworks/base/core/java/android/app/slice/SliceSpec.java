@@ -37,6 +37,7 @@ import android.os.Parcelable;
  *
  * @see Slice
  * @see SliceProvider#onBindSlice(Uri)
+ * 切片结构描述：描述切片内数据结构的类
  */
 public final class SliceSpec implements Parcelable {
 
@@ -76,6 +77,7 @@ public final class SliceSpec implements Parcelable {
 
     /**
      * Gets the revision of the version.
+     * 获取修订版本：返回 SliceSpec 对象的修订版本号
      */
     public int getRevision() {
         return mRevision;
@@ -90,6 +92,7 @@ public final class SliceSpec implements Parcelable {
      * @param candidate candidate format of data.
      * @return true if versions are compatible.
      * @see androidx.slice.widget.SliceView
+     * 渲染兼容性判断：判断当前 SliceSpec 是否能够渲染指定的候选 SliceSpec
      */
     public boolean canRender(@NonNull SliceSpec candidate) {
         if (!mType.equals(candidate.mType)) return false;

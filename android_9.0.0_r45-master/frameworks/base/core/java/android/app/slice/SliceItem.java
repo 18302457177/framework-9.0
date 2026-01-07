@@ -53,6 +53,9 @@ import java.util.List;
  * The hints that a {@link SliceItem} are a set of strings which annotate
  * the content. The hints that are guaranteed to be understood by the system
  * are defined on {@link Slice}.
+ * 内容存储：存储不同类型的内容数据
+ * 格式定义：支持多种内容格式类型
+ * 提示标注：提供内容含义和显示方式的提示信息
  */
 public final class SliceItem implements Parcelable {
 
@@ -62,7 +65,7 @@ public final class SliceItem implements Parcelable {
      * @hide
      */
     @StringDef(prefix = { "FORMAT_" }, value = {
-            FORMAT_SLICE,
+            FORMAT_SLICE,//包含 Slice 类型的内容
             FORMAT_TEXT,
             FORMAT_IMAGE,
             FORMAT_ACTION,
@@ -173,6 +176,7 @@ public final class SliceItem implements Parcelable {
      * <li>{@link #FORMAT_REMOTE_INPUT}</li>
      * <li>{@link #FORMAT_BUNDLE}</li>
      * @see #getSubType() ()
+     * 获取格式类型：返回当前 SliceItem 的格式
      */
     public String getFormat() {
         return mFormat;
@@ -220,6 +224,7 @@ public final class SliceItem implements Parcelable {
 
     /**
      * @hide This isn't final
+     * 获取 RemoteViews：返回当前 SliceItem 中存储的 RemoteViews 对象
      */
     public RemoteViews getRemoteView() {
         return (RemoteViews) mObj;

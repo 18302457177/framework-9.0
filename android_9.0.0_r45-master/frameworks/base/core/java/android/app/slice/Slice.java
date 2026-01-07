@@ -42,6 +42,8 @@ import java.util.Objects;
  *
  * <p>They are constructed using {@link Builder} in a tree structure
  * that provides the OS some information about how the content should be displayed.
+ * 树形结构：使用 Builder 以树形结构构建
+ * 显示信息：为操作系统提供关于内容显示方式的信息
  */
 public final class Slice implements Parcelable {
 
@@ -49,23 +51,23 @@ public final class Slice implements Parcelable {
      * @hide
      */
     @StringDef(prefix = { "HINT_" }, value = {
-            HINT_TITLE,
-            HINT_LIST,
-            HINT_LIST_ITEM,
-            HINT_LARGE,
-            HINT_ACTIONS,
-            HINT_SELECTED,
-            HINT_NO_TINT,
-            HINT_SHORTCUT,
-            HINT_TOGGLE,
-            HINT_HORIZONTAL,
-            HINT_PARTIAL,
-            HINT_SEE_MORE,
-            HINT_KEYWORDS,
-            HINT_ERROR,
-            HINT_TTL,
-            HINT_LAST_UPDATED,
-            HINT_PERMISSION_REQUEST,
+            HINT_TITLE,//表示此内容是切片中其他内容的标题
+            HINT_LIST,//表示此内容下的所有子项都应该被视为列表项
+            HINT_LIST_ITEM,//表示此项是列表的一部分
+            HINT_LARGE,//表示此内容重要且应尽可能放大显示
+            HINT_ACTIONS,//表示切片包含可分组到UI控制区域的多个操作
+            HINT_SELECTED,//表示此项（及其子项）是当前选择项
+            HINT_NO_TINT,//表示此内容不应被着色
+            HINT_SHORTCUT,//表示此内容仅在切片作为快捷方式显示时才显示
+            HINT_TOGGLE,//表示此内容有关联的开关操作
+            HINT_HORIZONTAL,//表示列表项水平排列效果更好
+            HINT_PARTIAL,//表示此切片不完整，加载完成后会发送更新
+            HINT_SEE_MORE,//表示此项目用于指示切片有关联的更多内容
+            HINT_KEYWORDS,//表示此子切片内容表示与父切片相关的关键词列表
+            HINT_ERROR,//表示此切片表示错误
+            HINT_TTL,//表示此项目代表内容的生存时间
+            HINT_LAST_UPDATED,//表示此项目代表内容创建或最后更新时间
+            HINT_PERMISSION_REQUEST,//表示此切片表示显示切片的权限请求
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SliceHint {}
@@ -73,16 +75,16 @@ public final class Slice implements Parcelable {
      * @hide
      */
     @StringDef(prefix = { "SUBTYPE_" }, value = {
-            SUBTYPE_COLOR,
-            SUBTYPE_CONTENT_DESCRIPTION,
-            SUBTYPE_MAX,
-            SUBTYPE_MESSAGE,
-            SUBTYPE_PRIORITY,
-            SUBTYPE_RANGE,
-            SUBTYPE_SOURCE,
-            SUBTYPE_TOGGLE,
-            SUBTYPE_VALUE,
-            SUBTYPE_LAYOUT_DIRECTION,
+            SUBTYPE_COLOR,//表示颜色信息
+            SUBTYPE_CONTENT_DESCRIPTION,//表示内容描述
+            SUBTYPE_MAX,//表示最大值
+            SUBTYPE_MESSAGE,//表示通信消息
+            SUBTYPE_PRIORITY,//表示优先级
+            SUBTYPE_RANGE,//表示范围信息
+            SUBTYPE_SOURCE,//表示消息来源
+            SUBTYPE_TOGGLE,//表示开关状态
+            SUBTYPE_VALUE,//表示当前值
+            SUBTYPE_LAYOUT_DIRECTION,//表示布局方向
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SliceSubtype {}
@@ -356,10 +358,10 @@ public final class Slice implements Parcelable {
      */
     public static class Builder {
 
-        private final Uri mUri;
-        private ArrayList<SliceItem> mItems = new ArrayList<>();
-        private @SliceHint ArrayList<String> mHints = new ArrayList<>();
-        private SliceSpec mSpec;
+        private final Uri mUri;//切片的标识符
+        private ArrayList<SliceItem> mItems = new ArrayList<>();//切片项列表
+        private @SliceHint ArrayList<String> mHints = new ArrayList<>();//切片提示列表
+        private SliceSpec mSpec;//切片规范
 
         /**
          * @deprecated TO BE REMOVED
@@ -395,6 +397,7 @@ public final class Slice implements Parcelable {
          * {@link SliceProvider#onBindSlice(Uri, java.util.Set)} may be different depending on
          * {@link SliceProvider#getCallingPackage()} and should not be cached for multiple
          * apps.
+         * 设置是否需要调用方信息，避免缓存
          */
         public Builder setCallerNeeded(boolean callerNeeded) {
             if (callerNeeded) {
@@ -407,6 +410,7 @@ public final class Slice implements Parcelable {
 
         /**
          * Add hints to the Slice being constructed
+         * 添加切片提示
          */
         public Builder addHints(@SliceHint List<String> hints) {
             mHints.addAll(hints);
@@ -426,6 +430,7 @@ public final class Slice implements Parcelable {
          * Add a sub-slice to the slice being constructed
          * @param subType Optional template-specific type information
          * @see SliceItem#getSubType()
+         * 添加子切片
          */
         public Builder addSubSlice(@NonNull Slice slice, @Nullable @SliceSubtype String subType) {
             Preconditions.checkNotNull(slice);
@@ -438,6 +443,7 @@ public final class Slice implements Parcelable {
          * Add an action to the slice being constructed
          * @param subType Optional template-specific type information
          * @see SliceItem#getSubType()
+         * 添加操作
          */
         public Slice.Builder addAction(@NonNull PendingIntent action, @NonNull Slice s,
                 @Nullable @SliceSubtype String subType) {
@@ -454,6 +460,7 @@ public final class Slice implements Parcelable {
          * Add text to the slice being constructed
          * @param subType Optional template-specific type information
          * @see SliceItem#getSubType()
+         * 添加文本内容
          */
         public Builder addText(CharSequence text, @Nullable @SliceSubtype String subType,
                 @SliceHint List<String> hints) {
@@ -465,6 +472,7 @@ public final class Slice implements Parcelable {
          * Add an image to the slice being constructed
          * @param subType Optional template-specific type information
          * @see SliceItem#getSubType()
+         * 添加图标
          */
         public Builder addIcon(Icon icon, @Nullable @SliceSubtype String subType,
                 @SliceHint List<String> hints) {
@@ -477,6 +485,7 @@ public final class Slice implements Parcelable {
          * Add remote input to the slice being constructed
          * @param subType Optional template-specific type information
          * @see SliceItem#getSubType()
+         * 添加远程输入
          */
         public Slice.Builder addRemoteInput(RemoteInput remoteInput,
                 @Nullable @SliceSubtype String subType,
@@ -491,6 +500,7 @@ public final class Slice implements Parcelable {
          * Add an integer to the slice being constructed
          * @param subType Optional template-specific type information
          * @see SliceItem#getSubType()
+         * 添加整数值
          */
         public Builder addInt(int value, @Nullable @SliceSubtype String subType,
                 @SliceHint List<String> hints) {
@@ -501,6 +511,7 @@ public final class Slice implements Parcelable {
         /**
          * @deprecated TO BE REMOVED.
          * @removed
+         *
          */
         @Deprecated
         public Slice.Builder addTimestamp(long time, @Nullable @SliceSubtype String subType,
@@ -512,6 +523,7 @@ public final class Slice implements Parcelable {
          * Add a long to the slice being constructed
          * @param subType Optional template-specific type information
          * @see SliceItem#getSubType()
+         * 添加长整数值
          */
         public Slice.Builder addLong(long value, @Nullable @SliceSubtype String subType,
                 @SliceHint List<String> hints) {
@@ -526,6 +538,7 @@ public final class Slice implements Parcelable {
          * development
          * @param subType Optional template-specific type information
          * @see SliceItem#getSubType()
+         * 添加 Bundle 数据
          */
         public Slice.Builder addBundle(Bundle bundle, @Nullable @SliceSubtype String subType,
                 @SliceHint List<String> hints) {

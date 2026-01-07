@@ -91,6 +91,8 @@ import java.util.Set;
  * </pre>
  *
  * @see Slice
+ * 内容模板：提供可包含操作的模板化内容
+ * 系统集成：内容的展示行为由特定系统表面决定
  */
 public abstract class SliceProvider extends ContentProvider {
     /**
@@ -306,6 +308,8 @@ public abstract class SliceProvider extends ContentProvider {
         return createPermissionIntent(getContext(), sliceUri, getCallingPackage());
     }
 
+    //更新操作：实现了 ContentProvider 的更新方法
+    //固定返回：始终返回 0，表示没有更新任何行
     @Override
     public final int update(Uri uri, ContentValues values, String selection,
             String[] selectionArgs) {
@@ -535,6 +539,7 @@ public abstract class SliceProvider extends ContentProvider {
         }
     }
 
+    //严格模式绑定：在严格模式下执行切片绑定操作
     private Slice onBindSliceStrict(Uri sliceUri, List<SliceSpec> supportedSpecs) {
         ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
         try {

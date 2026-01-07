@@ -57,6 +57,8 @@ import java.util.Set;
  * Class to handle interactions with {@link Slice}s.
  * <p>
  * The SliceManager manages permissions and pinned state for slices.
+ * 权限管理：管理切片的访问权限
+ * 固定状态管理：管理切片的固定（pinned）状态
  */
 @SystemService(Context.SLICE_SERVICE)
 public class SliceManager {
@@ -128,6 +130,8 @@ public class SliceManager {
      * @see SliceProvider#onSlicePinned(Uri)
      * @see Intent#ACTION_ASSIST
      * @see Intent#CATEGORY_HOME
+     * 固定切片：确保切片处于固定（pinned）状态
+     * 持久化控制：固定状态不会在重启后保留，应用需要在重启后重新固定关心的切片
      */
     public void pinSlice(@NonNull Uri uri, @NonNull Set<SliceSpec> specs) {
         try {
@@ -186,6 +190,8 @@ public class SliceManager {
      * This is the set of specs supported for a specific pinned slice. It will take
      * into account all clients and returns only specs supported by all.
      * @see SliceSpec
+     * 获取固定切片规格：获取特定固定切片的当前支持规格集合
+     * 规格交集：返回所有客户端都支持的规格，即取交集
      */
     public @NonNull Set<SliceSpec> getPinnedSpecs(Uri uri) {
         try {
@@ -217,6 +223,7 @@ public class SliceManager {
      * @param uri The uri to look for descendants under.
      * @return All slices within the space.
      * @see SliceProvider#onGetSliceDescendants(Uri)
+     * 获取后代切片：获取指定 URI 下的所有切片后代
      */
     @WorkerThread
     public @NonNull Collection<Uri> getSliceDescendants(@NonNull Uri uri) {
@@ -295,6 +302,7 @@ public class SliceManager {
      * @see Slice
      * @see SliceProvider#onMapIntentToUri(Intent)
      * @see Intent
+     * 意图转URI：将切片意图转换为切片URI
      */
     public @Nullable Uri mapIntentToUri(@NonNull Intent intent) {
         ContentResolver resolver = mContext.getContentResolver();
@@ -335,6 +343,7 @@ public class SliceManager {
                 : null;
     }
 
+    //静态解析：用于解析静态链接的切片 URI
     private Uri resolveStatic(@NonNull Intent intent, ContentResolver resolver) {
         Preconditions.checkNotNull(intent, "intent");
         Preconditions.checkArgument(intent.getComponent() != null || intent.getPackage() != null
@@ -463,7 +472,7 @@ public class SliceManager {
      *
      * @param toPackage The package you would like to allow to access the Uri.
      * @param uri The Uri you would like to revoke access to.
-     *
+     *revoke  撤销
      * @see #grantSlicePermission
      */
     public void revokeSlicePermission(@NonNull String toPackage, @NonNull Uri uri) {

@@ -29,12 +29,14 @@ import java.util.stream.StreamSupport;
 /**
  * A bunch of utilities for searching the contents of a slice.
  * @hide
+ * 切片查询工具类：提供用于搜索切片内容的实用工具集合
  */
 public class SliceQuery {
     private static final String TAG = "SliceQuery";
 
     /**
      * @hide
+     * 获取主图标：从 Slice 对象中查找主要的图标 SliceItem
      */
     public static SliceItem getPrimaryIcon(Slice slice) {
         for (SliceItem item : slice.getItems()) {
@@ -57,6 +59,7 @@ public class SliceQuery {
 
     /**
      * @hide
+     * 查找不包含项：在给定的 List<SliceItem> 中查找不被 container 包含的 SliceItem
      */
     public static SliceItem findNotContaining(SliceItem container, List<SliceItem> list) {
         SliceItem ret = null;
@@ -173,6 +176,7 @@ public class SliceQuery {
 
     /**
      * @hide
+     * 类型比较：比较 SliceItem 的类型与期望类型是否匹配
      */
     public static boolean compareTypes(SliceItem item, String desiredType) {
         final int typeLength = desiredType.length();
