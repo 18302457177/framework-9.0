@@ -30,6 +30,10 @@ import android.util.ArrayMap;
 /**
  * See {@link com.android.server.trust.TrustManagerService}
  * @hide
+ * 管理设备锁定状态（setDeviceLockedForUser()）
+ * 报告解锁尝试结果（reportUnlockAttempt()）
+ * 处理解锁锁定状态（reportUnlockLockout()）
+ * 监听信任事件（TrustListener）
  */
 @SystemService(Context.TRUST_SERVICE)
 public class TrustManager {
@@ -56,6 +60,7 @@ public class TrustManager {
      *
      * @param userId The id for the user to be locked/unlocked.
      * @param locked The value for that user's locked state.
+     * 设备锁定状态管理：更改指定用户的锁定状态
      */
     @RequiresPermission(Manifest.permission.ACCESS_KEYGUARD_SECURE_STORAGE)
     public void setDeviceLockedForUser(int userId, boolean locked) {
@@ -72,6 +77,7 @@ public class TrustManager {
      * @param successful if true, the unlock attempt was successful.
      *
      * Requires the {@link android.Manifest.permission#ACCESS_KEYGUARD_SECURE_STORAGE} permission.
+     * 报告解锁尝试：向系统报告指定用户尝试解锁设备的结果
      */
     public void reportUnlockAttempt(boolean successful, int userId) {
         try {
@@ -92,6 +98,7 @@ public class TrustManager {
      *    attempt to unlock the device again.
      *
      * Requires the {@link android.Manifest.permission#ACCESS_KEYGUARD_SECURE_STORAGE} permission.
+     * 报告临时设备锁定：报告指定用户进入临时设备锁定状态
      */
     public void reportUnlockLockout(int timeoutMs, int userId) {
         try {
@@ -105,6 +112,7 @@ public class TrustManager {
      * Reports that the list of enabled trust agents changed for user {@param userId}.
      *
      * Requires the {@link android.Manifest.permission#ACCESS_KEYGUARD_SECURE_STORAGE} permission.
+     * 报告信任代理变化：报告指定用户的已启用信任代理列表发生变化
      */
     public void reportEnabledTrustAgentsChanged(int userId) {
         try {
@@ -118,6 +126,7 @@ public class TrustManager {
      * Reports that the visibility of the keyguard has changed.
      *
      * Requires the {@link android.Manifest.permission#ACCESS_KEYGUARD_SECURE_STORAGE} permission.
+     * 报告Keyguard可见性变化：当锁屏界面（Keyguard）的可见性状态发生改变时调用此方法
      */
     public void reportKeyguardShowingChanged() {
         try {
@@ -254,12 +263,14 @@ public class TrustManager {
          * Reports that whether trust is managed has changed
          * @param enabled If true, at least one trust agent is managing trust.
          * @param userId The user, for which the state changed.
+         * 信任管理状态变更通知：报告信任是否被管理的状态发生变化
          */
         void onTrustManagedChanged(boolean enabled, int userId);
 
         /**
          * Reports that an error happened on a TrustAgentService.
          * @param message A message that should be displayed on the UI.
+         * 信任代理服务错误通知：报告在 TrustAgentService 中发生的错误
          */
         void onTrustError(CharSequence message);
     }
