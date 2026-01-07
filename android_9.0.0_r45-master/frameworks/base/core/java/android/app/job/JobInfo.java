@@ -54,17 +54,18 @@ import java.util.Objects;
  * You must specify at least one sort of constraint on the JobInfo object that you are creating.
  * The goal here is to provide the scheduler with high-level semantics about the work you want to
  * accomplish. Doing otherwise with throw an exception in your app.
+ * 工作调度参数容器：传递给 JobScheduler 的数据容器，完全封装了对调用应用程序进行工作调度所需的参数
  */
 public class JobInfo implements Parcelable {
     private static String TAG = "JobInfo";
 
     /** @hide */
     @IntDef(prefix = { "NETWORK_TYPE_" }, value = {
-            NETWORK_TYPE_NONE,
-            NETWORK_TYPE_ANY,
-            NETWORK_TYPE_UNMETERED,
-            NETWORK_TYPE_NOT_ROAMING,
-            NETWORK_TYPE_CELLULAR,
+            NETWORK_TYPE_NONE,//默认类型
+            NETWORK_TYPE_ANY,//需要网络连接
+            NETWORK_TYPE_UNMETERED,//需要非计量网络
+            NETWORK_TYPE_NOT_ROAMING,//需要非漫游网络
+            NETWORK_TYPE_CELLULAR,//需要蜂窝网络
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface NetworkType {}
@@ -106,10 +107,12 @@ public class JobInfo implements Parcelable {
      */
     public static final long MAX_BACKOFF_DELAY_MILLIS = 5 * 60 * 60 * 1000;  // 5 hours.
 
-    /** @hide */
+    /** @hide
+     * 定义退避策略常量的注解，用于限定退避策略参数的有效值
+     * */
     @IntDef(prefix = { "BACKOFF_POLICY_" }, value = {
-            BACKOFF_POLICY_LINEAR,
-            BACKOFF_POLICY_EXPONENTIAL,
+            BACKOFF_POLICY_LINEAR,//线性退避策略
+            BACKOFF_POLICY_EXPONENTIAL,//指数退避策略
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BackoffPolicy {}
@@ -149,6 +152,7 @@ public class JobInfo implements Parcelable {
      * job that is still periodic, but will run with this effective period.
      *
      * @return The minimum available interval for scheduling periodic jobs, in milliseconds.
+     * 查询周期性调度作业允许的最小间隔时间
      */
     public static final long getMinPeriodMillis() {
         return MIN_PERIOD_MILLIS;
@@ -361,7 +365,9 @@ public class JobInfo implements Parcelable {
         return flags;
     }
 
-    /** @hide */
+    /** @hide
+     * 检查作业是否被免除应用待机限制
+     * */
     public boolean isExemptedFromAppStandby() {
         return ((flags & FLAG_EXEMPT_FROM_APP_STANDBY) != 0) && !isPeriodic();
     }
@@ -509,6 +515,7 @@ public class JobInfo implements Parcelable {
      * Set for a job that does not recur periodically, to specify a delay after which the job
      * will be eligible for execution. This value is not set if the job recurs periodically.
      * @see JobInfo.Builder#setMinimumLatency(long)
+     * 获取作业的最小延迟时间（以毫秒为单位
      */
     public long getMinLatencyMillis() {
         return minLatencyMillis;
@@ -516,6 +523,7 @@ public class JobInfo implements Parcelable {
 
     /**
      * @see JobInfo.Builder#setOverrideDeadline(long)
+     * 获取作业的最大执行延迟时间（以毫秒为单位）
      */
     public long getMaxExecutionDelayMillis() {
         return maxExecutionDelayMillis;
@@ -525,6 +533,7 @@ public class JobInfo implements Parcelable {
      * Track whether this job will repeat with a given period.
      * @see JobInfo.Builder#setPeriodic(long)
      * @see JobInfo.Builder#setPeriodic(long, long)
+     * 检查作业是否会按给定周期重复执行
      */
     public boolean isPeriodic() {
         return isPeriodic;
@@ -532,6 +541,7 @@ public class JobInfo implements Parcelable {
 
     /**
      * @see JobInfo.Builder#setPersisted(boolean)
+     * 检查作业是否在设备重启后持续存在
      */
     public boolean isPersisted() {
         return isPersisted;
@@ -542,6 +552,7 @@ public class JobInfo implements Parcelable {
      * job does not recur periodically.
      * @see JobInfo.Builder#setPeriodic(long)
      * @see JobInfo.Builder#setPeriodic(long, long)
+     * 获取作业重复执行的时间间隔（以毫秒为单位）
      */
     public long getIntervalMillis() {
         return intervalMillis;
@@ -552,6 +563,7 @@ public class JobInfo implements Parcelable {
      * execute at any time in a window of flex length at the end of the period.
      * @see JobInfo.Builder#setPeriodic(long)
      * @see JobInfo.Builder#setPeriodic(long, long)
+     * 获取作业的弹性时间（以毫秒为单位
      */
     public long getFlexMillis() {
         return flexMillis;
@@ -562,6 +574,7 @@ public class JobInfo implements Parcelable {
      * will be increased depending on the backoff policy specified at job creation time. Defaults
      * to 30 seconds, minimum is currently 10 seconds.
      * @see JobInfo.Builder#setBackoffCriteria(long, int)
+     * 获取作业失败后重新调度的初始等待时间
      */
     public long getInitialBackoffMillis() {
         return initialBackoffMillis;
@@ -577,6 +590,7 @@ public class JobInfo implements Parcelable {
 
     /**
      * @see JobInfo.Builder#setImportantWhileForeground(boolean)
+     * 检查作业是否在前台应用或临时白名单期间被视为重要作业
      */
     public boolean isImportantWhileForeground() {
         return (flags & FLAG_IMPORTANT_WHILE_FOREGROUND) != 0;
@@ -584,6 +598,7 @@ public class JobInfo implements Parcelable {
 
     /**
      * @see JobInfo.Builder#setPrefetch(boolean)
+     * 检查作业是否被标记为预取类型
      */
     public boolean isPrefetch() {
         return (flags & FLAG_PREFETCH) != 0;
@@ -592,6 +607,7 @@ public class JobInfo implements Parcelable {
     /**
      * User can specify an early constraint of 0L, which is valid, so we keep track of whether the
      * function was called at all.
+     * 检查作业是否设置了早期约束（early constraint）
      * @hide
      */
     public boolean hasEarlyConstraint() {
@@ -872,15 +888,18 @@ public class JobInfo implements Parcelable {
     /**
      * Information about a content URI modification that a job would like to
      * trigger on.
+     * 用于描述一个内容 URI 修改的触发器，当指定的 URI 发生变化时触发作业执行
      */
     public static final class TriggerContentUri implements Parcelable {
         private final Uri mUri;
         private final int mFlags;
 
-        /** @hide */
+        /** @hide
+         * 定义触发器标志的注解
+         * */
         @Retention(RetentionPolicy.SOURCE)
         @IntDef(flag = true, prefix = { "FLAG_" }, value = {
-                FLAG_NOTIFY_FOR_DESCENDANTS,
+                FLAG_NOTIFY_FOR_DESCENDANTS,//当给定 URI 的任何后代发生变化时也触发
         })
         public @interface Flags { }
 
@@ -903,6 +922,7 @@ public class JobInfo implements Parcelable {
 
         /**
          * Return the Uri this trigger was created for.
+         * 返回此触发器创建时指定的 URI
          */
         public Uri getUri() {
             return mUri;
@@ -1039,6 +1059,7 @@ public class JobInfo implements Parcelable {
          *
          * @param extras Bundle containing extras you want the scheduler to hold on to for you.
          * @see JobInfo#getTransientExtras()
+         * 临时额外项
          */
         public Builder setTransientExtras(@NonNull Bundle extras) {
             mTransientExtras = extras;
@@ -1161,6 +1182,7 @@ public class JobInfo implements Parcelable {
          * @deprecated replaced by
          *             {@link #setEstimatedNetworkBytes(long, long)}.
          * @removed
+         * 设置估算网络字节数
          */
         @Deprecated
         public Builder setEstimatedNetworkBytes(@BytesLong long networkBytes) {
@@ -1226,6 +1248,7 @@ public class JobInfo implements Parcelable {
          * @param requiresCharging Pass {@code true} to require that the device be
          *     charging in order to run the job.
          * @see JobInfo#isRequireCharging()
+         * 指定运行此作业时设备必须处于充电状态（或连接到永久电源的非电池供电设备，如Android TV设备）
          */
         public Builder setRequiresCharging(boolean requiresCharging) {
             mConstraintFlags = (mConstraintFlags&~CONSTRAINT_FLAG_CHARGING)
@@ -1240,6 +1263,7 @@ public class JobInfo implements Parcelable {
          * warning.
          * @param batteryNotLow Whether or not the device's battery level must not be low.
          * @see JobInfo#isRequireBatteryNotLow()
+         * 指定运行此作业时设备的电池电量不能过低
          */
         public Builder setRequiresBatteryNotLow(boolean batteryNotLow) {
             mConstraintFlags = (mConstraintFlags&~CONSTRAINT_FLAG_BATTERY_NOT_LOW)
@@ -1265,6 +1289,7 @@ public class JobInfo implements Parcelable {
          * @param requiresDeviceIdle Pass {@code true} to prevent the job from running
          *     while the device is being used interactively.
          * @see JobInfo#isRequireDeviceIdle()
+         * 设置作业是否需要在设备空闲时运行的约束
          */
         public Builder setRequiresDeviceIdle(boolean requiresDeviceIdle) {
             mConstraintFlags = (mConstraintFlags&~CONSTRAINT_FLAG_DEVICE_IDLE)
@@ -1312,6 +1337,7 @@ public class JobInfo implements Parcelable {
          *
          * @param uri The content: URI to monitor.
          * @see JobInfo#getTriggerContentUris()
+         * 内容URI监控：添加一个新的内容URI，通过 ContentObserver 监控，当发生变化时触发作业执行
          */
         public Builder addTriggerContentUri(@NonNull TriggerContentUri uri) {
             if (mTriggerContentUris == null) {
@@ -1353,6 +1379,7 @@ public class JobInfo implements Parcelable {
          * @param intervalMillis Millisecond interval for which this job will repeat.
          * @see JobInfo#getIntervalMillis()
          * @see JobInfo#getFlexMillis()
+         * 周期性任务设置：指定作业应以提供的间隔重复执行，每个周期最多执行一次
          */
         public Builder setPeriodic(long intervalMillis) {
             return setPeriodic(intervalMillis, intervalMillis);
@@ -1400,6 +1427,8 @@ public class JobInfo implements Parcelable {
          * @param minLatencyMillis Milliseconds before which this job will not be considered for
          *                         execution.
          * @see JobInfo#getMinLatencyMillis()
+         * 延迟执行：指定作业应延迟指定的时间后再执行
+         * 最早执行时间：设置作业在指定的毫秒数之前不会被考虑执行
          */
         public Builder setMinimumLatency(long minLatencyMillis) {
             mMinLatencyMillis = minLatencyMillis;
@@ -1414,6 +1443,7 @@ public class JobInfo implements Parcelable {
          * {@link java.lang.IllegalArgumentException} when
          * {@link android.app.job.JobInfo.Builder#build()} is called.
          * @see JobInfo#getMaxExecutionDelayMillis()
+         * 设置执行截止时间：设置作业的最大调度延迟，即使其他要求未满足，作业也将在截止时间前运行
          */
         public Builder setOverrideDeadline(long maxExecutionDelayMillis) {
             mMaxExecutionDelayMillis = maxExecutionDelayMillis;
@@ -1435,6 +1465,7 @@ public class JobInfo implements Parcelable {
          *                             failed.
          * @see JobInfo#getInitialBackoffMillis()
          * @see JobInfo#getBackoffPolicy()
+         * 设置退避/重试策略：配置作业失败后的重试策略，包括初始等待时间和退避策略类型
          */
         public Builder setBackoffCriteria(long initialBackoffMillis,
                 @BackoffPolicy int backoffPolicy) {
@@ -1466,6 +1497,7 @@ public class JobInfo implements Parcelable {
          * @param importantWhileForeground whether to relax doze restrictions for this job when the
          *                                 app is in the foreground. False by default.
          * @see JobInfo#isImportantWhileForeground()
+         * 设置作业在调度应用处于前台或临时白名单中时是否重要
          */
         public Builder setImportantWhileForeground(boolean importantWhileForeground) {
             if (importantWhileForeground) {
@@ -1498,6 +1530,8 @@ public class JobInfo implements Parcelable {
          * may also use this signal in combination with end user usage patterns
          * to ensure data is prefetched before the user launches your app.
          * @see JobInfo#isPrefetch()
+         * 预取标识：设置作业是否为预取类型作业，用于改善用户体验
+         * 应用场景：如获取用户感兴趣的内容（头条新闻等）
          */
         public Builder setPrefetch(boolean prefetch) {
             if (prefetch) {
@@ -1514,6 +1548,7 @@ public class JobInfo implements Parcelable {
          * @param isPersisted True to indicate that the job will be written to
          *            disk and loaded at boot.
          * @see JobInfo#isPersisted()
+         * 设置作业是否在设备重启后持续存在
          */
         @RequiresPermission(android.Manifest.permission.RECEIVE_BOOT_COMPLETED)
         public Builder setPersisted(boolean isPersisted) {

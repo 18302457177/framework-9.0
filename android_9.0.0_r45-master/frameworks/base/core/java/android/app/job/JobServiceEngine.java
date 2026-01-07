@@ -37,6 +37,9 @@ import java.lang.ref.WeakReference;
  * {@link android.app.Service} that interact with {@link JobScheduler} as well as
  * add in additional functionality.  If you just want to execute jobs normally, you
  * should instead be looking at {@link JobService}.
+ * 消息处理：通过 JobHandler 处理作业相关的消息
+ * IPC 接口：提供与系统通信的 IPC 接口
+ * 作业管理：处理作业的启动、停止和完成状态
  */
 public abstract class JobServiceEngine {
     private static final String TAG = "JobServiceEngine";
@@ -44,14 +47,17 @@ public abstract class JobServiceEngine {
     /**
      * Identifier for a message that will result in a call to
      * {@link #onStartJob(android.app.job.JobParameters)}.
+     * 执行作业消息
      */
     private static final int MSG_EXECUTE_JOB = 0;
     /**
      * Message that will result in a call to {@link #onStopJob(android.app.job.JobParameters)}.
+     * 停止作业消息
      */
     private static final int MSG_STOP_JOB = 1;
     /**
      * Message that the client has completed execution of this job.
+     * 作业完成消息
      */
     private static final int MSG_JOB_FINISHED = 2;
 

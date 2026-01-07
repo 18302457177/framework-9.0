@@ -31,6 +31,8 @@ import android.os.IBinder;
  * in blocking any future callbacks from the JobManager - specifically
  * {@link #onStopJob(android.app.job.JobParameters)}, which is meant to inform you that the
  * scheduling requirements are no longer being met.</p>
+ * 异步请求处理：处理之前已调度的异步请求
+ * 作业逻辑实现：通过重写 onStartJob(JobParameters) 方法实现作业逻辑
  */
 public abstract class JobService extends Service {
     private static final String TAG = "JobService";
@@ -93,6 +95,8 @@ public abstract class JobService extends Service {
      * @param wantsReschedule {@code true} if this job should be rescheduled according
      *     to the back-off criteria specified when it was first scheduled; {@code false}
      *     otherwise.
+     * 作业完成通知：通知 JobScheduler 作业已完成工作
+     * 唤醒锁释放：系统接收到此消息后会释放为该作业持有的唤醒锁
      */
     public final void jobFinished(JobParameters params, boolean wantsReschedule) {
         mEngine.jobFinished(params, wantsReschedule);

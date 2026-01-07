@@ -27,6 +27,8 @@ import android.os.Parcelable;
  * A unit of work that can be enqueued for a job using
  * {@link JobScheduler#enqueue JobScheduler.enqueue}.  See
  * {@link JobParameters#dequeueWork() JobParameters.dequeueWork} for more details.
+ * 工作封装：将工作任务封装成可调度的单元
+ * 队列管理：支持作业的工作项队列机制
  */
 final public class JobWorkItem implements Parcelable {
     final Intent mIntent;
@@ -87,6 +89,8 @@ final public class JobWorkItem implements Parcelable {
      * @deprecated replaced by {@link #getEstimatedNetworkDownloadBytes()} and
      *             {@link #getEstimatedNetworkUploadBytes()}.
      * @removed
+     * 网络流量估算：返回工作项预估的网络流量大小
+     * 计算逻辑：根据下载和上传字节数的不同情况进行计算
      */
     @Deprecated
     public @BytesLong long getEstimatedNetworkBytes() {
@@ -129,6 +133,8 @@ final public class JobWorkItem implements Parcelable {
      * to the job.  The value will be > 1 if it has been redelivered because the job
      * was stopped or crashed while it had previously been delivered but before the
      * job had called {@link JobParameters#completeWork JobParameters.completeWork} for it.
+     * 返回交付次数：获取此工作项被交付给作业的次数
+     * 计数机制：mDeliveryCount 字段记录了交付次数
      */
     public int getDeliveryCount() {
         return mDeliveryCount;
@@ -136,6 +142,7 @@ final public class JobWorkItem implements Parcelable {
 
     /**
      * @hide
+     * 增加工作项的交付计数
      */
     public void bumpDeliveryCount() {
         mDeliveryCount++;
@@ -157,6 +164,7 @@ final public class JobWorkItem implements Parcelable {
 
     /**
      * @hide
+     * 设置工作项的授权信息
      */
     public void setGrants(Object grants) {
         mGrants = grants;

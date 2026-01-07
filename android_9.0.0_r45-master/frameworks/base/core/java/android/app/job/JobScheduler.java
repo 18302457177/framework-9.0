@@ -56,13 +56,28 @@ import java.util.List;
  * instantiate this class directly; instead, retrieve it through
  * {@link android.content.Context#getSystemService
  * Context.getSystemService(Context.JOB_SCHEDULER_SERVICE)}.
+ * 作业调度API：提供调度各种类型作业的API，作业将在应用程序的进程中执行
+ * 作业管理：
+ * 通过 schedule(JobInfo) 方法调度作业
+ * 通过 cancel(int) 和 cancelAll() 方法取消作业
+ * 通过 getAllPendingJobs() 和 getPendingJob(int) 方法查询作业状态
+ * 作业执行：
+ * 当满足声明的条件时，系统将在应用程序的 JobService 上执行作业
+ * 作业运行时系统会持有唤醒锁，无需应用自行保证设备唤醒
+ * 智能调度：
+ * 框架会智能决定作业执行时机
+ * 尽可能批量处理和延迟执行作业
+ * 不指定截止时间的作业可能在任何时刻执行
+ * 工作队列：
+ * 通过 enqueue(JobInfo, JobWorkItem) 方法支持工作项入队
+ * 获取方式：通过 Context.getSystemService(Context.JOB_SCHEDULER_SERVICE) 获取实例，不能直接实例化
  */
 @SystemService(Context.JOB_SCHEDULER_SERVICE)
 public abstract class JobScheduler {
     /** @hide */
     @IntDef(prefix = { "RESULT_" }, value = {
-            RESULT_FAILURE,
-            RESULT_SUCCESS,
+            RESULT_FAILURE,//（调度失败）
+            RESULT_SUCCESS,//（调度成功）
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Result {}
@@ -87,6 +102,7 @@ public abstract class JobScheduler {
      * {@link android.app.job.JobInfo.Builder JobInfo.Builder} for more detail on the sorts of jobs
      * you can schedule.
      * @return the result of the schedule request.
+     * 调度一个作业（job）以供执行
      */
     public abstract @Result int schedule(@NonNull JobInfo job);
 
@@ -124,6 +140,7 @@ public abstract class JobScheduler {
      * you can schedule.
      * @param work New work to enqueue.  This will be available later when the job starts running.
      * @return the result of the enqueue request.
+     * 将工作项加入队列，适用于新作业或现有作业
      */
     public abstract @Result int enqueue(@NonNull JobInfo job, @NonNull JobWorkItem work);
 
@@ -135,6 +152,7 @@ public abstract class JobScheduler {
      * @param userId    User on behalf of whom this job is to be scheduled.
      * @param tag Debugging tag for dumps associated with this job (instead of the service class)
      * @hide
+     * 以指定包名和用户身份调度作业
      */
     @SystemApi
     @RequiresPermission(android.Manifest.permission.UPDATE_DEVICE_STATS)

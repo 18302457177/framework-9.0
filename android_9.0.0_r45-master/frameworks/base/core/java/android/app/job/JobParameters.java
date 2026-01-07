@@ -32,6 +32,7 @@ import android.os.RemoteException;
 /**
  * Contains the parameters used to configure/identify your job. You do not create this object
  * yourself, instead it is handed in to your application by the System.
+ * 参数容器：包含用于配置/识别作业的参数，是系统传递给应用程序的作业参数对象
  */
 public class JobParameters implements Parcelable {
 
@@ -47,7 +48,9 @@ public class JobParameters implements Parcelable {
     /** @hide */
     public static final int REASON_DEVICE_IDLE = JobProtoEnums.STOP_REASON_DEVICE_IDLE; // 4.
 
-    /** @hide */
+    /** @hide
+     * 将作业停止原因的整数值转换为对应的字符串名称
+     * */
     public static String getReasonName(int reason) {
         switch (reason) {
             case REASON_CANCELED: return "canceled";
@@ -126,6 +129,7 @@ public class JobParameters implements Parcelable {
      * @return The transient extras you passed in when constructing this job with
      * {@link android.app.job.JobInfo.Builder#setTransientExtras(android.os.Bundle)}. This will
      * never be null. If you did not set any extras this will be an empty bundle.
+     * 获取作业创建时传递的临时额外参数
      */
     public @NonNull Bundle getTransientExtras() {
         return transientExtras;
@@ -154,6 +158,7 @@ public class JobParameters implements Parcelable {
      * provides an easy way to tell whether the job is being executed due to the deadline
      * expiring. Note: If the job is running because its deadline expired, it implies that its
      * constraints will not be met.
+     * 检查作业是否因截止时间到期而执行
      */
     public boolean isOverrideDeadlineExpired() {
         return overrideDeadlineExpired;
@@ -166,6 +171,7 @@ public class JobParameters implements Parcelable {
      * URIs is too large to report.  Whether or not the number of URIs is too large, you can
      * always use {@link #getTriggeredContentAuthorities()} to determine whether the job was
      * triggered due to any content changes and the authorities they are associated with.
+     * 获取触发作业执行的内容URI数组
      */
     public @Nullable Uri[] getTriggeredContentUris() {
         return mTriggeredContentUris;
@@ -178,6 +184,7 @@ public class JobParameters implements Parcelable {
      * as a deadline expiring.  If this is non-null, you can use {@link #getTriggeredContentUris()}
      * to retrieve the details of which URIs changed (as long as that has not exceeded the maximum
      * number it can reported).
+     * 获取触发作业执行的内容提供者权限数组
      */
     public @Nullable String[] getTriggeredContentAuthorities() {
         return mTriggeredContentAuthorities;
@@ -237,6 +244,7 @@ public class JobParameters implements Parcelable {
      * If null is returned, the system will also stop the job if all work has also been completed.
      * (This means that for correct operation, you must always call dequeueWork() after you have
      * completed other work, to check either for more work or allow the system to stop the job.)
+     * 从与当前运行作业相关的 JobParameters 中取出下一个待处理的 JobWorkItem
      */
     public @Nullable JobWorkItem dequeueWork() {
         try {
