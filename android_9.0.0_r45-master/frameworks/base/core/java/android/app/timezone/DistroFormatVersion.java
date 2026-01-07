@@ -32,13 +32,13 @@ import android.os.Parcelable;
  *     major versions match exactly, i.e. version 2.2 will be compatible with 2.1 devices but not
  *     2.3 devices.</dd>
  * </dl>
- *
+ * 版本信息描述：描述分发包（distro）格式或设备支持格式的版本信息
  * @hide
  */
 public final class DistroFormatVersion implements Parcelable {
 
-    private final int mMajorVersion;
-    private final int mMinorVersion;
+    private final int mMajorVersion;//主版本号，不同主版本之间不兼容
+    private final int mMinorVersion;//次版本号，相同主版本下向后兼容
 
     public DistroFormatVersion(int majorVersion, int minorVersion) {
         mMajorVersion = Utils.validateVersion("major", majorVersion);

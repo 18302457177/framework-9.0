@@ -26,6 +26,7 @@ import android.os.UserHandle;
  * application.
  *
  * @hide
+ * 系统与更新应用间的契约定义：定义 Android 系统与特权时区更新应用之间的契约常量
  */
 public final class RulesUpdaterContract {
 
@@ -33,6 +34,7 @@ public final class RulesUpdaterContract {
      * The system permission possessed by the Android system that allows it to trigger time zone
      * update checks. The updater should be configured to require this permission when registering
      * for {@link #ACTION_TRIGGER_RULES_UPDATE_CHECK} intents.
+     * 系统触发时区更新检查的权限
      */
     public static final String TRIGGER_TIME_ZONE_RULES_CHECK_PERMISSION =
             android.Manifest.permission.TRIGGER_TIME_ZONE_RULES_CHECK;
@@ -41,6 +43,7 @@ public final class RulesUpdaterContract {
      * The system permission possessed by the time zone rules updater app that allows it to update
      * device time zone rules. The Android system requires this permission for calls made to
      * {@link RulesManager}.
+     * 时区规则更新应用更新设备时区规则的权限
      */
     public static final String UPDATE_TIME_ZONE_RULES_PERMISSION =
             android.Manifest.permission.UPDATE_TIME_ZONE_RULES;
@@ -49,6 +52,7 @@ public final class RulesUpdaterContract {
      * The action of the intent that the Android system will broadcast. The intent will be targeted
      * at the configured updater application's package meaning the term "broadcast" only loosely
      * applies.
+     * 系统广播的意图动作
      */
     public static final String ACTION_TRIGGER_RULES_UPDATE_CHECK =
             "com.android.intent.action.timezone.TRIGGER_RULES_UPDATE_CHECK";
@@ -59,6 +63,7 @@ public final class RulesUpdaterContract {
      * {@link RulesManager#requestUninstall(byte[], Callback)} and
      * {@link RulesManager#requestNothing(byte[], boolean)} methods when the
      * {@link #ACTION_TRIGGER_RULES_UPDATE_CHECK} intent has been processed.
+     * 包含检查令牌的额外数据
      */
     public static final String EXTRA_CHECK_TOKEN =
             "com.android.intent.extra.timezone.CHECK_TOKEN";

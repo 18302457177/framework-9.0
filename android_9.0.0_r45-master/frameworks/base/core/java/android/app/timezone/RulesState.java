@@ -59,15 +59,16 @@ import java.lang.annotation.RetentionPolicy;
  * </dl>
  *
  * @hide
+ * 描述设备上时区规则的状态
  */
 public final class RulesState implements Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "STAGED_OPERATION_" }, value = {
-            STAGED_OPERATION_UNKNOWN,
-            STAGED_OPERATION_NONE,
-            STAGED_OPERATION_UNINSTALL,
-            STAGED_OPERATION_INSTALL
+            STAGED_OPERATION_UNKNOWN,//暂存状态无法确定
+            STAGED_OPERATION_NONE,//没有暂存操作
+            STAGED_OPERATION_UNINSTALL,//暂存卸载操作
+            STAGED_OPERATION_INSTALL//暂存安装操作
     })
     private @interface StagedOperationType {}
 
@@ -82,9 +83,9 @@ public final class RulesState implements Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "DISTRO_STATUS_" }, value = {
-            DISTRO_STATUS_UNKNOWN,
-            DISTRO_STATUS_NONE,
-            DISTRO_STATUS_INSTALLED
+            DISTRO_STATUS_UNKNOWN,//当前分发状态无法确定
+            DISTRO_STATUS_NONE,//没有活动的已安装时区分发包
+            DISTRO_STATUS_INSTALLED//存在活动的已安装时区分发包
     })
     private @interface DistroStatus {}
 
@@ -98,12 +99,12 @@ public final class RulesState implements Parcelable {
     private static final byte BYTE_FALSE = 0;
     private static final byte BYTE_TRUE = 1;
 
-    private final String mSystemRulesVersion;
-    private final DistroFormatVersion mDistroFormatVersionSupported;
-    private final boolean mOperationInProgress;
-    @StagedOperationType private final int mStagedOperationType;
-    @Nullable private final DistroRulesVersion mStagedDistroRulesVersion;
-    @DistroStatus private final int mDistroStatus;
+    private final String mSystemRulesVersion;//随OS发布的IANA规则版本
+    private final DistroFormatVersion mDistroFormatVersionSupported;//设备支持的分发格式版本
+    private final boolean mOperationInProgress;//是否正在进行安装/卸载操作
+    @StagedOperationType private final int mStagedOperationType;//暂存操作类型（未知、无、卸载、安装）
+    @Nullable private final DistroRulesVersion mStagedDistroRulesVersion;//暂存的分发规则版本
+    @DistroStatus private final int mDistroStatus;//分发状态（未知、无、已安装）
     @Nullable private final DistroRulesVersion mInstalledDistroRulesVersion;
 
     public RulesState(String systemRulesVersion, DistroFormatVersion distroFormatVersionSupported,
@@ -159,6 +160,7 @@ public final class RulesState implements Parcelable {
     /**
      * Returns the installed rules version when {@link #getDistroStatus()} is
      * {@link #DISTRO_STATUS_INSTALLED}.
+     * 获取已安装规则版本：返回当前设备上已安装并激活的时区分发包的规则版本
      */
     public @Nullable DistroRulesVersion getInstalledDistroRulesVersion() {
         return mInstalledDistroRulesVersion;
@@ -177,6 +179,7 @@ public final class RulesState implements Parcelable {
      * than the one that is in the system image. Returns false if the system image version is the
      * same or older, i.e. false when the version specified would be "better" than the one that is
      * in the system image.
+     * 系统版本比较：比较系统内置的IANA规则版本与提供的分发规则版本
      */
     public boolean isSystemVersionNewerThan(DistroRulesVersion distroRulesVersion) {
         return mSystemRulesVersion.compareTo(distroRulesVersion.getRulesVersion()) > 0;
@@ -285,6 +288,7 @@ public final class RulesState implements Parcelable {
                 + '}';
     }
 
+    //验证传入的暂存操作类型是否为预定义的有效值
     private static int validateStagedOperation(int stagedOperationType) {
         if (stagedOperationType < STAGED_OPERATION_UNKNOWN
                 || stagedOperationType > STAGED_OPERATION_INSTALL) {

@@ -35,11 +35,12 @@ import android.os.Parcelable;
  * </dl>
  *
  * @hide
+ * 用于描述时区规则集的版本信息
  */
 public final class DistroRulesVersion implements Parcelable {
 
-    private final String mRulesVersion;
-    private final int mRevision;
+    private final String mRulesVersion;//IANA规则版本，如"2017a"
+    private final int mRevision;//规则修订版本，数值更高表示更新
 
     public DistroRulesVersion(String rulesVersion, int revision) {
         mRulesVersion = validateRulesVersion("rulesVersion", rulesVersion);
@@ -70,6 +71,7 @@ public final class DistroRulesVersion implements Parcelable {
      * Returns true if this DistroRulesVersion is older than the one supplied. It returns false if
      * it is the same or newer. This method compares the {@code rulesVersion} and the
      * {@code revision}.
+     * 版本比较：判断当前 DistroRulesVersion 对象是否比参数提供的对象更旧
      */
     public boolean isOlderThan(DistroRulesVersion distroRulesVersion) {
         int rulesComparison = mRulesVersion.compareTo(distroRulesVersion.mRulesVersion);

@@ -63,6 +63,11 @@ import java.util.Arrays;
  * <p>Applications obtain this using {@link android.app.Activity#getSystemService(String)} with
  * {@link Context#TIME_ZONE_RULES_MANAGER_SERVICE}.
  * @hide
+ * 时区规则更新接口：提供时区更新应用与 Android 系统交互的接口，用于处理时区规则更新
+ * 权限要求：调用者必须拥有 UPDATE_TIME_ZONE_RULES 系统权限
+ * 更新机制：
+ * 支持默认的 APK 基础时区规则更新应用
+ * OEM 可通过配置禁用默认机制并使用自定义更新方式
  */
 public final class RulesManager {
     private static final String TAG = "timezone.RulesManager";
@@ -87,9 +92,9 @@ public final class RulesManager {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "SUCCESS", "ERROR_" }, value = {
-            SUCCESS,
-            ERROR_UNKNOWN_FAILURE,
-            ERROR_OPERATION_IN_PROGRESS
+            SUCCESS,//操作成功
+            ERROR_UNKNOWN_FAILURE,//未知错误
+            ERROR_OPERATION_IN_PROGRESS//操作正在进行中
     })
     public @interface ResultCode {}
 
@@ -126,6 +131,7 @@ public final class RulesManager {
      *
      * <p>Callers must possess the {@link android.Manifest.permission#QUERY_TIME_ZONE_RULES} system
      * permission.
+     * 获取当前时区规则状态信息
      */
     public RulesState getRulesState() {
         try {
@@ -147,6 +153,7 @@ public final class RulesManager {
      *     {@link RulesUpdaterContract#ACTION_TRIGGER_RULES_UPDATE_CHECK} intent
      * @param callback the {@link Callback} to receive callbacks related to the installation
      * @return {@link #SUCCESS} if the installation will be attempted
+     * 请求安装分发包
      */
     @ResultCode
     public int requestInstall(
@@ -170,6 +177,7 @@ public final class RulesManager {
      *     {@link RulesUpdaterContract#ACTION_TRIGGER_RULES_UPDATE_CHECK} intent
      * @param callback the {@link Callback} to receive callbacks related to the uninstall
      * @return {@link #SUCCESS} if the uninstallation will be attempted
+     * 请求卸载当前分发包
      */
     @ResultCode
     public int requestUninstall(byte[] checkToken, Callback callback) {
@@ -217,6 +225,7 @@ public final class RulesManager {
      *     {@link RulesUpdaterContract#ACTION_TRIGGER_RULES_UPDATE_CHECK} intent
      * @param succeeded true if the check was successful, false if it was not successful but may
      *     succeed if it is retried
+     * 请求系统不修改当前安装的时区分发包
      */
     public void requestNothing(byte[] checkToken, boolean succeeded) {
         try {

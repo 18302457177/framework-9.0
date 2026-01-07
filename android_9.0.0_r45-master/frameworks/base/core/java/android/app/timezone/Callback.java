@@ -24,19 +24,19 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Callback interface for receiving information about an async time zone operation.
  * The methods will be called on your application's main thread.
- *
+ * 用于接收异步时区操作的信息
  * @hide
  */
 public abstract class Callback {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "SUCCESS", "ERROR_" }, value = {
-            SUCCESS,
-            ERROR_UNKNOWN_FAILURE,
-            ERROR_INSTALL_BAD_DISTRO_STRUCTURE,
-            ERROR_INSTALL_BAD_DISTRO_FORMAT_VERSION,
-            ERROR_INSTALL_RULES_TOO_OLD,
-            ERROR_INSTALL_VALIDATION_ERROR
+            SUCCESS,//操作成功
+            ERROR_UNKNOWN_FAILURE,//未知错误
+            ERROR_INSTALL_BAD_DISTRO_STRUCTURE,//分发包结构错误
+            ERROR_INSTALL_BAD_DISTRO_FORMAT_VERSION,//分发包格式版本错误
+            ERROR_INSTALL_RULES_TOO_OLD,//规则过旧
+            ERROR_INSTALL_VALIDATION_ERROR//验证错误
     })
     public @interface AsyncResultCode {}
 
