@@ -27,11 +27,12 @@ import android.os.UserHandle;
  * storage volume.
  *
  * @see StorageStatsManager
+ * 为单个存储卷上的 UID、包或 UserHandle 提供存储统计信息
  */
 public final class StorageStats implements Parcelable {
-    /** {@hide} */ public long codeBytes;
-    /** {@hide} */ public long dataBytes;
-    /** {@hide} */ public long cacheBytes;
+    /** {@hide} */ public long codeBytes;//应用代码大小（包括APK文件、优化编译输出和解压的原生库）
+    /** {@hide} */ public long dataBytes;//数据大小（包括应用数据目录下的文件）
+    /** {@hide} */ public long cacheBytes;//缓存数据大小
 
     /**
      * Return the size of app. This includes {@code APK} files, optimized

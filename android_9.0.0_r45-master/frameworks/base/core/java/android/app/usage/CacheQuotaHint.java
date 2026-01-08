@@ -31,6 +31,7 @@ import java.util.Objects;
  * its usage stats. When processed, it obtains a cache quota as defined by the system which
  * allows apps to understand how much cache to use.
  * {@hide}
+ * 缓存配额提示：表示一个包含uid、存储卷UUID和使用统计信息的三元组
  */
 @SystemApi
 public final class CacheQuotaHint implements Parcelable {
@@ -113,22 +114,26 @@ public final class CacheQuotaHint implements Parcelable {
             setQuota(hint.getQuota());
         }
 
+        //设置存储卷UUID，接受可空字符串参数
         public @NonNull Builder setVolumeUuid(@Nullable String uuid) {
             mUuid = uuid;
             return this;
         }
 
+        //设置用户ID，验证参数非负数
         public @NonNull Builder setUid(int uid) {
             Preconditions.checkArgumentNonnegative(uid, "Proposed uid was negative.");
             mUid = uid;
             return this;
         }
 
+        //设置使用统计信息，接受可空UsageStats 对象
         public @NonNull Builder setUsageStats(@Nullable UsageStats stats) {
             mUsageStats = stats;
             return this;
         }
 
+        //设置配额值，验证参数大于等于 QUOTA_NOT_SET
         public @NonNull Builder setQuota(long quota) {
             Preconditions.checkArgument((quota >= QUOTA_NOT_SET));
             mQuota = quota;

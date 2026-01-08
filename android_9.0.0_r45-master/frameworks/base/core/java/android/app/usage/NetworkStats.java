@@ -35,6 +35,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Class providing enumeration over buckets of network usage statistics. {@link NetworkStats} objects
  * are returned as results to various queries in {@link NetworkStatsManager}.
+ * 网络使用统计枚举：提供网络使用统计桶（buckets）的枚举功能
  */
 public final class NetworkStats implements AutoCloseable {
     private final static String TAG = "NetworkStats";
@@ -129,13 +130,14 @@ public final class NetworkStats implements AutoCloseable {
     /**
      * Buckets are the smallest elements of a query result. As some dimensions of a result may be
      * aggregated (e.g. time or state) some values may be equal across all buckets.
+     * 桶是查询结果中最小的元素。由于结果的某些维度可能会被聚合（例如时间或状态），某些数值在所有桶中可能相同。
      */
     public static class Bucket {
         /** @hide */
         @IntDef(prefix = { "STATE_" }, value = {
-                STATE_ALL,
-                STATE_DEFAULT,
-                STATE_FOREGROUND
+                STATE_ALL,//表示所有状态的组合使用量
+                STATE_DEFAULT,//0x1，表示未在其他状态中记录的使用量
+                STATE_FOREGROUND//0x2，表示前台使用量
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface State {}
@@ -172,9 +174,9 @@ public final class NetworkStats implements AutoCloseable {
 
         /** @hide */
         @IntDef(prefix = { "METERED_" }, value = {
-                METERED_ALL,
-                METERED_NO,
-                METERED_YES
+                METERED_ALL,//-1，表示所有计费状态的组合使用量，涵盖计费和非计费使用量
+                METERED_NO,//0x1，表示在非计费网络上发生的使用量
+                METERED_YES//0x2，表示在计费网络上发生的使用量
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Metered {}
@@ -199,9 +201,9 @@ public final class NetworkStats implements AutoCloseable {
 
         /** @hide */
         @IntDef(prefix = { "ROAMING_" }, value = {
-                ROAMING_ALL,
-                ROAMING_NO,
-                ROAMING_YES
+                ROAMING_ALL,//-1，表示所有漫游状态的组合使用量，涵盖漫游和非漫游使用量
+                ROAMING_NO,//0x1，表示在家庭、非漫游网络上发生的使用量
+                ROAMING_YES//0x2，表示在漫游网络上发生的使用量
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Roaming {}
@@ -232,9 +234,9 @@ public final class NetworkStats implements AutoCloseable {
 
         /** @hide */
         @IntDef(prefix = { "DEFAULT_NETWORK_" }, value = {
-                DEFAULT_NETWORK_ALL,
-                DEFAULT_NETWORK_NO,
-                DEFAULT_NETWORK_YES
+                DEFAULT_NETWORK_ALL,//-1，表示此网络的组合使用量，无论默认网络状态如何
+                DEFAULT_NETWORK_NO,//0x1，表示在此网络不是默认网络时发生的使用量
+                DEFAULT_NETWORK_YES//0x2，表示在此网络是默认网络时发生的使用量
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface DefaultNetworkStatus {}
@@ -278,6 +280,7 @@ public final class NetworkStats implements AutoCloseable {
         private long mTxBytes;
         private long mTxPackets;
 
+        //将 NetworkStats Bucket 类中的状态值转换为 android.net.NetworkStats 中对应的集合值
         private static int convertSet(@State int state) {
             switch (state) {
                 case STATE_ALL: return android.net.NetworkStats.SET_ALL;
@@ -386,6 +389,7 @@ public final class NetworkStats implements AutoCloseable {
          * <p>A network is classified as metered when the user is sensitive to heavy data usage on
          * that connection. Apps may warn before using these networks for large downloads. The
          * metered state can be set by the user within data usage network restrictions.
+         * 获取桶（bucket）的计费状态
          */
         public @Metered int getMetered() {
             return mMetered;
@@ -437,6 +441,7 @@ public final class NetworkStats implements AutoCloseable {
          * Number of bytes received during the bucket's time interval. Statistics are measured at
          * the network layer, so they include both TCP and UDP usage.
          * @return Number of bytes.
+         * 获取桶（bucket）的时间间隔内接收的字节数
          */
         public long getRxBytes() {
             return mRxBytes;
@@ -446,6 +451,7 @@ public final class NetworkStats implements AutoCloseable {
          * Number of bytes transmitted during the bucket's time interval. Statistics are measured at
          * the network layer, so they include both TCP and UDP usage.
          * @return Number of bytes.
+         * 获取桶（bucket）在时间间隔内传输的字节数
          */
         public long getTxBytes() {
             return mTxBytes;
@@ -455,6 +461,7 @@ public final class NetworkStats implements AutoCloseable {
          * Number of packets received during the bucket's time interval. Statistics are measured at
          * the network layer, so they include both TCP and UDP usage.
          * @return Number of packets.
+         * 获取桶（bucket）在时间间隔内接收的数据包数量
          */
         public long getRxPackets() {
             return mRxPackets;

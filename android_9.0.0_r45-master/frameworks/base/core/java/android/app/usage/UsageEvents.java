@@ -29,6 +29,7 @@ import java.util.List;
 /**
  * A result returned from {@link android.app.usage.UsageStatsManager#queryEvents(long, long)}
  * from which to read {@link android.app.usage.UsageEvents.Event} objects.
+ * 事件集合容器：作为 UsageStatsManager.queryEvents() 方法的返回结果，用于存储和访问使用情况事件
  */
 public final class UsageEvents implements Parcelable {
 
@@ -169,7 +170,7 @@ public final class UsageEvents implements Parcelable {
 
         /** @hide */
         @IntDef(flag = true, prefix = { "FLAG_" }, value = {
-                FLAG_IS_PACKAGE_INSTANT_APP,
+                FLAG_IS_PACKAGE_INSTANT_APP,//标识包是否为即时应用
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface EventFlags {}
@@ -327,6 +328,7 @@ public final class UsageEvents implements Parcelable {
          * {@link #STANDBY_BUCKET_CHANGED}, otherwise returns 0.
          * @return the standby bucket associated with the event.
          * @hide
+         * 如果事件类型为 STANDBY_BUCKET_CHANGED，则返回应用的待机桶，否则返回 0。
          */
         public int getStandbyBucket() {
             return (mBucketAndReason & 0xFFFF0000) >>> 16;
@@ -364,7 +366,9 @@ public final class UsageEvents implements Parcelable {
             return mNotificationChannelId;
         }
 
-        /** @hide */
+        /** @hide
+         * 当事件的包是即时应用时，返回混淆后的事件对象
+         * */
         public Event getObfuscatedIfInstantApp() {
             if ((mFlags & FLAG_IS_PACKAGE_INSTANT_APP) == 0) {
                 return this;

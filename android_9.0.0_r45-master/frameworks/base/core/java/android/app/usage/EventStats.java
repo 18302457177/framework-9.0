@@ -22,36 +22,43 @@ import android.os.Parcelable;
 /**
  * Contains usage statistics for an event type for a specific
  * time range.
+ * 事件统计容器：包含特定时间范围内事件类型的使用统计信息
  */
 public final class EventStats implements Parcelable {
 
     /**
      * {@hide}
+     * 事件类型
      */
     public int mEventType;
 
     /**
      * {@hide}
+     * 时间范围开始时间戳
      */
     public long mBeginTimeStamp;
 
     /**
      * {@hide}
+     * 时间范围结束时间戳
      */
     public long mEndTimeStamp;
 
     /**
      * {@hide}
+     * 最后事件时间
      */
     public long mLastEventTime;
 
     /**
      * {@hide}
+     * 总时间
      */
     public long mTotalTime;
 
     /**
      * {@hide}
+     * 事件计数
      */
     public int mCount;
 

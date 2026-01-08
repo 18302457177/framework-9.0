@@ -23,6 +23,7 @@ import java.util.ArrayList;
  * {@link UsageEvents.Event#mTimeStamp timestamps}.
  *
  * @hide
+ * 事件容器：作为存储 UsageEvents.Event 事件的容器
  */
 public class EventList {
 

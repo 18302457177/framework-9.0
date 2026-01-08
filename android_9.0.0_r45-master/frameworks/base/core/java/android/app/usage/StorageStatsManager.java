@@ -50,6 +50,7 @@ import java.util.UUID;
  * user can then choose to grant this permission through the Settings
  * application.
  * </p>
+ * 存储统计访问：提供对详细存储统计信息的访问，汇总了应用程序、用户和外部/共享存储如何使用磁盘空间的情况
  */
 @SystemService(Context.STORAGE_STATS_SERVICE)
 public class StorageStatsManager {
@@ -62,7 +63,9 @@ public class StorageStatsManager {
         mService = Preconditions.checkNotNull(service);
     }
 
-    /** {@hide} */
+    /** {@hide}
+     * 检查指定存储卷是否支持配额管理功能
+     * */
     @TestApi
     public boolean isQuotaSupported(@NonNull UUID storageUuid) {
         try {
@@ -78,7 +81,9 @@ public class StorageStatsManager {
         return isQuotaSupported(convert(uuid));
     }
 
-    /** {@hide} */
+    /** {@hide}
+     * 检查指定存储卷是否支持预留空间功能
+     * */
     @TestApi
     public boolean isReservedSupported(@NonNull UUID storageUuid) {
         try {
@@ -115,7 +120,9 @@ public class StorageStatsManager {
         }
     }
 
-    /** @removed */
+    /** @removed
+     * 返回托管此存储卷的底层物理媒体的总大小
+     * */
     @Deprecated
     public long getTotalBytes(String uuid) throws IOException {
         return getTotalBytes(convert(uuid));
@@ -134,6 +141,7 @@ public class StorageStatsManager {
      * @param storageUuid the UUID of the storage volume you're interested in,
      *            such as {@link StorageManager#UUID_DEFAULT}.
      * @throws IOException when the storage device isn't present.
+     * 返回请求的存储卷上的可用空间
      */
     @WorkerThread
     public @BytesLong long getFreeBytes(@NonNull UUID storageUuid) throws IOException {
@@ -199,6 +207,7 @@ public class StorageStatsManager {
      * @throws IOException when the storage device isn't present.
      * @see ApplicationInfo#storageUuid
      * @see PackageInfo#packageName
+     * 返回请求的存储卷上特定包的存储统计信息
      */
     @WorkerThread
     public @NonNull StorageStats queryStatsForPackage(@NonNull UUID storageUuid,
@@ -242,6 +251,7 @@ public class StorageStatsManager {
      * @throws IOException when the storage device isn't present.
      * @see ApplicationInfo#storageUuid
      * @see ApplicationInfo#uid
+     * 返回请求的存储卷上特定UID的存储统计信息
      */
     @WorkerThread
     public @NonNull StorageStats queryStatsForUid(@NonNull UUID storageUuid, int uid)
@@ -280,6 +290,7 @@ public class StorageStatsManager {
      * @param user the user you're interested in.
      * @throws IOException when the storage device isn't present.
      * @see android.os.Process#myUserHandle()
+     * 返回请求的存储卷上特定 UserHandle 的存储统计信息
      */
     @WorkerThread
     public @NonNull StorageStats queryStatsForUser(@NonNull UUID storageUuid,
@@ -317,6 +328,7 @@ public class StorageStatsManager {
      *            such as {@link StorageManager#UUID_DEFAULT}.
      * @throws IOException when the storage device isn't present.
      * @see android.os.Process#myUserHandle()
+     * 返回请求的存储卷上特定 UserHandle 的共享/外部存储统计信息
      */
     @WorkerThread
     public @NonNull ExternalStorageStats queryExternalStatsForUser(@NonNull UUID storageUuid,

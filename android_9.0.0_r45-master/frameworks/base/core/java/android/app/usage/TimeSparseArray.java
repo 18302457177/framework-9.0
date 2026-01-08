@@ -23,6 +23,7 @@ import android.util.Slog;
  * An array that indexes by a long timestamp, representing milliseconds since the epoch.
  *
  * {@hide}
+ * 时间索引数组：这是一个基于 long 类型时间戳进行索引的数组，时间戳表示自纪元以来的毫秒数
  */
 public class TimeSparseArray<E> extends LongSparseArray<E> {
     private static final String TAG = TimeSparseArray.class.getSimpleName();
@@ -39,6 +40,7 @@ public class TimeSparseArray<E> extends LongSparseArray<E> {
      *
      * @param time The timestamp for which to search the array.
      * @return The index of the matched element, or -1 if no such match exists.
+     * 查找时间戳大于或等于给定时间的第一个元素的索引
      */
     public int closestIndexOnOrAfter(long time) {
         // This is essentially a binary search, except that if no match is found
@@ -76,6 +78,7 @@ public class TimeSparseArray<E> extends LongSparseArray<E> {
      * <p> As this container is being used only to keep {@link android.util.AtomicFile files},
      * there should not be any collisions. Reporting a {@link Slog#wtf(String, String)} in case that
      * happens, as that will lead to one whole file being dropped.
+     * 用于向数组中插入键值对
      */
     @Override
     public void put(long key, E value) {

@@ -62,33 +62,39 @@ import java.util.concurrent.TimeUnit;
  * See {@link android.provider.Settings#ACTION_USAGE_ACCESS_SETTINGS}.
  * Methods which only return the information for the calling package do not require this permission.
  * E.g. {@link #getAppStandbyBucket()} and {@link #queryEventsForSelf(long, long)}.
+ * 设备使用统计访问：提供对设备使用历史和统计信息的访问功能
  */
 @SystemService(Context.USAGE_STATS_SERVICE)
 public final class UsageStatsManager {
 
     /**
      * An interval type that spans a day. See {@link #queryUsageStats(int, long, long)}.
+     * 按天聚合
      */
     public static final int INTERVAL_DAILY = 0;
 
     /**
      * An interval type that spans a week. See {@link #queryUsageStats(int, long, long)}.
+     * 按周聚合
      */
     public static final int INTERVAL_WEEKLY = 1;
 
     /**
      * An interval type that spans a month. See {@link #queryUsageStats(int, long, long)}.
+     * 按月聚合
      */
     public static final int INTERVAL_MONTHLY = 2;
 
     /**
      * An interval type that spans a year. See {@link #queryUsageStats(int, long, long)}.
+     * 按年聚合
      */
     public static final int INTERVAL_YEARLY = 3;
 
     /**
      * An interval type that will use the best fit interval for the given time range.
      * See {@link #queryUsageStats(int, long, long)}.
+     * 最佳匹配间隔
      */
     public static final int INTERVAL_BEST = 4;
 
@@ -196,12 +202,12 @@ public final class UsageStatsManager {
 
     /** @hide */
     @IntDef(flag = false, prefix = { "STANDBY_BUCKET_" }, value = {
-            STANDBY_BUCKET_EXEMPTED,
-            STANDBY_BUCKET_ACTIVE,
-            STANDBY_BUCKET_WORKING_SET,
-            STANDBY_BUCKET_FREQUENT,
-            STANDBY_BUCKET_RARE,
-            STANDBY_BUCKET_NEVER,
+            STANDBY_BUCKET_EXEMPTED,//应用因某种原因被白名单保护，无法更改桶状态
+            STANDBY_BUCKET_ACTIVE,//应用最近使用过，当前正在使用或很可能很快使用
+            STANDBY_BUCKET_WORKING_SET,//应用最近使用过，或可能在接下来几小时内使用
+            STANDBY_BUCKET_FREQUENT,//应用在过去几天使用过，或可能在未来几天使用
+            STANDBY_BUCKET_RARE,//应用已几天未使用，或预计几天内不会使用
+            STANDBY_BUCKET_NEVER,//应用从未被使用过
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface StandbyBuckets {}
@@ -339,6 +345,7 @@ public final class UsageStatsManager {
      * @see #INTERVAL_MONTHLY
      * @see #INTERVAL_YEARLY
      * @see #INTERVAL_BEST
+     * 获取指定时间范围内的聚合事件统计信息，按指定间隔进行聚合
      */
     public List<EventStats> queryEventStats(int intervalType, long beginTime, long endTime) {
         try {
@@ -407,6 +414,7 @@ public final class UsageStatsManager {
      * @param beginTime The inclusive beginning of the range of stats to include in the results.
      * @param endTime The exclusive end of the range of stats to include in the results.
      * @return A {@link java.util.Map} keyed by package name
+     * Aggregate 聚合
      */
     public Map<String, UsageStats> queryAndAggregateUsageStats(long beginTime, long endTime) {
         List<UsageStats> stats = queryUsageStats(INTERVAL_BEST, beginTime, endTime);
@@ -704,6 +712,7 @@ public final class UsageStatsManager {
      * @param user The user for whom the package should be whitelisted. Passing in a user that is
      * not the same as the caller's process will require the INTERACT_ACROSS_USERS permission.
      * @see #isAppInactive(String)
+     * 临时将指定应用加入白名单一段时间，允许接收高优先级消息的应用即使在省电模式或被标记为非活跃状态下也能访问网络和获取唤醒锁
      */
     @SystemApi
     @RequiresPermission(android.Manifest.permission.CHANGE_DEVICE_IDLE_TEMP_WHITELIST)
@@ -718,6 +727,7 @@ public final class UsageStatsManager {
     /**
      * Inform usage stats that the carrier privileged apps access rules have changed.
      * @hide
+     * 通知使用情况统计系统运营商特权应用的访问规则已发生变化
      */
     public void onCarrierPrivilegedAppsChanged() {
         try {
@@ -737,6 +747,7 @@ public final class UsageStatsManager {
      * @param action The action type of Intent that invokes ChooserActivity.
      * {@link UsageEvents}
      * @hide
+     * 向 UsageStatsManager 报告选择器（Chooser）操作
      */
     public void reportChooserSelection(String packageName, int userId, String contentType,
                                        String[] annotations, String action) {

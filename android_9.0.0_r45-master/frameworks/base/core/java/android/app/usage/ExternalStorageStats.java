@@ -26,14 +26,15 @@ import android.os.UserHandle;
  * storage volume.
  *
  * @see StorageStatsManager
+ * 存储统计信息：为单个存储卷上的 UserHandle 提供共享/外部存储统计信息
  */
 public final class ExternalStorageStats implements Parcelable {
-    /** {@hide} */ public long totalBytes;
-    /** {@hide} */ public long audioBytes;
-    /** {@hide} */ public long videoBytes;
-    /** {@hide} */ public long imageBytes;
-    /** {@hide} */ public long appBytes;
-    /** {@hide} */ public long obbBytes;
+    /** {@hide} */ public long totalBytes;//总字节数
+    /** {@hide} */ public long audioBytes;//音频文件字节数
+    /** {@hide} */ public long videoBytes;//视频文件字节数
+    /** {@hide} */ public long imageBytes;//图像文件字节数
+    /** {@hide} */ public long appBytes;//应用文件字节数
+    /** {@hide} */ public long obbBytes;//OBB文件字节数
 
     /**
      * Return the total bytes used by all files in the shared/external storage

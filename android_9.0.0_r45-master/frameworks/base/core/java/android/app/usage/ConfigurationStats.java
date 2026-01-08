@@ -22,16 +22,19 @@ import android.os.Parcelable;
 /**
  * Represents the usage statistics of a device {@link android.content.res.Configuration} for a
  * specific time range.
+ * 配置使用统计：表示设备 Configuration 在特定时间范围内的使用统计信息
  */
 public final class ConfigurationStats implements Parcelable {
 
     /**
      * {@hide}
+     * 设备配置信息
      */
     public Configuration mConfiguration;
 
     /**
      * {@hide}
+     * 统计时间范围的开始时间戳
      */
     public long mBeginTimeStamp;
 
@@ -42,16 +45,19 @@ public final class ConfigurationStats implements Parcelable {
 
     /**
      * {@hide}
+     * 配置最后一次活跃的时间
      */
     public long mLastTimeActive;
 
     /**
      * {@hide}
+     * 配置总的活跃时间
      */
     public long mTotalTimeActive;
 
     /**
      * {@hide}
+     * 配置激活次数
      */
     public int mActivationCount;
 

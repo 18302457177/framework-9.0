@@ -86,6 +86,8 @@ import com.android.internal.annotations.VisibleForTesting;
  * <b>NOTE:</b> Prior to API level {@value android.os.Build.VERSION_CODES#N}, all calls to these APIs required
  * the above permission, even to access an app's own data usage, and carrier-privileged apps were
  * not included.
+ * 网络使用统计访问：提供对网络使用历史和统计数据的访问功能
+ * 数据收集方式：使用名为"Buckets"的时间离散区间来收集使用数据
  */
 @SystemService(Context.NETWORK_STATS_SERVICE)
 public class NetworkStatsManager {
@@ -134,7 +136,9 @@ public class NetworkStatsManager {
         setPollOnOpen(true);
     }
 
-    /** @hide */
+    /** @hide
+     * 设置轮询标志：设置在打开时是否进行轮询的标志位
+     * */
     public void setPollOnOpen(boolean pollOnOpen) {
         if (pollOnOpen) {
             mFlags |= FLAG_POLL_ON_OPEN;
@@ -153,7 +157,9 @@ public class NetworkStatsManager {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 设置是否使用订阅计划信息增强网络统计数据的标志位
+     * */
     public void setAugmentWithSubscriptionPlan(boolean augmentWithSubscriptionPlan) {
         if (augmentWithSubscriptionPlan) {
             mFlags |= FLAG_AUGMENT_WITH_SUBSCRIPTION_PLAN;
@@ -162,7 +168,9 @@ public class NetworkStatsManager {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 查询设备网络使用统计摘要，返回整个设备的汇总数据
+     * */
     public Bucket querySummaryForDevice(NetworkTemplate template,
             long startTime, long endTime) throws SecurityException, RemoteException {
         Bucket bucket = null;
@@ -287,6 +295,7 @@ public class NetworkStatsManager {
      * Query network usage statistics details for a given uid.
      *
      * #see queryDetailsForUidTagState(int, String, long, long, int, int, int)
+     * 查询指定UID的网络使用统计详细信息
      */
     public NetworkStats queryDetailsForUid(int networkType, String subscriberId,
             long startTime, long endTime, int uid) throws SecurityException {
@@ -482,11 +491,13 @@ public class NetworkStatsManager {
 
     /**
      * Base class for usage callbacks. Should be extended by applications wanting notifications.
+     * 使用量回调基类：作为使用量回调的基类，需要被需要通知的应用程序扩展
      */
     public static abstract class UsageCallback {
 
         /**
          * Called when data usage has reached the given threshold.
+         * 当数据使用量达到指定阈值时调用
          */
         public abstract void onThresholdReached(int networkType, String subscriberId);
 
@@ -515,6 +526,7 @@ public class NetworkStatsManager {
         return template;
     }
 
+    //回调处理器：处理数据使用量阈值回调的内部处理器类
     private static class CallbackHandler extends Handler {
         private final int mNetworkType;
         private final String mSubscriberId;

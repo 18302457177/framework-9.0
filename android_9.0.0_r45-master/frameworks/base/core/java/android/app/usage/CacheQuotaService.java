@@ -35,6 +35,7 @@ import java.util.List;
  * CacheQuoteService defines a service which accepts cache quota requests and processes them,
  * thereby filling out how much quota each request deserves.
  * {@hide}
+ * 缓存配额服务定义：定义了一个接受缓存配额请求并处理的服务
  */
 @SystemApi
 public abstract class CacheQuotaService extends Service {

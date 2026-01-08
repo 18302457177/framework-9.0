@@ -23,6 +23,7 @@ import android.os.Parcelable;
  * A pair of {package, bucket} to denote the app standby bucket for a given package.
  * Used as a vehicle of data across the binder IPC.
  * @hide
+ * 数据封装：封装应用待机桶信息，包含包名和待机桶级别的配对数据
  */
 public final class AppStandbyInfo implements Parcelable {
 

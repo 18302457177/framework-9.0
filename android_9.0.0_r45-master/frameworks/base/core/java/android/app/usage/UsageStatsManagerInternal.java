@@ -28,6 +28,7 @@ import java.util.Set;
  * UsageStatsManager local system service interface.
  *
  * {@hide} Only for use within the system server.
+ * 系统服务接口：作为 UsageStatsManager 的本地系统服务接口，仅在系统服务器内部使用
  */
 public abstract class UsageStatsManagerInternal {
 
@@ -145,6 +146,7 @@ public abstract class UsageStatsManagerInternal {
     public abstract void removeAppIdleStateChangeListener(
             AppIdleStateChangeListener listener);
 
+    //应用闲置状态变化监听器
     public static abstract class AppIdleStateChangeListener {
 
         /** Callback to inform listeners that the idle state has changed to a new bucket. */
@@ -154,12 +156,14 @@ public abstract class UsageStatsManagerInternal {
         /**
          * Callback to inform listeners that the parole state has changed. This means apps are
          * allowed to do work even if they're idle or in a low bucket.
+         * 回调以通知监听器假释状态已更改。这意味着应用程序即使处于空闲状态或低优先级队列中，也被允许执行工作。
          */
         public abstract void onParoleStateChanged(boolean isParoleOn);
 
         /**
          * Optional callback to inform the listener that the app has transitioned into
          * an active state due to user interaction.
+         * 可选回调，用于通知监听器应用程序由于用户互动已转入活动状态。
          */
         public void onUserInteractionStarted(String packageName, @UserIdInt int userId) {
             // No-op by default
@@ -249,6 +253,7 @@ public abstract class UsageStatsManagerInternal {
      *
      * @param packageName name of the package that owns the sync adapter.
      * @param userId which user the app is associated with
+     * 报告由前台应用调度的同步操作
      */
     public abstract void reportExemptedSyncScheduled(String packageName, @UserIdInt int userId);
 
@@ -257,6 +262,7 @@ public abstract class UsageStatsManagerInternal {
      *
      * @param packageName name of the package that owns the sync adapter.
      * @param userId which user the app is associated with
+     * 报告由前台应用调度的同步操作即将执行
      */
     public abstract void reportExemptedSyncStart(String packageName, @UserIdInt int userId);
 }

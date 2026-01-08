@@ -25,11 +25,13 @@ import android.util.ArrayMap;
 /**
  * Contains usage statistics for an app package for a specific
  * time range.
+ * 应用使用统计：包含特定时间段内某个应用包的使用统计信息
  */
 public final class UsageStats implements Parcelable {
 
     /**
      * {@hide}
+     * 包名
      */
     public String mPackageName;
 
@@ -46,16 +48,19 @@ public final class UsageStats implements Parcelable {
     /**
      * Last time used by the user with an explicit action (notification, activity launch).
      * {@hide}
+     * 最后使用时间
      */
     public long mLastTimeUsed;
 
     /**
      * {@hide}
+     * 前台总时间
      */
     public long mTotalTimeInForeground;
 
     /**
      * {@hide}
+     * 启动次数
      */
     public int mLaunchCount;
 
@@ -94,6 +99,7 @@ public final class UsageStats implements Parcelable {
 
     /**
      * {@hide}
+     * 为即时应用（Instant App）创建混淆的 UsageStats 对象副本
      */
     public UsageStats getObfuscatedForInstantApp() {
         final UsageStats ret = new UsageStats(this);
