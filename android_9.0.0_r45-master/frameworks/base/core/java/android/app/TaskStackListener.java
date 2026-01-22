@@ -47,6 +47,7 @@ public abstract class TaskStackListener extends ITaskStackListener.Stub {
     public void onPinnedStackAnimationStarted() throws RemoteException {
     }
 
+    //固定堆栈动画结束
     @Override
     public void onPinnedStackAnimationEnded() throws RemoteException {
     }
@@ -56,6 +57,7 @@ public abstract class TaskStackListener extends ITaskStackListener.Stub {
             throws RemoteException {
     }
 
+    //监听活动正在关闭停靠栈的事件回调
     @Override
     public void onActivityDismissingDockedStack() throws RemoteException {
     }
@@ -85,6 +87,7 @@ public abstract class TaskStackListener extends ITaskStackListener.Stub {
             throws RemoteException {
     }
 
+    //监听活动请求的方向改变事件回调
     @Override
     public void onActivityRequestedOrientationChanged(int taskId, int requestedOrientation)
             throws RemoteException {

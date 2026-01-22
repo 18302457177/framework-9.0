@@ -29,6 +29,7 @@ import java.lang.annotation.RetentionPolicy;
 public abstract class FragmentTransaction {
     /**
      * Calls {@link #add(int, Fragment, String)} with a 0 containerViewId.
+     * 用于添加一个 Fragment 到事务中。
      */
     public abstract FragmentTransaction add(Fragment fragment, String tag);
 
@@ -184,10 +185,10 @@ public abstract class FragmentTransaction {
 
     /** @hide */
     @IntDef(prefix = { "TRANSIT_" }, value = {
-            TRANSIT_NONE,
-            TRANSIT_FRAGMENT_OPEN,
-            TRANSIT_FRAGMENT_CLOSE,
-            TRANSIT_FRAGMENT_FADE
+            TRANSIT_NONE,//无动画转场
+            TRANSIT_FRAGMENT_OPEN,//Fragment 打开转场
+            TRANSIT_FRAGMENT_CLOSE,//Fragment 关闭转场
+            TRANSIT_FRAGMENT_FADE//Fragment 淡入淡出转场
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Transit {}

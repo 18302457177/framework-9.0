@@ -59,6 +59,7 @@ import java.util.List;
  * <p>
  * Note that the application must have the {@link android.Manifest.permission#INTERNET}
  * permission to use this class.
+ * 用于处理长时间运行的 HTTP 下载任务。
  */
 @SystemService(Context.DOWNLOAD_SERVICE)
 public class DownloadManager {
@@ -359,6 +360,7 @@ public class DownloadManager {
      * Note that the default download destination is a shared volume where the system might delete
      * your file if it needs to reclaim space for system use. If this is a problem, use a location
      * on external storage (see {@link #setDestinationUri(Uri)}.
+     * 包含了请求新下载所需的所有信息，是配置下载任务的核心类。
      */
     public static class Request {
         /**
@@ -544,6 +546,7 @@ public class DownloadManager {
             return this;
         }
 
+        //用于基于基础目录和子路径构建完整的下载文件目标 URI。
         private void setDestinationFromBase(File base, String subPath) {
             if (subPath == null) {
                 throw new NullPointerException("subPath cannot be null");
@@ -554,6 +557,7 @@ public class DownloadManager {
         /**
          * If the file to be downloaded is to be scanned by MediaScanner, this method
          * should be called before {@link DownloadManager#enqueue(Request)} is called.
+         * 此方法用于指定下载的文件需要被 MediaScanner 扫描，使文件能够在媒体应用程序（如图库应用）中可见。
          */
         public void allowScanningByMediaScanner() {
             mScannable = true;
@@ -667,6 +671,10 @@ public class DownloadManager {
          *
          * @param flags any combination of the NETWORK_* bit flags.
          * @return this object
+         * 用于限制下载任务可以通过哪些类型的网络进行。
+         * NETWORK_MOBILE: 移动网络
+         * NETWORK_WIFI: WiFi网络
+         * NETWORK_BLUETOOTH: 蓝牙网络（已废弃）
          */
         public Request setAllowedNetworkTypes(int flags) {
             mAllowedNetworkTypes = flags;
@@ -678,6 +686,7 @@ public class DownloadManager {
          * allowed.
          * @param allowed whether to allow a roaming connection to be used
          * @return this object
+         * 用于设置下载任务是否可以在漫游连接状态下进行。
          */
         public Request setAllowedOverRoaming(boolean allowed) {
             mRoamingAllowed = allowed;
@@ -689,6 +698,7 @@ public class DownloadManager {
          * connection. By default, metered networks are allowed.
          *
          * @see ConnectivityManager#isActiveNetworkMetered()
+         * 设置下载任务是否可以在计量网络连接上进行。
          */
         public Request setAllowedOverMetered(boolean allow) {
             mMeteredAllowed = allow;
@@ -721,6 +731,7 @@ public class DownloadManager {
          * @param requiresDeviceIdle Whether or not the device need be within an
          *            idle maintenance window.
          * @see android.app.job.JobInfo.Builder#setRequiresDeviceIdle(boolean)
+         * 设置下载任务是否需要在设备处于空闲模式时才能运行。
          */
         public Request setRequiresDeviceIdle(boolean requiresDeviceIdle) {
             if (requiresDeviceIdle) {
@@ -801,6 +812,7 @@ public class DownloadManager {
 
     /**
      * This class may be used to filter download manager queries.
+     * 用于过滤下载管理器的查询结果，允许客户端根据特定条件筛选下载记录。
      */
     public static class Query {
         /**
@@ -968,6 +980,7 @@ public class DownloadManager {
             return builder.toString();
         }
 
+        //用于构建状态查询的SQL条件子句。
         private String statusClause(String operator, int value) {
             return Downloads.Impl.COLUMN_STATUS + operator + "'" + value + "'";
         }
@@ -995,6 +1008,7 @@ public class DownloadManager {
      * Makes this object access the download provider through /all_downloads URIs rather than
      * /my_downloads URIs, for clients that have permission to do so.
      * @hide
+     * 用于切换 DownloadManager 访问下载提供者（download provider）的 URI 范围。
      */
     public void setAccessAllDownloads(boolean accessAllDownloads) {
         if (accessAllDownloads) {
@@ -1187,6 +1201,7 @@ public class DownloadManager {
      * @param context the {@link Context} to use for accessing the {@link ContentResolver}
      * @return maximum size, in bytes, of downloads that may go over a mobile connection; or null if
      * there's no limit
+     * 获取可通过移动网络下载的最大字节数限制，如果没有限制则返回 null。
      */
     public static Long getMaxBytesOverMobile(Context context) {
         try {
@@ -1283,6 +1298,7 @@ public class DownloadManager {
      * @param context the {@link Context} to use for accessing the {@link ContentResolver}
      * @return recommended maximum size, in bytes, of downloads that may go over a mobile
      * connection; or null if there's no recommended limit.
+     * 获取推荐的可经过移动网络下载的最大字节数限制，如果没有推荐限制则返回 null。
      */
     public static Long getRecommendedMaxBytesOverMobile(Context context) {
         try {
@@ -1293,7 +1309,9 @@ public class DownloadManager {
         }
     }
 
-    /** {@hide} */
+    /** {@hide}
+     * 判断当前活动的网络是否属于昂贵的网络类型，但在当前实现中尚未完成。
+     * */
     public static boolean isActiveNetworkExpensive(Context context) {
         // TODO: connect to NetworkPolicyManager
         return false;
@@ -1438,6 +1456,7 @@ public class DownloadManager {
 
     /**
      * Get a parameterized SQL WHERE clause to select a bunch of IDs.
+     * 生成一个参数化的 SQL WHERE 子句，用于根据多个 ID 查询下载记录。
      */
     static String getWhereClauseForIds(long[] ids) {
         StringBuilder whereClause = new StringBuilder();
@@ -1464,6 +1483,7 @@ public class DownloadManager {
     /**
      * Get selection args for a clause returned by {@link #getWhereClauseForIds(long[])}
      * and write it to the supplied args array.
+     * 将 ID 数组转换为 SQL 查询参数数组，与 getWhereClauseForIds 方法配合使用。
      */
     static String[] getWhereArgsForIds(long[] ids, String[] args) {
         assert(args.length >= ids.length);
@@ -1479,6 +1499,7 @@ public class DownloadManager {
      * presents a different set of columns, those defined in the DownloadManager.COLUMN_* constants.
      * Some columns correspond directly to underlying values while others are computed from
      * underlying data.
+     * 用于包装从 DownloadProvider 返回的游标，并提供一组标准化的列定义。
      */
     private static class CursorTranslator extends CursorWrapper {
         private final Uri mBaseUri;

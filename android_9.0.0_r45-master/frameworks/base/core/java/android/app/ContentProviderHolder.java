@@ -25,7 +25,7 @@ import android.os.Parcelable;
 
 /**
  * Information you can retrieve about a particular application.
- *
+ * 您可以检索有关特定应用程序的信息。
  * @hide
  */
 public class ContentProviderHolder implements Parcelable {

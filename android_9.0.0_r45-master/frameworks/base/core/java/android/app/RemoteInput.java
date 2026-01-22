@@ -67,6 +67,7 @@ import java.util.Set;
  * if (results != null) {
  *     CharSequence quickReplyResult = results.getCharSequence(KEY_QUICK_REPLY_TEXT);
  * }</pre>
+ * 用户输入收集: 指定从用户收集的输入，随 PendingIntent 中的 Intent 一起传递
  */
 public final class RemoteInput implements Parcelable {
     /** Label used to denote the clip data type used for remote input transport */
@@ -82,7 +83,10 @@ public final class RemoteInput implements Parcelable {
     /** Extra added to a clip data intent object identifying the {@link Source} of the results. */
     private static final String EXTRA_RESULTS_SOURCE = "android.remoteinput.resultsSource";
 
-    /** @hide */
+    /** @hide
+     * SOURCE_FREE_FORM_INPUT - 自由输入（手动输入数据）
+     * SOURCE_CHOICE - 选择输入（从预定义选项中选择）
+     * */
     @IntDef(prefix = {"SOURCE_"}, value = {SOURCE_FREE_FORM_INPUT, SOURCE_CHOICE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Source {}
@@ -151,6 +155,7 @@ public final class RemoteInput implements Parcelable {
      * Returns true if the input only accepts data, meaning {@link #getAllowFreeFormInput}
      * is false, {@link #getChoices} is null or empty, and {@link #getAllowedDataTypes} is
      * non-null and not empty.
+     * 判断数据模式: 检查输入是否仅接受数据输入而不接受文本输入
      */
     public boolean isDataOnly() {
         return !getAllowFreeFormInput()
@@ -266,6 +271,7 @@ public final class RemoteInput implements Parcelable {
          *         in {@code setAllowDataType}. Otherwise an
          *         {@link IllegalArgumentException} is thrown
          * @return this object for method chaining
+         * 控制输入类型: 设置用户是否可以提供任意文本值
          */
         @NonNull
         public Builder setAllowFreeFormInput(boolean allowFreeFormTextInput) {

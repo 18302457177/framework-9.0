@@ -27,6 +27,8 @@ import java.util.HashMap;
  * @deprecated Use the new {@link Fragment} and {@link FragmentManager} APIs
  * instead; these are also
  * available on older platforms through the Android compatibility package.
+ * 嵌入式活动容器：提供一个屏幕来包含和运行多个嵌入式活动（embedded activities）
+ * 活动管理：通过 LocalActivityManager 管理嵌入的子活动
  */
 @Deprecated
 public class ActivityGroup extends Activity {
@@ -93,6 +95,7 @@ public class ActivityGroup extends Activity {
      * from calls to their onRetainNonConfigurationInstance methods.
      *
      * {@hide}
+     * 返回子活动的非配置实例数据：返回一个 HashMap 映射，将子活动ID映射到它们的 onRetainNonConfigurationInstance() 方法返回值
      */
     @Override
     public HashMap<String,Object> onRetainNonConfigurationChildInstances() {

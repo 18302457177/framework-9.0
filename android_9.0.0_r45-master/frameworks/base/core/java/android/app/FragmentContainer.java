@@ -48,7 +48,7 @@ public abstract class FragmentContainer {
      * Creates an instance of the specified fragment, can be overridden to construct fragments
      * with dependencies, or change the fragment being constructed. By default just calls
      * {@link Fragment#instantiate(Context, String, Bundle)}.
-     *创建指定 Fragment 的实例
+     * 创建指定 Fragment 的实例
      * @hide
      */
     public Fragment instantiate(Context context, String className, Bundle arguments) {

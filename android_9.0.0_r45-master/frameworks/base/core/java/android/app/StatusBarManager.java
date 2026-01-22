@@ -81,6 +81,15 @@ public class StatusBarManager {
     public static final int DISABLE2_MASK = DISABLE2_QUICK_SETTINGS | DISABLE2_SYSTEM_ICONS
             | DISABLE2_NOTIFICATION_SHADE | DISABLE2_GLOBAL_ACTIONS | DISABLE2_ROTATE_SUGGESTIONS;
 
+    /**
+     * DISABLE2_NONE - 无禁用
+     * DISABLE2_MASK - 所有标志掩码
+     * DISABLE2_QUICK_SETTINGS - 禁用快速设置
+     * DISABLE2_SYSTEM_ICONS - 禁用系统图标
+     * DISABLE2_NOTIFICATION_SHADE - 禁用通知阴影
+     * DISABLE2_GLOBAL_ACTIONS - 禁用全局操作
+     * DISABLE2_ROTATE_SUGGESTIONS - 禁用旋转建议
+     */
     @IntDef(flag = true, prefix = { "DISABLE2_" }, value = {
             DISABLE2_NONE,
             DISABLE2_MASK,

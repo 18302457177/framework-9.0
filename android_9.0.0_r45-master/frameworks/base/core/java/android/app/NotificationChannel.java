@@ -42,6 +42,7 @@ import java.util.Arrays;
 
 /**
  * A representation of settings that apply to a collection of similarly themed notifications.
+ * 适用于一组主题相似通知的设置表示。
  */
 public final class NotificationChannel implements Parcelable {
 
@@ -284,6 +285,7 @@ public final class NotificationChannel implements Parcelable {
 
     /**
      * @hide
+     * 用于设置前台服务通知的显示状态
      */
     public void setFgServiceShown(boolean shown) {
         mFgServiceShown = shown;
@@ -324,6 +326,7 @@ public final class NotificationChannel implements Parcelable {
         mDesc = getTrimmedString(description);
     }
 
+    //用于限制字符串长度不超过最大允许值。
     private String getTrimmedString(String input) {
         if (input != null && input.length() > MAX_TEXT_LENGTH) {
             return input.substring(0, MAX_TEXT_LENGTH);
@@ -403,6 +406,7 @@ public final class NotificationChannel implements Parcelable {
      *
      * Only modifiable before the channel is submitted to
      * {@link NotificationManager#createNotificationChannel(NotificationChannel)}.
+     * 用于设置通知渠道是否应该震动。
      */
     public void enableVibration(boolean vibration) {
         this.mVibrationEnabled = vibration;
@@ -441,6 +445,7 @@ public final class NotificationChannel implements Parcelable {
      * {@link android.app.NotificationManager.Policy#INTERRUPTION_FILTER_PRIORITY} mode.
      *
      * Only modifiable by the system and notification ranker.
+     * 用于设置通知渠道是否可以绕过"勿扰模式"。
      */
     public void setBypassDnd(boolean bypassDnd) {
         this.mBypassDnd = bypassDnd;
@@ -506,6 +511,7 @@ public final class NotificationChannel implements Parcelable {
 
     /**
      * Returns the audio attributes for sound played by notifications posted to this channel.
+     * 用于获取与通知渠道相关联的音频属性。
      */
     public AudioAttributes getAudioAttributes() {
         return mAudioAttributes;
@@ -615,6 +621,7 @@ public final class NotificationChannel implements Parcelable {
 
     /**
      * If {@param forRestore} is true, {@param Context} MUST be non-null.
+     * 用于从 XML 解析器中填充通知渠道的属性。
      */
     private void populateFromXml(XmlPullParser parser, boolean forRestore,
             @Nullable Context context) {
@@ -642,6 +649,7 @@ public final class NotificationChannel implements Parcelable {
         setBlockableSystem(safeBool(parser, ATT_BLOCKABLE_SYSTEM, false));
     }
 
+    //用于在恢复备份时处理声音 URI。
     @Nullable
     private Uri restoreSoundUri(Context context, @Nullable Uri uri) {
         if (uri == null) {
@@ -815,6 +823,7 @@ public final class NotificationChannel implements Parcelable {
                 .build();
     }
 
+    //用于安全地从 XML 解析器中提取 URI 值。
     private static Uri safeUri(XmlPullParser parser, String att) {
         final String val = parser.getAttributeValue(null, att);
         return val == null ? null : Uri.parse(val);

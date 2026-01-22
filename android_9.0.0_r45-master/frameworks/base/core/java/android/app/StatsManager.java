@@ -31,6 +31,7 @@ import android.util.Slog;
 
 /**
  * API for statsd clients to send configurations and retrieve data.
+ * 用于 statsd 客户端发送配置和检索数据的 API。
  *
  * @hide
  */
@@ -192,6 +193,7 @@ public final class StatsManager {
      * @param configKey     The integer naming the config to which this subscriber is attached.
      * @param subscriberId  ID of the subscriber, as used in the config.
      * @throws StatsUnavailableException if unsuccessful due to failing to connect to stats service
+     * 设置广播订阅者的通知回调 PendingIntent
      */
     @RequiresPermission(allOf = { DUMP, PACKAGE_USAGE_STATS })
     public void setBroadcastSubscriber(
@@ -246,6 +248,7 @@ public final class StatsManager {
      *                      it removes any associated pending intent with this configKey.
      * @param configKey     The integer naming the config to which this operation is attached.
      * @throws StatsUnavailableException if unsuccessful due to failing to connect to stats service
+     * 注册用于检索指标数据的操作回调
      */
     @RequiresPermission(allOf = { DUMP, PACKAGE_USAGE_STATS })
     public void setFetchReportsOperation(PendingIntent pendingIntent, long configKey)
@@ -357,6 +360,7 @@ public final class StatsManager {
         }
     }
 
+    //用于处理 statsd 服务死亡的情况
     private class StatsdDeathRecipient implements IBinder.DeathRecipient {
         @Override
         public void binderDied() {

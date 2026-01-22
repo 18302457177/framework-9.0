@@ -78,6 +78,24 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @deprecated Use the <a href="{@docRoot}tools/extras/support-library.html">Support Library</a>
  *      {@link android.support.v4.app.FragmentManager} for consistent behavior across all devices
  *      and access to <a href="{@docRoot}topic/libraries/architecture/lifecycle.html">Lifecycle</a>.
+ *      用于在 Activity 中与 Fragment 对象进行交互的接口。
+ * 1. Fragment 生命周期管理
+ * 管理 Fragment 的整个生命周期状态转换
+ * 提供状态同步和生命周期回调机制
+ * 2. Fragment 事务处理
+ * 通过 beginTransaction() 开始 Fragment 操作事务
+ * 执行 FragmentTransaction 的提交和执行
+ * 3. Fragment 搜索和查找
+ * findFragmentById(): 根据 ID 查找 Fragment
+ * findFragmentByTag(): 根据标签查找 Fragment
+ * getFragment(): 从 Bundle 中获取 Fragment 实例
+ * 4. 回退栈管理
+ * 管理 Fragment 的回退栈操作
+ * 提供 popBackStack() 系列方法控制回退栈
+ * 监听回退栈变化 OnBackStackChangedListener
+ * 5. 状态保存和恢复
+ * 通过 saveFragmentInstanceState() 保存 Fragment 状态
+ * 管理整体的状态保存和恢复机制
  */
 @Deprecated
 public abstract class FragmentManager {
@@ -646,6 +664,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
     static final String VIEW_STATE_TAG = "android:view_state";
     static final String USER_VISIBLE_HINT_TAG = "android:user_visible_hint";
 
+    //用于在动画执行过程中适当地将 View 设置到硬件层（Hardware Layer），以优化动画性能。
     static class AnimateOnHWLayerIfNeededListener implements Animator.AnimatorListener {
         private boolean mShouldRunOnHWLayer = false;
         private View mView;
@@ -798,6 +817,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
 
     /**
      * Sets the to be animated view on hardware layer during the animation.
+     * 在动画期间将要动画的视图设置到硬件层，以优化动画性能。
      */
     private void setHWLayerAnimListenerIfAlpha(final View v, Animator anim) {
         if (v == null || anim == null) {
@@ -1139,7 +1159,8 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
         
         return AnimatorInflater.loadAnimator(mHost.getContext(), anim);
     }
-    
+
+    //处理延迟启动的 Fragment。
     public void performPendingDeferredStart(Fragment f) {
         if (f.mDeferStart) {
             if (mExecutingActions) {
@@ -1152,10 +1173,12 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
         }
     }
 
+    //检查当前 FragmentManager 的状态是否至少达到指定的状态级别。
     boolean isStateAtLeast(int state) {
         return mCurState >= state;
     }
 
+    //负责管理 Fragment 的生命周期状态转换。
     @SuppressWarnings("ReferenceEquality")
     void moveToState(Fragment f, int newState, int transit, int transitionStyle,
             boolean keepActive) {
@@ -1675,6 +1698,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
         }
     }
 
+    //负责为 Fragment 分配索引并将其添加到活动 Fragment 列表中。
     void makeActive(Fragment f) {
         if (f.mIndex >= 0) {
             return;
@@ -1932,7 +1956,8 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
             }
         }
     }
-    
+
+    //用于分配回退栈索引的关键方法，用于为新的回退栈记录分配唯一的索引号。
     public int allocBackStackIndex(BackStackRecord bse) {
         synchronized (this) {
             if (mAvailBackStackIndices == null || mAvailBackStackIndices.size() <= 0) {
@@ -1994,6 +2019,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
      *
      * @param allowStateLoss true if state loss should be ignored or false if it should be
      *                       checked.
+     * 用于准备执行 Fragment 操作，确保在执行事务之前满足必要的条件。
      */
     private void ensureExecReady(boolean allowStateLoss) {
         if (mExecutingActions) {
@@ -2119,6 +2145,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
      *
      * @param records The records pending execution
      * @param isRecordPop The direction that these records are being run.
+     * 用于优化和执行 BackStackRecord 操作，通过合并相邻记录的操作来消除冗余操作。
      */
     private void removeRedundantOperationsAndExecute(ArrayList<BackStackRecord> records,
             ArrayList<Boolean> isRecordPop) {
@@ -2361,6 +2388,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
      * @param f The fragment that may be on top of another fragment.
      * @return The fragment with a View under f, if one exists or null if f has no View or
      * there are no fragments with Views in the same container.
+     * 用于查找在给定 Fragment 之下的 Fragment，即在同一容器中位于下方的 Fragment。
      */
     private Fragment findFragmentUnder(Fragment f) {
         final ViewGroup container = f.mContainer;
@@ -2445,6 +2473,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
     /**
      * Ends the animations of fragments so that they immediately reach the end state.
      * This is used prior to saving the state so that the correct state is saved.
+     * 用于结束正在进行动画的 Fragment 的动画过程，使其立即到达最终状态。这个方法在保存状态之前被调用，以确保正确的状态被保存。
      */
     private void endAnimatingAwayFragments() {
         final int numFragments = mActive == null ? 0 : mActive.size();
@@ -2582,6 +2611,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
      * was previously done while saving the non-config state, but that has been moved to
      * {@link #saveNonConfig()} called from {@link #saveAllState()}. If mRetaining is set too
      * early, the fragment won't be destroyed when the FragmentManager is destroyed.
+     * 用于递归设置 FragmentManagerNonConfig 中所有 Fragment 的 mRetaining 标志为 true。
      */
     private static void setRetaining(FragmentManagerNonConfig nonConfig) {
         if (nonConfig == null) {
@@ -2939,6 +2969,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
      * To prevent list modification errors, mActive sets values to null instead of
      * removing them when the Fragment becomes inactive. This cleans up the list at the
      * end of executing the transactions.
+     * 用于清理 mActive 列表中的空条目，这是一个内部辅助方法，用于解决列表修改错误。
      */
     private void burpActive() {
         if (mActive != null) {
@@ -3467,6 +3498,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
         }
     }
 
+    //用于将 Fragment 转场动画类型反转，即将进入动画转换为退出动画，或将退出动画转换为进入动画。
     public static int reverseTransit(int transit) {
         int rev = 0;
         switch (transit) {
@@ -3483,7 +3515,8 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
         return rev;
         
     }
-    
+
+    //用于将 Fragment 转场动画类型转换为相应的样式属性索引。
     public static int transitToStyleIndex(int transit, boolean enter) {
         int animAttr = -1;
         switch (transit) {
@@ -3608,6 +3641,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
 
     /**
      * An add or pop transaction to be scheduled for the UI thread.
+     * 用于定义一个操作生成器，可生成待执行的事务记录
      */
     interface OpGenerator {
         /**
@@ -3628,11 +3662,12 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
     /**
      * A pop operation OpGenerator. This will be run on the UI thread and will generate the
      * transactions that will be popped if anything can be popped.
+     * 用于处理 Fragment 回退栈的弹出操作。
      */
     private class PopBackStackState implements OpGenerator {
-        final String mName;
-        final int mId;
-        final int mFlags;
+        final String mName;//要弹出到的回退栈条目的名称
+        final int mId;//要弹出到的回退栈条目的ID
+        final int mFlags;//弹出操作的标志位
 
         public PopBackStackState(String name, int id, int flags) {
             mName = name;
@@ -3640,6 +3675,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
             mFlags = flags;
         }
 
+        //生成需要执行的回退栈操作记录
         @Override
         public boolean generateOps(ArrayList<BackStackRecord> records,
                 ArrayList<Boolean> isRecordPop) {
@@ -3661,12 +3697,13 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
      * A listener for a postponed transaction. This waits until
      * {@link Fragment#startPostponedEnterTransition()} is called or a transaction is started
      * that interacts with this one, based on interactions with the fragment container.
+     * 用于监听延迟进入过渡（postponed enter transition）的完成情况。
      */
     static class StartEnterTransitionListener
             implements Fragment.OnStartEnterTransitionListener {
-        private final boolean mIsBack;
-        private final BackStackRecord mRecord;
-        private int mNumPostponed;
+        private final boolean mIsBack;//标识是否为回退操作
+        private final BackStackRecord mRecord;//关联的 BackStackRecord 记录
+        private int mNumPostponed;//延迟的 Fragment 数量
 
         public StartEnterTransitionListener(BackStackRecord record, boolean isBack) {
             mIsBack = isBack;
@@ -3677,6 +3714,8 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
          * Called from {@link Fragment#startPostponedEnterTransition()}, this decreases the
          * number of Fragments that are postponed. This may cause the transaction to schedule
          * to finish running and run transitions and animations.
+         * 当 Fragment 调用 startPostponedEnterTransition() 时被调用
+         * 减少延迟的 Fragment 计数，当计数为 0 时安排提交事务
          */
         @Override
         public void onStartEnterTransition() {
@@ -3699,6 +3738,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
 
         /**
          * @return true if there are no more postponed fragments as part of the transaction.
+         * 检查是否还有延迟的 Fragment
          */
         public boolean isReady() {
             return mNumPostponed == 0;
@@ -3708,6 +3748,7 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
          * Completes the transaction and start the animations and transitions. This may skip
          * the transitions if this is called before all fragments have called
          * {@link Fragment#startPostponedEnterTransition()}.
+         * 完成事务并启动动画和过渡效果
          */
         public void completeTransaction() {
             final boolean canceled;

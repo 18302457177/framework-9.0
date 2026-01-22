@@ -26,6 +26,7 @@ import java.util.Objects;
 
 /**
  * Rule instance information for zen mode.
+ * 禅模式规则实例：封装禅模式（Zen Mode）的自动规则信息
  */
 public final class AutomaticZenRule implements Parcelable {
 

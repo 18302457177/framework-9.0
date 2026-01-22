@@ -26,6 +26,7 @@ import java.io.PrintWriter;
  * Information returned after waiting for an activity start.
  *
  * @hide
+ * 存储等待Activity启动操作后的结果信息
  */
 public class WaitResult implements Parcelable {
     public static final int INVALID_DELAY = -1;

@@ -75,6 +75,18 @@ import java.lang.annotation.RetentionPolicy;
  * {@link #setExact(int, long, PendingIntent)}.  Applications whose {@code targetSdkVersion}
  * is earlier than API 19 will continue to see the previous behavior in which all
  * alarms are delivered exactly when requested.
+ * 系统闹钟服务访问：提供对系统闹钟服务的访问接口，允许应用程序在未来的特定时间运行
+ * 定时任务调度：可以安排应用程序在指定时间执行，即使应用程序当前未运行也能触发
+ * 广播触发机制：当闹钟触发时，系统会广播注册的 Intent，自动启动目标应用程序（如果尚未运行）
+ * 设备唤醒控制：支持在设备休眠时唤醒设备，闹钟触发时可选择唤醒设备或仅在设备唤醒时处理
+ * 电量优化管理：自API 19起，闹钟传递是不精确的，系统会调整闹钟以最小化唤醒次数和电池使用
+ * 多种时间类型支持：
+ * RTC_WAKEUP - 唤醒设备的UTC时间闹钟
+ * RTC - 不唤醒设备的UTC时间闹钟
+ * ELAPSED_REALTIME_WAKEUP - 唤醒设备的启动时间闹钟
+ * ELAPSED_REALTIME - 不唤醒设备的启动时间闹钟
+ * 精确/非精确闹钟：支持精确时间闹钟和可批量处理的非精确闹钟，平衡定时精度与电池使用
+ * 系统重启保留：注册的闹钟在设备重启后会被清除，但在设备休眠时会保留
  */
 @SystemService(Context.ALARM_SERVICE)
 public class AlarmManager {
@@ -82,10 +94,10 @@ public class AlarmManager {
 
     /** @hide */
     @IntDef(prefix = { "RTC", "ELAPSED" }, value = {
-            RTC_WAKEUP,
-            RTC,
-            ELAPSED_REALTIME_WAKEUP,
-            ELAPSED_REALTIME,
+            RTC_WAKEUP,//唤醒设备的UTC时间闹钟
+            RTC,//不唤醒设备的UTC时间闹钟
+            ELAPSED_REALTIME_WAKEUP,//唤醒设备的启动时间闹钟
+            ELAPSED_REALTIME,//不唤醒设备的启动时间闹钟
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AlarmType {}
@@ -188,18 +200,21 @@ public class AlarmManager {
      * Direct-notification alarms: the requester must be running continuously from the
      * time the alarm is set to the time it is delivered, or delivery will fail.  Only
      * one-shot alarms can be set using this mechanism, not repeating alarms.
+     * 用于直接接收闹钟触发的通知
      */
     public interface OnAlarmListener {
         /**
          * Callback method that is invoked by the system when the alarm time is reached.
+         * 在闹钟到达指定时间时被系统调用
          */
         public void onAlarm();
     }
 
+    //作为 OnAlarmListener 的包装器，处理远程调用到本地回调的转换，并管理回调的执行和完成通知。
     final class ListenerWrapper extends IAlarmListener.Stub implements Runnable {
-        final OnAlarmListener mListener;
-        Handler mHandler;
-        IAlarmCompleteListener mCompletion;
+        final OnAlarmListener mListener;//OnAlarmListener 实例
+        Handler mHandler;//Handler 用于执行回调
+        IAlarmCompleteListener mCompletion;//完成回调接口
 
         public ListenerWrapper(OnAlarmListener listener) {
             mListener = listener;
@@ -209,6 +224,7 @@ public class AlarmManager {
            mHandler = h;
         }
 
+        //取消闹钟并从缓存中移除
         public void cancel() {
             try {
                 mService.remove(null, this);
@@ -223,6 +239,7 @@ public class AlarmManager {
             }
         }
 
+        //接收闹钟触发回调，从缓存中移除并投递到 Handler
         @Override
         public void doAlarm(IAlarmCompleteListener alarmManager) {
             mCompletion = alarmManager;
@@ -238,6 +255,7 @@ public class AlarmManager {
             mHandler.post(this);
         }
 
+        //执行 mListener.onAlarm() 并报告完成状态
         @Override
         public void run() {
             // Now deliver it to the app
@@ -273,6 +291,7 @@ public class AlarmManager {
         mMainThreadHandler = new Handler(ctx.getMainLooper());
     }
 
+    //为旧版 API 提供向后兼容性，确保目标 SDK 版本低于 API 19 的应用仍能获得精确闹钟行为
     private long legacyExactLength() {
         return (mAlwaysExact ? WINDOW_EXACT : WINDOW_HEURISTIC);
     }
@@ -655,6 +674,9 @@ public class AlarmManager {
                 targetHandler, workSource, null);
     }
 
+    /**
+     * 闹钟设置的内部实现方法，处理各种类型的闹钟设置请求
+     */
     private void setImpl(@AlarmType int type, long triggerAtMillis, long windowMillis,
             long intervalMillis, int flags, PendingIntent operation, final OnAlarmListener listener,
             String listenerTag, Handler targetHandler, WorkSource workSource,
@@ -788,6 +810,7 @@ public class AlarmManager {
      * @see #INTERVAL_HOUR
      * @see #INTERVAL_HALF_DAY
      * @see #INTERVAL_DAY
+     * 设置一个具有不精确触发时间要求的重复闹钟，例如每小时重复一次但不一定要在整点触发的闹钟
      */
     public void setInexactRepeating(@AlarmType int type, long triggerAtMillis,
             long intervalMillis, PendingIntent operation) {
@@ -1006,7 +1029,9 @@ public class AlarmManager {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 获取下一次从空闲状态唤醒的时间点
+     * */
     public long getNextWakeFromIdleTime() {
         try {
             return mService.getNextWakeFromIdleTime();
@@ -1059,14 +1084,14 @@ public class AlarmManager {
 
     /**
      * An immutable description of a scheduled "alarm clock" event.
-     *
+     * 表示已调度的闹钟事件的不可变描述
      * @see AlarmManager#setAlarmClock
      * @see AlarmManager#getNextAlarmClock
      */
     public static final class AlarmClockInfo implements Parcelable {
 
-        private final long mTriggerTime;
-        private final PendingIntent mShowIntent;
+        private final long mTriggerTime;//触发时间（UTC时间戳，毫秒）
+        private final PendingIntent mShowIntent;//用于显示或编辑闹钟详情的 PendingIntent
 
         /**
          * Creates a new alarm clock description.
@@ -1095,6 +1120,7 @@ public class AlarmManager {
          *
          * This value is UTC wall clock time in milliseconds, as returned by
          * {@link System#currentTimeMillis()} for example.
+         * 获取触发时间
          */
         public long getTriggerTime() {
             return mTriggerTime;
@@ -1109,6 +1135,7 @@ public class AlarmManager {
          * {@link PendingIntent#send(android.content.Context, int, android.content.Intent)
          * PendingIntent.send()} and {@link android.content.Intent#fillIn Intent.fillIn()}
          * for details.
+         * 获取显示意图
          */
         public PendingIntent getShowIntent() {
             return mShowIntent;

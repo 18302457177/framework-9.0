@@ -25,15 +25,21 @@ import android.os.Parcelable;
 /**
  * Provides an immutable reference to an entity that appears repeatedly on different surfaces of the
  * platform. For example, this could represent the sender of a message.
+ * 1. 实体引用表示
+ * 不可变实体引用: 提供平台不同界面上反复出现的实体的不可变引用
+ * 消息发送者表示: 可用于表示消息的发送者
+ * 2. 数据封装
+ * 基本信息: 包含姓名(mName)、图标(mIcon)、URI(mUri)、键值(mKey)
+ * 状态标识: 机器人标识(mIsBot)和重要性标识(mIsImportant)
  */
 public final class Person implements Parcelable {
 
-    @Nullable private CharSequence mName;
-    @Nullable private Icon mIcon;
-    @Nullable private String mUri;
-    @Nullable private String mKey;
-    private boolean mIsBot;
-    private boolean mIsImportant;
+    @Nullable private CharSequence mName;//人员姓名
+    @Nullable private Icon mIcon;//人员图标
+    @Nullable private String mUri;//关联的URI
+    @Nullable private String mKey;// 唯一标识键
+    private boolean mIsBot;//是否为机器人
+    private boolean mIsImportant;//是否为重要联系人
 
     private Person(Parcel in) {
         mName = in.readCharSequence();

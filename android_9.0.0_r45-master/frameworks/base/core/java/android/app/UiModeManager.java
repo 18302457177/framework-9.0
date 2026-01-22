@@ -98,9 +98,9 @@ public class UiModeManager {
 
     /** @hide */
     @IntDef(prefix = { "MODE_" }, value = {
-            MODE_NIGHT_AUTO,
-            MODE_NIGHT_NO,
-            MODE_NIGHT_YES
+            MODE_NIGHT_AUTO,//根据时间自动切换夜间模式
+            MODE_NIGHT_NO,//从不运行夜间模式
+            MODE_NIGHT_YES//始终运行夜间模式
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface NightMode {}
@@ -155,6 +155,7 @@ public class UiModeManager {
      * This will cause the device to switch to the car home UI as part of
      * the mode switch.
      * @param flags Must be 0.
+     * 使设备在模式切换时切换到车载主界面
      */
     public void enableCarMode(int flags) {
         if (mService != null) {

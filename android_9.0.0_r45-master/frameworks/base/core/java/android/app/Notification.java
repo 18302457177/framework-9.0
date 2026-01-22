@@ -607,11 +607,11 @@ public class Notification implements Parcelable
 
     /** @hide */
     @IntDef(prefix = { "PRIORITY_" }, value = {
-            PRIORITY_DEFAULT,
-            PRIORITY_LOW,
-            PRIORITY_MIN,
-            PRIORITY_HIGH,
-            PRIORITY_MAX
+            PRIORITY_DEFAULT,//默认优先级
+            PRIORITY_LOW,//较低优先级
+            PRIORITY_MIN,//最低优先级
+            PRIORITY_HIGH,//较高优先级
+            PRIORITY_MAX//最高优先级
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Priority {}
@@ -1261,7 +1261,11 @@ public class Notification implements Parcelable
     private String mShortcutId;
     private CharSequence mSettingsText;
 
-    /** @hide */
+    /** @hide
+     * GROUP_ALERT_ALL: 所有通知都发出声音和振动
+     * GROUP_ALERT_CHILDREN: 只对子通知静音
+     * GROUP_ALERT_SUMMARY: 只对摘要通知静音
+     * */
     @IntDef(prefix = { "GROUP_ALERT_" }, value = {
             GROUP_ALERT_ALL, GROUP_ALERT_CHILDREN, GROUP_ALERT_SUMMARY
     })
@@ -1862,6 +1866,7 @@ public class Notification implements Parcelable
              * a companion device. The user can still trigger this action when the wearable device is
              * offline, but a visual hint will indicate that the action may not be available.
              * Defaults to true.
+             * 用于设置当可穿戴设备未连接到伴侣设备时，通知操作是否可用。
              */
             public WearableExtender setAvailableOffline(boolean availableOffline) {
                 setFlag(FLAG_AVAILABLE_OFFLINE, availableOffline);
@@ -1892,6 +1897,7 @@ public class Notification implements Parcelable
              *
              * @param label the label to display while the action is being prepared to execute
              * @return this object for method chaining
+             * 用于设置在可穿戴设备自动执行操作时显示的标签文本。
              */
             @Deprecated
             public WearableExtender setInProgressLabel(CharSequence label) {
@@ -1964,6 +1970,7 @@ public class Notification implements Parcelable
              * @param hintLaunchesActivity {@code true} if the content intent will launch
              * an activity and transitions should be generated, false otherwise.
              * @return this object for method chaining
+             * 用于设置一个提示，指示此操作是否会直接启动一个 Activity，从而让平台生成适当的转换动画。
              */
             public WearableExtender setHintLaunchesActivity(
                     boolean hintLaunchesActivity) {
@@ -1988,6 +1995,7 @@ public class Notification implements Parcelable
              * @param hintDisplayInline {@code true} if action should be displayed inline, false
              *        otherwise
              * @return this object for method chaining
+             * 用于设置一个提示，指示此操作是否应以内联方式显示。
              */
             public WearableExtender setHintDisplayActionInline(
                     boolean hintDisplayInline) {
@@ -2015,17 +2023,17 @@ public class Notification implements Parcelable
          * @hide
          */
         @IntDef(prefix = { "SEMANTIC_ACTION_" }, value = {
-                SEMANTIC_ACTION_NONE,
-                SEMANTIC_ACTION_REPLY,
-                SEMANTIC_ACTION_MARK_AS_READ,
-                SEMANTIC_ACTION_MARK_AS_UNREAD,
-                SEMANTIC_ACTION_DELETE,
-                SEMANTIC_ACTION_ARCHIVE,
-                SEMANTIC_ACTION_MUTE,
-                SEMANTIC_ACTION_UNMUTE,
-                SEMANTIC_ACTION_THUMBS_UP,
-                SEMANTIC_ACTION_THUMBS_DOWN,
-                SEMANTIC_ACTION_CALL
+                SEMANTIC_ACTION_NONE,//无语义动作定义
+                SEMANTIC_ACTION_REPLY,//回复对话、聊天、群组等
+                SEMANTIC_ACTION_MARK_AS_READ,//将内容标记为已读
+                SEMANTIC_ACTION_MARK_AS_UNREAD,//将内容标记为未读
+                SEMANTIC_ACTION_DELETE,//删除相关内容
+                SEMANTIC_ACTION_ARCHIVE,//归档相关内容
+                SEMANTIC_ACTION_MUTE,//静音相关内容
+                SEMANTIC_ACTION_UNMUTE,//取消静音
+                SEMANTIC_ACTION_THUMBS_UP,//点赞内容
+                SEMANTIC_ACTION_THUMBS_DOWN,//点踩内容
+                SEMANTIC_ACTION_CALL//呼叫联系人、群组等
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface SemanticAction {}
@@ -2335,6 +2343,7 @@ public class Notification implements Parcelable
      * of this object is able to render its contents.
      *
      * @hide
+     * 用于遍历通知对象中所有引用的 Uri 对象。
      */
     public void visitUris(@NonNull Consumer<Uri> visitor) {
         visitor.accept(sound);
@@ -2372,6 +2381,7 @@ public class Notification implements Parcelable
      * Removes heavyweight parts of the Notification object for archival or for sending to
      * listeners when the full contents are not necessary.
      * @hide
+     * 用于移除通知对象中的重量级组件，以减小其大小。
      */
     public final void lightenPayload() {
         tickerView = null;
@@ -2418,6 +2428,7 @@ public class Notification implements Parcelable
         return removeTextSizeSpans(cs);
     }
 
+    //用于移除字符序列中的文本大小相关的跨度（spans）。
     private static CharSequence removeTextSizeSpans(CharSequence charSequence) {
         if (charSequence instanceof Spanned) {
             Spanned ss = (Spanned) charSequence;
@@ -2764,6 +2775,7 @@ public class Notification implements Parcelable
      * <p>
      * However, once the notification goes into a parcel each reference gets marshalled separately,
      * wasting memory. Especially with large images on Auto and TV, this is worth fixing.
+     * 用于修复 extras 中的对象重复问题。
      */
     private void fixDuplicateExtras() {
         if (extras != null) {
@@ -2799,6 +2811,7 @@ public class Notification implements Parcelable
      *
      * @deprecated Use {@link Builder} instead.
      * @removed
+     * 用于设置标准的"最新事件"布局视图。
      */
     @Deprecated
     public void setLatestEventInfo(Context context,
@@ -3405,6 +3418,7 @@ public class Notification implements Parcelable
          * in the content view.
          * For apps targeting {@link android.os.Build.VERSION_CODES#N} and above, this defaults to
          * {@code false}. For earlier apps, the default is {@code true}.
+         * 用于控制是否在通知内容视图中显示时间戳。
          */
         public Builder setShowWhen(boolean show) {
             mN.extras.putBoolean(EXTRA_SHOW_WHEN, show);
@@ -3425,6 +3439,7 @@ public class Notification implements Parcelable
          * @see android.widget.Chronometer
          * @see Notification#when
          * @see #setChronometerCountDown(boolean)
+         * 用于设置通知是否将 when 字段显示为秒表计时器。
          */
         public Builder setUsesChronometer(boolean b) {
             mN.extras.putBoolean(EXTRA_SHOW_CHRONOMETER, b);
@@ -3584,6 +3599,7 @@ public class Notification implements Parcelable
         /**
          * Sets whether remote history entries view should have a spinner.
          * @hide
+         * 用于设置远程输入历史条目视图是否应该显示一个进度条。
          */
         public Builder setShowRemoteInputSpinner(boolean showSpinner) {
             mN.extras.putBoolean(EXTRA_SHOW_REMOTE_INPUT_SPINNER, showSpinner);
@@ -3673,6 +3689,7 @@ public class Notification implements Parcelable
          *
          * This will override the heads-up layout that would otherwise be constructed by this
          * Builder object.
+         * 用于设置自定义的 RemoteViews 来替换平台默认模板在 Heads-up 通知对话框中的显示。
          */
         public Builder setCustomHeadsUpContentView(RemoteViews contentView) {
             mN.headsUpContentView = contentView;
@@ -3689,6 +3706,7 @@ public class Notification implements Parcelable
          * clickable buttons inside the notification view).
          *
          * @see Notification#contentIntent Notification.contentIntent
+         * 用于设置点击通知时要发送的 PendingIntent。
          */
         public Builder setContentIntent(PendingIntent intent) {
             mN.contentIntent = intent;
@@ -3699,6 +3717,7 @@ public class Notification implements Parcelable
          * Supply a {@link PendingIntent} to send when the notification is cleared explicitly by the user.
          *
          * @see Notification#deleteIntent
+         * 用于设置当用户显式清除通知时要发送的 PendingIntent。
          */
         public Builder setDeleteIntent(PendingIntent intent) {
             mN.deleteIntent = intent;
@@ -3735,6 +3754,7 @@ public class Notification implements Parcelable
          * Set the "ticker" text which is sent to accessibility services.
          *
          * @see Notification#tickerText
+         * 用于设置发送到无障碍服务的"跑马灯"文本。
          */
         public Builder setTicker(CharSequence tickerText) {
             mN.tickerText = safeCharSequence(tickerText);
@@ -3832,6 +3852,7 @@ public class Notification implements Parcelable
          *
          * @deprecated use {@link NotificationChannel#setVibrationPattern(long[])} instead.
          * @see Notification#vibrate
+         * 用于设置通知的振动模式。
          */
         @Deprecated
         public Builder setVibrate(long[] pattern) {
@@ -3877,6 +3898,7 @@ public class Notification implements Parcelable
 
          * @see Notification#FLAG_ONGOING_EVENT
          * @see Service#setForeground(boolean)
+         * 用于设置通知是否为"持续运行"的通知。
          */
         public Builder setOngoing(boolean ongoing) {
             setFlag(FLAG_ONGOING_EVENT, ongoing);
@@ -3897,6 +3919,7 @@ public class Notification implements Parcelable
          *
          * @see Builder#setColor(int)
          * @see MediaStyle#setMediaSession(MediaSession.Token)
+         * 用于设置通知是否应该被着色。当设置后，使用 setColor(int) 设置的颜色将作为通知的背景颜色。
          */
         public Builder setColorized(boolean colorize) {
             mN.extras.putBoolean(EXTRA_COLORIZED, colorize);
@@ -3908,6 +3931,7 @@ public class Notification implements Parcelable
          * and ticker to be played if the notification is not already showing.
          *
          * @see Notification#FLAG_ONLY_ALERT_ONCE
+         * 用于设置通知是否只在首次显示时播放声音、震动和跑马灯效果。
          */
         public Builder setOnlyAlertOnce(boolean onlyAlertOnce) {
             setFlag(FLAG_ONLY_ALERT_ONCE, onlyAlertOnce);
@@ -3929,6 +3953,7 @@ public class Notification implements Parcelable
          *
          * <p>Some notifications can be bridged to other devices for remote display.
          * This hint can be set to recommend this notification not be bridged.
+         * 用于设置通知是否不应桥接到其他设备显示。
          */
         public Builder setLocalOnly(boolean localOnly) {
             setFlag(FLAG_LOCAL_ONLY, localOnly);
@@ -3947,6 +3972,7 @@ public class Notification implements Parcelable
          * @deprecated use {@link NotificationChannel#enableVibration(boolean)} and
          * {@link NotificationChannel#enableLights(boolean)} and
          * {@link NotificationChannel#setSound(Uri, AudioAttributes)} instead.
+         * 用于设置通知从系统默认值继承哪些通知属性。
          */
         @Deprecated
         public Builder setDefaults(int defaults) {
@@ -4027,6 +4053,7 @@ public class Notification implements Parcelable
          *
          * @param person the person to add.
          * @see Notification#EXTRA_PEOPLE_LIST
+         * 用于向通知添加一个相关人员，这些人员信息对于通知的优先级排序和过滤很重要。
          */
         public Builder addPerson(Person person) {
             mPersonList.add(person);
@@ -4043,6 +4070,7 @@ public class Notification implements Parcelable
          * {@link #setSortKey}.
          * @param groupKey The group key of the group.
          * @return this object for method chaining
+         * 用于将通知设置为属于具有相同键的通知组的一部分。分组的通知可以在支持此类渲染的设备上以集群或堆叠的方式显示。
          */
         public Builder setGroup(String groupKey) {
             mN.mGroupKey = groupKey;
@@ -4056,6 +4084,7 @@ public class Notification implements Parcelable
          * The group summary may be suppressed if too few notifications are included in the group.
          * @param isGroupSummary Whether this notification should be a group summary.
          * @return this object for method chaining
+         * 用于将通知设置为通知组的摘要。分组的通知可以在支持这种渲染的设备上以集群或堆叠的形式显示。
          */
         public Builder setGroupSummary(boolean isGroupSummary) {
             setFlag(FLAG_GROUP_SUMMARY, isGroupSummary);
@@ -4171,6 +4200,7 @@ public class Notification implements Parcelable
          * in some other way (for example, in the Activity pointed to by {@link #contentIntent}).
          *
          * @param action The action to add.
+         * 用于向通知添加一个操作按钮，这些操作通常由系统显示为靠近通知内容的按钮。
          */
         public Builder addAction(Action action) {
             if (action != null) {
@@ -4236,6 +4266,7 @@ public class Notification implements Parcelable
          * (i.e. atop the secure lockscreen). See {@link #visibility} and {@link #VISIBILITY_PUBLIC}.
          * @param n A replacement notification, presumably with some or all info redacted.
          * @return The same Builder.
+         * 用于设置一个替换的通知，在不安全的上下文中（例如锁屏界面上）显示其内容。这与通知的可见性设置配合使用，允许应用控制在不同安全级别下通知的显示内容。
          */
         public Builder setPublicVersion(Notification n) {
             if (n != null) {
@@ -4250,6 +4281,7 @@ public class Notification implements Parcelable
         /**
          * Apply an extender to this notification builder. Extenders may be used to add
          * metadata or change options on this builder.
+         * 用于向通知构建器应用一个扩展器，扩展器可以用来添加元数据或修改构建器的选项。
          */
         public Builder extend(Extender extender) {
             extender.extend(this);
@@ -4281,6 +4313,7 @@ public class Notification implements Parcelable
             return this;
         }
 
+        //用于获取用户配置文件徽章的 Drawable 对象，这个徽章用于标识通知来源的用户配置文件。
         private Drawable getProfileBadgeDrawable() {
             if (mContext.getUserId() == UserHandle.USER_SYSTEM) {
                 // This user can never be a badged profile,
@@ -4423,6 +4456,7 @@ public class Notification implements Parcelable
             return contentView;
         }
 
+        //用于处理文本中的颜色跨度（color spans），根据通知是否有前景色来决定是否清除文本中的颜色跨度。
         private CharSequence processTextSpans(CharSequence text) {
             if (hasForegroundColor()) {
                 return NotificationColorUtil.clearColorSpans(text);
@@ -4592,6 +4626,7 @@ public class Notification implements Parcelable
             }
         }
 
+        //用于绑定大图标和回复图标到通知视图中，并处理它们的显示逻辑和布局边距。
         private void bindLargeIconAndReply(RemoteViews contentView, StandardTemplateParams p,
                 TemplateBindResult result) {
             boolean largeIconShown = bindLargeIcon(contentView, p.hideLargeIcon || p.ambient);
@@ -4729,6 +4764,7 @@ public class Notification implements Parcelable
                     color);
         }
 
+        //用于绑定通知头部的时间或计时器组件到远程视图中，处理时间显示逻辑。
         private void bindHeaderChronometerAndTime(RemoteViews contentView) {
             if (showsTimeOrChronometer()) {
                 contentView.setViewVisibility(R.id.time_divider, View.VISIBLE);
@@ -4788,6 +4824,7 @@ public class Notification implements Parcelable
 
         /**
          * @hide
+         * 用于获取要在通知头部显示的应用程序名称。该方法支持从额外数据中获取替代应用名称（需要特殊权限）或从应用信息中获取默认应用名称。
          */
         public String loadHeaderAppName() {
             CharSequence name = null;
@@ -4944,6 +4981,7 @@ public class Notification implements Parcelable
             return big;
         }
 
+        //用于检查通知操作是否包含有效的远程输入（RemoteInput）。
         private boolean hasValidRemoteInput(Action action) {
             if (TextUtils.isEmpty(action.title) || action.actionIntent == null) {
                 // Weird actions
@@ -5046,6 +5084,7 @@ public class Notification implements Parcelable
          * Construct a RemoteViews for the ambient version of the notification.
          *
          * @hide
+         * 用于创建通知的环境版本（ambient version）的 RemoteViews。这是 Android 通知系统中用于低功耗显示模式的一个特殊版本。
          */
         public RemoteViews makeAmbientNotification() {
             RemoteViews ambient = applyStandardTemplateWithActions(
@@ -5055,6 +5094,7 @@ public class Notification implements Parcelable
             return ambient;
         }
 
+        //用于隐藏通知视图中的第一行文本。
         private void hideLine1Text(RemoteViews result) {
             if (result != null) {
                 result.setViewVisibility(R.id.text_line_1, View.GONE);
@@ -5081,6 +5121,7 @@ public class Notification implements Parcelable
          * slightly bigger even when collapsed.
          *
          * @hide
+         * 用于创建抬头通知（Heads-Up Notification）的 RemoteViews 布局。
          */
         public RemoteViews createHeadsUpContentView(boolean increasedHeight) {
             if (mN.headsUpContentView != null && useExistingRemoteView()) {
@@ -5128,6 +5169,7 @@ public class Notification implements Parcelable
             return makePublicView(true /* ambient */);
         }
 
+        //用于创建公共版本的通知视图，适用于在安全锁屏等受限环境中显示。
         private RemoteViews makePublicView(boolean ambient) {
             if (mN.publicVersion != null) {
                 final Builder builder = recoverBuilder(mContext, mN.publicVersion);
@@ -5297,6 +5339,7 @@ public class Notification implements Parcelable
          * @param outResultColor an array in which a color will be returned as the first element if
          *                    there exists a full length color span.
          * @return the contrasted charSequence
+         * 用于确保文本中的颜色跨度与背景色之间有足够的对比度，并返回完整的颜色信息。
          */
         private CharSequence ensureColorSpanContrast(CharSequence charSequence, int background,
                 ColorStateList[] outResultColor) {
@@ -5362,6 +5405,7 @@ public class Notification implements Parcelable
         /**
          * @return Whether we are currently building a notification from a legacy (an app that
          *         doesn't create material notifications by itself) app.
+         * 用于判断当前正在构建的通知是否来自遗留应用程序（即不自行创建 Material Design 通知的应用程序）。
          */
         private boolean isLegacy() {
             if (!mIsLegacyInitialized) {
@@ -5423,6 +5467,7 @@ public class Notification implements Parcelable
             }
         }
 
+        //用于清理和验证通知的颜色值，确保自定义颜色具有有效的Alpha通道值。
         private void sanitizeColor() {
             if (mN.color != COLOR_DEFAULT) {
                 mN.color |= 0xFF000000; // no alpha for custom colors
@@ -5479,6 +5524,7 @@ public class Notification implements Parcelable
         /**
          * Apply the unstyled operations and return a new {@link Notification} object.
          * @hide
+         * 用于应用未设置样式的操作并返回一个新的 Notification 对象。
          */
         public Notification buildUnstyled() {
             if (mActions.size() > 0) {
@@ -5603,6 +5649,7 @@ public class Notification implements Parcelable
          * @return {@param n}, if no stripping is needed, otherwise a stripped clone of {@param n}.
          *
          * @hide
+         * 用于在特定情况下克隆并精简 Notification 对象，以减少内存占用和传输开销。
          */
         public static Notification maybeCloneStrippedForDelivery(Notification n, boolean isLowRam,
                 Context context) {
@@ -5749,6 +5796,7 @@ public class Notification implements Parcelable
          * @param foregroundColor the color to be used as the foreground
          *
          * @hide
+         * 用于设置通知的颜色调色板，包括背景色和前景色。
          */
         public void setColorPalette(int backgroundColor, int foregroundColor) {
             mBackgroundColor = backgroundColor;
@@ -5967,6 +6015,7 @@ public class Notification implements Parcelable
     /**
      * An object that can apply a rich notification style to a {@link Notification.Builder}
      * object.
+     * 一个可以将丰富的通知样式应用到 Notification.Builder 对象的对象。
      */
     public static abstract class Style {
 
@@ -6123,6 +6172,7 @@ public class Notification implements Parcelable
 
         /**
          * @hide
+         * 用于清除资源
          */
         public void purgeResources() {}
 
@@ -6179,6 +6229,7 @@ public class Notification implements Parcelable
 
         /**
          * @hide
+         * 用于判断两个通知样式之间是否有可见的差异。
          */
         public abstract boolean areNotificationsVisiblyDifferent(Style other);
 
@@ -6658,6 +6709,7 @@ public class Notification implements Parcelable
 
         /**
          * Validate that this style was properly composed. This is called at build time.
+         * 验证此样式是否已正确编写。这将在构建时调用。
          * @hide
          */
         @Override
@@ -7094,6 +7146,7 @@ public class Notification implements Parcelable
             return contentView;
         }
 
+        //用于检查消息列表中是否只有空白发送者。
         private boolean hasOnlyWhiteSpaceSenders() {
             for (int i = 0; i < mMessages.size(); i++) {
                 Message m = mMessages.get(i);
@@ -7155,6 +7208,7 @@ public class Notification implements Parcelable
             return remoteViews;
         }
 
+        //用于创建一个具有指定颜色的文本外观样式。
         private static TextAppearanceSpan makeFontColorSpan(int color) {
             return new TextAppearanceSpan(null, 0, 0,
                     ColorStateList.valueOf(color), null);
@@ -7461,6 +7515,8 @@ public class Notification implements Parcelable
      * </pre>
      *
      * @see Notification#bigContentView
+     * 用于创建收件箱样式的通知
+     * 这种样式特别适合显示多行文本，如邮件或消息列表，每行代表一条独立的消息或项目。
      */
     public static class InboxStyle extends Style {
 
@@ -7500,6 +7556,7 @@ public class Notification implements Parcelable
 
         /**
          * Append a line to the digest section of the Inbox notification.
+         * 在收件箱通知的摘要部分添加一行。
          */
         public InboxStyle addLine(CharSequence cs) {
             mTexts.add(safeCharSequence(cs));
@@ -8216,6 +8273,7 @@ public class Notification implements Parcelable
      * Notification.WearableExtender wearableExtender = new Notification.WearableExtender(
      *         notification);
      * List&lt;Notification&gt; pages = wearableExtender.getPages();</pre>
+     * 专门用于为通知添加可穿戴设备（如 Android Wear 智能手表）的扩展功能。
      */
     public static final class WearableExtender implements Extender {
         /**
@@ -8555,6 +8613,7 @@ public class Notification implements Parcelable
          * @param page the notification to add as another page
          * @return this object for method chaining
          * @see android.app.Notification.WearableExtender#getPages
+         * 用于为可穿戴设备扩展添加额外的内容页面。
          */
         public WearableExtender addPage(Notification page) {
             mPages.add(page);
@@ -8799,6 +8858,7 @@ public class Notification implements Parcelable
          * to a companion device.  The user can still trigger this intent when the wearable device
          * is offline, but a visual hint will indicate that the content intent may not be available.
          * Defaults to true.
+         * 用于设置当可穿戴设备未连接到伴侣设备时内容意图（content intent）是否可用。
          */
         public WearableExtender setContentIntentAvailableOffline(
                 boolean contentIntentAvailableOffline) {
@@ -8914,6 +8974,7 @@ public class Notification implements Parcelable
          * qr codes, as well as other simple black-and-white tickets.
          * @param hintAmbientBigPicture {@code true} to enable converstion and ambient.
          * @return this object for method chaining
+         * 设置提示大图
          */
         public WearableExtender setHintAmbientBigPicture(boolean hintAmbientBigPicture) {
             setFlag(FLAG_BIG_PICTURE_AMBIENT, hintAmbientBigPicture);
@@ -9207,6 +9268,7 @@ public class Notification implements Parcelable
             /**
              * Gets the pending intent that will be triggered when the user replies to this
              * notification.
+             * 用于获取当用户回复通知时将被触发的待定意图（PendingIntent）。
              */
             public PendingIntent getReplyPendingIntent() {
                 return mReplyPendingIntent;
@@ -9222,6 +9284,7 @@ public class Notification implements Parcelable
 
             /**
              * Gets the participants in the conversation.
+             * 用于获取参与对话的参与者数组。
              */
             public String[] getParticipants() {
                 return mParticipants;
@@ -9583,6 +9646,7 @@ public class Notification implements Parcelable
         /**
          * Specifies whether this notification should suppress showing a message over top of apps
          * outside of the launcher.
+         * 用于控制在非启动器应用之上是否显示消息覆盖。
          */
         public TvExtender setSuppressShowOverApps(boolean suppress) {
             mSuppressShowOverApps = suppress;

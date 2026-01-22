@@ -28,6 +28,7 @@ import dalvik.system.PathClassLoader;
 import java.util.Collection;
 
 /** @hide */
+//应用类加载器管理：作为管理应用类加载器的单例类，提供统一的类加载器创建和缓存机制
 public class ApplicationLoaders {
     public static ApplicationLoaders getDefault() {
         return gApplicationLoaders;
@@ -98,6 +99,7 @@ public class ApplicationLoaders {
      * Creates a classloader for the WebView APK and places it in the cache of loaders maintained
      * by this class. This is used in the WebView zygote, where its presence in the cache speeds up
      * startup and enables memory sharing.
+     * 为 WebView APK 创建类加载器并将其放入由该类维护的加载器缓存中
      */
     public ClassLoader createAndCacheWebViewClassLoader(String packagePath, String libsPath,
                                                         String cacheKey) {
@@ -113,6 +115,7 @@ public class ApplicationLoaders {
 
     /**
      * Adds a new path the classpath of the given loader.
+     * 向指定加载器的类路径添加一个新路径。
      * @throws IllegalStateException if the provided class loader is not a {@link PathClassLoader}.
      */
     void addPath(ClassLoader classLoader, String dexPath) {

@@ -29,6 +29,7 @@ public abstract class SynchronousUserSwitchObserver extends UserSwitchObserver {
     /**
      * Calls {@link #onUserSwitching(int)} and notifies {@code reply} by calling
      * {@link IRemoteCallback#sendResult(Bundle)}.
+     * 调用同步版本的 onUserSwitching(int)
      */
     @Override
     public final void onUserSwitching(int newUserId, IRemoteCallback reply) throws RemoteException {

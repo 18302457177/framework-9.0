@@ -39,6 +39,7 @@ import java.io.IOException;
  * To use this activity, you should include in the manifest for the associated
  * component an entry named "android.app.alias".  It is a reference to an XML
  * resource describing an intent that launches the real application.
+ * 提供简单的别名机制实现方式，允许通过配置而非硬编码的方式定义活动跳转关系
  */
 public class AliasActivity extends Activity {
     /**

@@ -137,6 +137,7 @@ class FragmentTransition {
      *                 as part of this transition.
      * @return A map from the initial shared element name to the final shared element name
      * before any onMapSharedElements is run.
+     * 用于迭代影响给定 Fragment 容器的事务，并跟踪跨事务的共享元素名称。
      */
     private static ArrayMap<String, String> calculateNameOverrides(int containerId,
             ArrayList<BackStackRecord> records, ArrayList<Boolean> isRecordPop,
@@ -324,6 +325,7 @@ class FragmentTransition {
      * Replace hide operations with visibility changes on the exiting views. Instead of making
      * the entire fragment's view GONE, make each exiting view INVISIBLE. At the end of the
      * transition, make the fragment's view GONE.
+     * 用于替换隐藏操作，通过改变退出视图的可见性而不是直接隐藏整个 Fragment 视图。
      */
     private static void replaceHide(Transition exitTransition, Fragment exitingFragment,
             final ArrayList<View> exitingViews) {
@@ -361,6 +363,7 @@ class FragmentTransition {
      * @param enteringViews The entering Views of the incoming fragment
      * @param exitTransition The exit transition of the outgoing fragment
      * @param exitingViews The exiting views of the outgoing fragment
+     * 用于在有序事务的 Fragment 转换中，在调用 TransitionManager.beginDelayedTransition() 之后更改进入和退出转换目标。
      */
     private static void scheduleTargetChange(final ViewGroup sceneRoot,
             final Fragment inFragment, final View nonExistentView,
@@ -702,6 +705,7 @@ class FragmentTransition {
      * @param fragments A structure holding the transitioning fragments in this container.
      * @return The mapping of shared element names to the Views in the hierarchy or null
      * if there is no shared element transition.
+     * 用于查找传出 Fragment 中的共享元素，并调用 SharedElementCallback.onMapSharedElements() 来允许更多控制共享元素映射。
      */
     private static ArrayMap<String, View> captureOutSharedElements(
             ArrayMap<String, String> nameOverrides, TransitionSet sharedElementTransition,
@@ -828,6 +832,7 @@ class FragmentTransition {
      * @param fragments A structure holding the transitioning fragments in this container.
      * @param enterTransition The transition used for the incoming Fragment's views
      * @param inIsPop Is the incoming fragment being added as a pop transaction?
+     * 用于获取传入 Fragment 中应作为中心点的视图，这是 Fragment 转换过程中的一个重要部分。
      */
     private static View getInEpicenterView(ArrayMap<String, View> inSharedElements,
             FragmentContainerTransition fragments,
@@ -852,6 +857,7 @@ class FragmentTransition {
      * @param outSharedElements Shared elements in the outgoing fragment
      * @param outIsPop Is the outgoing fragment being removed as a pop transaction?
      * @param outTransaction The transaction that caused the fragment to be removed.
+     * 用于设置退出转换的中心点，这是 Fragment 转换过程中的一个重要部分。
      */
     private static void setOutEpicenter(TransitionSet sharedElementTransition,
             Transition exitTransition, ArrayMap<String, View> outSharedElements, boolean outIsPop,
@@ -891,6 +897,7 @@ class FragmentTransition {
      * A utility to retain only the mappings in {@code nameOverrides} that have a value
      * that has a key in {@code namedViews}. This is a useful equivalent to
      * {@link ArrayMap#retainAll(Collection)} for values.
+     * 用于保留 nameOverrides 中那些值在 namedViews 中存在对应键的映射项。
      */
     private static void retainValues(ArrayMap<String, String> nameOverrides,
             ArrayMap<String, View> namedViews) {
@@ -912,6 +919,7 @@ class FragmentTransition {
      * @param isPop Is the incoming fragment part of a pop transaction?
      * @param sharedElements The shared element Views
      * @param isStart Call the start or end call on the SharedElementCallback
+     * 用于在适当的传入或传出 Fragment 上调用 SharedElementCallback 的 onSharedElementStart 或 onSharedElementEnd 方法。
      */
     private static void callSharedElementStartEnd(Fragment inFragment, Fragment outFragment,
             boolean isPop, ArrayMap<String, View> sharedElements, boolean isStart) {
@@ -939,6 +947,7 @@ class FragmentTransition {
      * targets to point to those. It also limits transitions that have no targets to the
      * specific shared elements. This allows developers to target child views of the
      * shared elements specifically, but this doesn't happen by default.
+     * 用于查找共享元素的所有子视图，并设置包装的 TransitionSet 目标指向这些子视图。
      */
     private static void setSharedElementTargets(TransitionSet transition,
             View nonExistentView, ArrayList<View> sharedViews) {
@@ -957,6 +966,7 @@ class FragmentTransition {
     /**
      * Uses a breadth-first scheme to add startView and all of its children to views.
      * It won't add a child if it is already in views.
+     * 使用广度优先搜索算法将起始视图及其所有子视图添加到视图列表中。
      */
     private static void bfsAddViewChildren(final List<View> views, final View startView) {
         final int startIndex = views.size();
@@ -981,6 +991,7 @@ class FragmentTransition {
 
     /**
      * Does a linear search through views for view, limited to maxIndex.
+     * 用于在指定范围内线性搜索视图列表，检查特定视图是否已存在于列表中。
      */
     private static boolean containedBeforeIndex(final List<View> views, final View view,
             final int maxIndex) {
@@ -995,6 +1006,7 @@ class FragmentTransition {
     /**
      * After the transition has started, remove all targets that we added to the transitions
      * so that the transitions are left in a clean state.
+     * 用于在转换启动后移除我们添加到转换中的所有目标，使转换处于干净状态。
      */
     private static void scheduleRemoveTargets(final Transition overalTransition,
             final Transition enterTransition, final ArrayList<View> enteringViews,
@@ -1021,6 +1033,7 @@ class FragmentTransition {
      * replaces them with the new targets list.
      * The views list should match those added in addTargets and should contain
      * one view that is not in the view hierarchy (state.nonExistentView).
+     * 用于从转换中移除指定的旧目标视图，并用新的目标视图列表替换它们。
      */
     public static void replaceTargets(Transition transition, ArrayList<View> oldTargets,
             ArrayList<View> newTargets) {
@@ -1080,6 +1093,7 @@ class FragmentTransition {
 
     /**
      * Returns true if there are any targets based on ID, transition or type.
+     * 用于检查转换对象是否具有基于ID、名称或类型的简单目标。
      */
     private static boolean hasSimpleTarget(Transition transition) {
         return !isNullOrEmpty(transition.getTargetIds()) ||
@@ -1211,6 +1225,7 @@ class FragmentTransition {
      * @param transitioningFragments Keyed on the container ID, the first fragments to be removed,
      *                               and last fragments to be added. This will be modified by
      *                               this method.
+     * 用于在回退栈弹出时查找第一个被移除的 Fragment 和最后添加的 Fragment。
      */
     public static void calculatePopFragments(BackStackRecord transaction,
             SparseArray<FragmentContainerTransition> transitioningFragments, boolean isReordered) {
@@ -1236,6 +1251,7 @@ class FragmentTransition {
      * @param isReorderedTransaction True if the operations have been partially executed and the
      *                               added fragments have Views in the hierarchy or false if the
      *                               operations haven't been executed yet.
+     * 用于检查操作命令并可能为 Fragment 容器设置第一个移出或最后进入的 Fragment。
      */
     @SuppressWarnings("ReferenceEquality")
     private static void addToFirstInLastOut(BackStackRecord transaction, BackStackRecord.Op op,
@@ -1337,6 +1353,7 @@ class FragmentTransition {
      * Ensures that a FragmentContainerTransition has been added to the SparseArray. If so,
      * it returns the existing one. If not, one is created and added to the SparseArray and
      * returned.
+     * 用于确保 FragmentContainerTransition 已经添加到 SparseArray 中。
      */
     private static FragmentContainerTransition ensureContainer(
             FragmentContainerTransition containerTransition,
@@ -1351,6 +1368,7 @@ class FragmentTransition {
     /**
      * Tracks the last fragment added and first fragment removed for fragment transitions.
      * This also tracks which fragments are changed by push or pop transactions.
+     * 用于跟踪 Fragment 容器中的过渡状态。
      */
     public static class FragmentContainerTransition {
         /**

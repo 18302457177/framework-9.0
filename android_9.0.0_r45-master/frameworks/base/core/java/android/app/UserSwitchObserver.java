@@ -21,8 +21,10 @@ import android.os.RemoteException;
 
 /**
  * @hide
+ * 用户切换观察者的基类
  */
 public class UserSwitchObserver extends IUserSwitchObserver.Stub {
+    //用户切换时的回调
     @Override
     public void onUserSwitching(int newUserId, IRemoteCallback reply) throws RemoteException {
         if (reply != null) {
@@ -30,12 +32,15 @@ public class UserSwitchObserver extends IUserSwitchObserver.Stub {
         }
     }
 
+    //用户切换完成时的回调
     @Override
     public void onUserSwitchComplete(int newUserId) throws RemoteException {}
 
+    //前台配置文件切换时的回调
     @Override
     public void onForegroundProfileSwitch(int newProfileId) throws RemoteException {}
 
+    //锁定引导完成时的回调
     @Override
     public void onLockedBootComplete(int newUserId) throws RemoteException {}
 }

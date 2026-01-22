@@ -134,6 +134,7 @@ public class VrManager {
     /**
      * Returns the current VrMode state.
      * @hide
+     * 获取设备当前的持久化VR模式状态，返回一个boolean值表示是否启用了持久化VR模式
      */
     @RequiresPermission(anyOf = {
             android.Manifest.permission.RESTRICTED_VR_ACCESS,
@@ -189,6 +190,7 @@ public class VrManager {
      *
      * @param componentName ComponentName of a Service in the application's compositor process to
      * bind to, or null to clear the current binding.
+     * 设置并绑定VR合成器服务组件，用于指定应用的合成器服务进程中的服务来绑定
      */
     @RequiresPermission(android.Manifest.permission.RESTRICTED_VR_ACCESS)
     public void setAndBindVrCompositor(ComponentName componentName) {
@@ -206,6 +208,7 @@ public class VrManager {
      *
      * @param standby True if the device is entering standby, false if it's exiting standby.
      * @hide
+     * 设置VR设备的当前待机状态
      */
     @RequiresPermission(android.Manifest.permission.ACCESS_VR_MANAGER)
     public void setStandbyEnabled(boolean standby) {

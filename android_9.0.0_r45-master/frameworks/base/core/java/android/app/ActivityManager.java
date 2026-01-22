@@ -118,6 +118,7 @@ import java.util.List;
  * classes. However, in general, the methods in this class should
  * be used for testing and debugging purposes only.
  * </p>
+ * 活动、服务和进程管理：提供关于活动、服务和包含进程的信息并与之交互
  */
 @SystemService(Context.ACTIVITY_SERVICE)
 public class ActivityManager {
@@ -137,6 +138,7 @@ public class ActivityManager {
     private static final int FIRST_START_NON_FATAL_ERROR_CODE = 100;
     private static final int LAST_START_NON_FATAL_ERROR_CODE = 199;
 
+    //用于监听和处理 UID（用户ID）状态变化的观察
     static final class UidObserver extends IUidObserver.Stub {
         final OnUidImportanceListener mListener;
         final Context mContext;
@@ -146,12 +148,14 @@ public class ActivityManager {
             mContext = clientContext;
         }
 
+        //当 UID 状态改变时调用，将进程状态转换为客户端重要性级别
         @Override
         public void onUidStateChanged(int uid, int procState, long procStateSeq) {
             mListener.onUidImportance(uid, RunningAppProcessInfo.procStateToImportanceForClient(
                     procState, mContext));
         }
 
+        //当 UID 消失时调用，通知监听器 UID 重要性为 IMPORTANCE_GONE
         @Override
         public void onUidGone(int uid, boolean disabled) {
             mListener.onUidImportance(uid, RunningAppProcessInfo.IMPORTANCE_GONE);
@@ -177,12 +181,12 @@ public class ActivityManager {
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "BUGREPORT_OPTION_" }, value = {
-            BUGREPORT_OPTION_FULL,
-            BUGREPORT_OPTION_INTERACTIVE,
-            BUGREPORT_OPTION_REMOTE,
-            BUGREPORT_OPTION_WEAR,
-            BUGREPORT_OPTION_TELEPHONY,
-            BUGREPORT_OPTION_WIFI
+            BUGREPORT_OPTION_FULL,//包含所有部分的完整bugreport
+            BUGREPORT_OPTION_INTERACTIVE,//允许用户监控进度的交互式bugreport
+            BUGREPORT_OPTION_REMOTE,//远程请求的bugreport
+            BUGREPORT_OPTION_WEAR,//可穿戴设备的bugreport
+            BUGREPORT_OPTION_TELEPHONY,//电话相关的轻量级bugreport
+            BUGREPORT_OPTION_WIFI//WiFi相关的轻量级bugreport
     })
     public @interface BugreportMode {}
     /**
@@ -563,6 +567,7 @@ public class ActivityManager {
      * @param amInt a process state of the form ActivityManager.PROCESS_STATE_
      * @return the value of the corresponding enums.proto ProcessStateEnum value.
      * @hide
+     * 提供关于当前在系统中运行的特定服务的信息
      */
     public static final int processStateAmToProto(int amInt) {
         switch (amInt) {
@@ -752,7 +757,9 @@ public class ActivityManager {
         private StackId() {
         }
 
-        /** Invalid stack ID. */
+        /** Invalid stack ID.
+         * 表示无效的堆栈ID
+         * */
         public static final int INVALID_STACK_ID = -1;
 
     }
@@ -822,7 +829,9 @@ public class ActivityManager {
     public static final int RESIZE_MODE_USER_FORCED =
             RESIZE_MODE_PRESERVE_WINDOW | RESIZE_MODE_FORCED;
 
-    /** @hide */
+    /** @hide
+     * 获取前台活动的屏幕兼容模式
+     * */
     public int getFrontActivityScreenCompatMode() {
         try {
             return getService().getFrontActivityScreenCompatMode();
@@ -840,7 +849,9 @@ public class ActivityManager {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 查询屏幕兼容模式：获取指定应用包的屏幕兼容模式设置
+     * */
     public int getPackageScreenCompatMode(String packageName) {
         try {
             return getService().getPackageScreenCompatMode(packageName);
@@ -858,7 +869,9 @@ public class ActivityManager {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 获取指定应用包是否需要询问屏幕兼容性设置
+     * */
     public boolean getPackageAskScreenCompat(String packageName) {
         try {
             return getService().getPackageAskScreenCompat(packageName);
@@ -883,12 +896,15 @@ public class ActivityManager {
      * returned value is in megabytes; the baseline Android memory class is
      * 16 (which happens to be the Java heap limit of those devices); some
      * devices with more memory may return 24 or even higher numbers.
+     * 返回当前设备的单个应用内存限制值（以MB为单位）
      */
     public int getMemoryClass() {
         return staticGetMemoryClass();
     }
 
-    /** @hide */
+    /** @hide
+     * 返回设备的标准应用内存限制值（以MB为单位）
+     * */
     static public int staticGetMemoryClass() {
         // Really brain dead right now -- just take this from the configured
         // vm heap size, and assume it is in megabytes and thus ends with "m".
@@ -911,6 +927,7 @@ public class ActivityManager {
      *
      * <p>This is the size of the application's Dalvik heap if it has
      * specified <code>android:largeHeap="true"</code> in its manifest.
+     * 返回当前设备上应用在启用大堆内存时的内存限制值（以MB为单位）
      */
     public int getLargeMemoryClass() {
         return staticGetLargeMemoryClass();
@@ -934,7 +951,9 @@ public class ActivityManager {
         return isLowRamDeviceStatic();
     }
 
-    /** @hide */
+    /** @hide
+     * 检测当前设备是否配置为低内存设备
+     * */
     public static boolean isLowRamDeviceStatic() {
         return RoSystemProperties.CONFIG_LOW_RAM ||
                 (Build.IS_DEBUGGABLE && DEVELOPMENT_FORCE_LOW_RAM);
@@ -957,6 +976,7 @@ public class ActivityManager {
      * higher-end device so should be okay using hardware drawing acceleration
      * (which tends to consume a lot more RAM).
      * @hide
+     * 用于持久进程确定是否在高端设备上运行
      */
     static public boolean isHighEndGfx() {
         return !isLowRamDeviceStatic()
@@ -979,6 +999,7 @@ public class ActivityManager {
     /**
      * Return the maximum number of recents entries that we will maintain and show.
      * @hide
+     * 获取系统维护和显示的最近任务条目的最大数量
      */
     static public int getMaxRecentTasksStatic() {
         if (gMaxRecentTasks < 0) {
@@ -990,6 +1011,7 @@ public class ActivityManager {
     /**
      * Return the default limit on the number of recents that an app can make.
      * @hide
+     * 返回单个应用可以创建的最近任务条目的默认限制数量
      */
     static public int getDefaultAppRecentsLimitStatic() {
         return getMaxRecentTasksStatic() / 6;
@@ -1038,6 +1060,7 @@ public class ActivityManager {
 
     /**
      * Information you can set and retrieve about the current activity within the recent task list.
+     * 任务信息描述：提供当前活动在最近任务列表中的信息设置和检索功能
      */
     public static class TaskDescription implements Parcelable {
         /** @hide */
@@ -1872,6 +1895,7 @@ public class ActivityManager {
     /**
      * Return the current design dimensions for {@link AppTask} thumbnails, for use
      * with {@link #addAppTask}.
+     * 返回当前用于 AppTask 缩略图的设计尺寸
      */
     public Size getAppTaskThumbnailSize() {
         synchronized (this) {
@@ -2050,6 +2074,7 @@ public class ActivityManager {
      * @param stackId Id of the stack to resize.
      * @param bounds Bounds to resize the stack to or {@code null} for fullscreen.
      * @hide
+     * Resizes  调整大小
      */
     @TestApi
     @RequiresPermission(android.Manifest.permission.MANAGE_ACTIVITY_STACKS)
@@ -2156,6 +2181,7 @@ public class ActivityManager {
         /**
          * @return The system/content insets on the snapshot. These can be clipped off in order to
          *         remove any areas behind system bars in the snapshot.
+         *         获取快照上的系统栏和内容区域的边距信息
          */
         public Rect getContentInsets() {
             return mContentInsets;
@@ -2163,6 +2189,7 @@ public class ActivityManager {
 
         /**
          * @return Whether this snapshot is a down-sampled version of the full resolution.
+         * 判断此快照是否为全分辨率的降采样版本
          */
         public boolean isReducedResolution() {
             return mReducedResolution;
@@ -2179,6 +2206,7 @@ public class ActivityManager {
         /**
          * @return Whether or not the snapshot is of a translucent app window (non-fullscreen or has
          * a non-opaque pixel format).
+         * 判断快照是否为半透明应用窗口
          */
         public boolean isTranslucent() {
             return mIsTranslucent;
@@ -2249,8 +2277,8 @@ public class ActivityManager {
 
     /** @hide */
     @IntDef(flag = true, prefix = { "MOVE_TASK_" }, value = {
-            MOVE_TASK_WITH_HOME,
-            MOVE_TASK_NO_USER_ACTION,
+            MOVE_TASK_WITH_HOME,//移动任务时同时移动"home"活动
+            MOVE_TASK_NO_USER_ACTION,//不将此操作计为用户发起的行动
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MoveTaskFlags {}
@@ -2497,6 +2525,7 @@ public class ActivityManager {
      * Returns a PendingIntent you can start to show a control panel for the
      * given running service.  If the service does not have a control panel,
      * null is returned.
+     * 获取一个 PendingIntent，用于启动指定运行服务的控制面板
      */
     public PendingIntent getRunningServiceControlPanel(ComponentName service)
             throws SecurityException {
@@ -3372,6 +3401,7 @@ public class ActivityManager {
      * @return Returns a list of ApplicationInfo records, or null if none
      * This list ordering is not specified.
      * @hide
+     * 返回安装在外部存储介质上且正在设备上运行的应用程序进程列表
      */
     public List<ApplicationInfo> getRunningExternalApplications() {
         try {
@@ -3394,6 +3424,7 @@ public class ActivityManager {
      * <p><b> Note that these restrictions stay in effect even when the device is charging.</b></p>
      *
      * @return true if user has enforced background restrictions for this app, false otherwise.
+     * 查询用户是否为此应用启用了后台限制
      */
     public boolean isBackgroundRestricted() {
         try {
@@ -3410,6 +3441,7 @@ public class ActivityManager {
      *
      * @return Returns true if successful.
      * @hide
+     * 为指定进程设置内存精简模式并安排内存精简操作
      */
     public boolean setProcessMemoryTrimLevel(String process, int userId, int level) {
         try {
@@ -3699,6 +3731,7 @@ public class ActivityManager {
      * custom drawables are created (e.g., for shortcuts).
      *
      * @return density in terms of DPI
+     * 获取启动器图标的首选密度，用于创建自定义可绘制资源时（如快捷方式）
      */
     public int getLauncherLargeIconDensity() {
         final Resources res = mContext.getResources();
@@ -3735,6 +3768,7 @@ public class ActivityManager {
      * are created (e.g., for shortcuts).
      *
      * @return dimensions of square icons in terms of pixels
+     * 获取启动器图标的首选大小
      */
     public int getLauncherLargeIconSize() {
         return getLauncherLargeIconSizeInner(mContext);
@@ -3775,6 +3809,7 @@ public class ActivityManager {
     /**
      * Returns "true" if the user interface is currently being messed with
      * by a monkey.
+     * 检查用户界面是否正在被 Monkey 测试程序干扰
      */
     public static boolean isUserAMonkey() {
         try {
@@ -3786,6 +3821,7 @@ public class ActivityManager {
 
     /**
      * Returns "true" if device is running in a test harness.
+     * 检查设备是否在测试环境中运行
      */
     public static boolean isRunningInTestHarness() {
         return SystemProperties.getBoolean("ro.test_harness", false);
@@ -3799,6 +3835,7 @@ public class ActivityManager {
      * @param activity The component name of the activity to always show the warning for.
      *
      * @hide
+     * 为指定活动组件设置始终显示不支持的编译SDK警告
      */
     @TestApi
     public void alwaysShowUnsupportedCompileSdkWarning(ComponentName activity) {
@@ -4063,6 +4100,7 @@ public class ActivityManager {
 
     /**
      * @hide
+     * 发送粘性广播意图给指定用户
      */
     public static void broadcastStickyIntent(Intent intent, int userId) {
         broadcastStickyIntent(intent, AppOpsManager.OP_NONE, userId);
@@ -4084,6 +4122,7 @@ public class ActivityManager {
 
     /**
      * @hide
+     * 记录唤醒闹钟的相关信息，用于系统跟踪和统计
      */
     public static void noteWakeupAlarm(PendingIntent ps, WorkSource workSource, int sourceUid,
             String sourcePkg, String tag) {
@@ -4190,6 +4229,7 @@ public class ActivityManager {
      * handle heap limit reports themselves.</p>
      *
      * @param pssSize The size in bytes to set the limit at.
+     * 设置进程堆内存使用限制监控
      */
     public void setWatchHeapLimit(long pssSize) {
         try {

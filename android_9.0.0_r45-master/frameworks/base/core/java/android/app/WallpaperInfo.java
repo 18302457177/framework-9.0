@@ -43,6 +43,16 @@ import java.io.IOException;
 
 /**
  * This class is used to specify meta information of a wallpaper service.
+ * 元数据封装: 这个类用于封装壁纸服务的元信息，提供了对壁纸服务各种属性的访问接口。
+ * 壁纸服务描述: 用于描述和管理第三方壁纸服务的基本信息，包括：
+ * mService - 壁纸服务的解析信息
+ * mSettingsActivityName - 设置活动的类名
+ * mThumbnailResource - 缩略图资源ID
+ * mAuthorResource - 作者信息资源ID
+ * mDescriptionResource - 描述信息资源ID
+ * 跨进程传输: 实现了 Parcelable 接口，支持在不同进程间传递壁纸信息。
+ * 资源加载: 提供了加载壁纸标签、图标、缩略图等资源的方法，方便系统和应用获取壁纸的展示信息。
+ * 配置解析: 从 wallpaper XML 配置文件中解析壁纸的各种属性，包括预览元数据显示选项、环境模式支持等功能特性。
  */
 public final class WallpaperInfo implements Parcelable {
     static final String TAG = "WallpaperInfo";
@@ -218,6 +228,7 @@ public final class WallpaperInfo implements Parcelable {
      * 
      * @param pm Supply a PackageManager used to load the wallpaper's
      * resources.
+     *           加载壁纸的缩略图图像
      */
     public Drawable loadThumbnail(PackageManager pm) {
         if (mThumbnailResource < 0) return null;
@@ -229,6 +240,7 @@ public final class WallpaperInfo implements Parcelable {
 
     /**
      * Return a string indicating the author(s) of this wallpaper.
+     * 加载并返回壁纸的作者信息字符串
      */
     public CharSequence loadAuthor(PackageManager pm) throws NotFoundException {
         if (mAuthorResource <= 0) throw new NotFoundException();
@@ -309,6 +321,7 @@ public final class WallpaperInfo implements Parcelable {
      * about this wallpaper.
      *
      * @return Whether any metadata should be shown when previewing the wallpaper.
+     * 查询在预览壁纸时是否应显示元数据信息
      */
     public boolean getShowMetadataInPreview() {
         return mShowMetadataInPreview;
@@ -319,6 +332,7 @@ public final class WallpaperInfo implements Parcelable {
      *
      * @return {@code true} if wallpaper can draw in ambient mode.
      * @hide
+     * 检查壁纸是否为环境模式(ambient mode)进行了优化
      */
     public boolean getSupportsAmbientMode() {
         return mSupportsAmbientMode;

@@ -29,6 +29,14 @@ import android.content.Intent;
  * @see #instantiateService
  * @see #instantiateReceiver
  * @see #instantiateProvider
+ * 组件实例化控制：提供统一接口来控制Android应用中各类组件的实例化过程
+ * 依赖注入支持：允许应用覆盖默认的组件创建过程，以便进行依赖注入或类加载器更改
+ * 组件生命周期管理：为以下五种主要组件提供实例化钩子：
+ * instantiateApplication - 应用程序对象
+ * instantiateActivity - 活动组件
+ * instantiateService - 服务组件
+ * instantiateReceiver - 广播接收器
+ * instantiateProvider - 内容提供者
  */
 public class AppComponentFactory {
 

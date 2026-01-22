@@ -987,6 +987,7 @@ public class SearchManager
      * @param args the args to pass to the assistant
      *
      * @hide
+     * 启动传统助手功能
      */
     public boolean launchLegacyAssist(String hint, int userHandle, Bundle args) {
         try {

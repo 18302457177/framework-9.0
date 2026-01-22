@@ -56,6 +56,7 @@ import android.widget.TextView;
  * SearchManager and runs in the current foreground process.
  * 
  * @hide
+ * 搜索对话框的实现类
  */
 public class SearchDialog extends Dialog {
 
@@ -623,6 +624,7 @@ public class SearchDialog extends Dialog {
             super(context);
         }
 
+        //控制子视图的动作模式启动行为
         @Override
         public ActionMode startActionModeForChild(
                 View child, ActionMode.Callback callback, int type) {

@@ -42,6 +42,7 @@ import java.util.Set;
  *     2) determine whether or not a dex file is used by an app which does not
  *        own it (in order to select the optimal compilation method).
  * @hide
+ * 核心功能：监控并报告使用 BaseDexClassLoader 加载的 dex 文件给包管理器
  */
 /*package*/ class DexLoadReporter implements BaseDexClassLoader.Reporter {
     private static final String TAG = "DexLoadReporter";
@@ -130,6 +131,7 @@ import java.util.Set;
         }
     }
 
+    //为二级 dex 文件注册性能分析配置
     private void registerSecondaryDexForProfiling(String[] dexPaths) {
         if (!SystemProperties.getBoolean("dalvik.vm.dexopt.secondary", false)) {
             return;

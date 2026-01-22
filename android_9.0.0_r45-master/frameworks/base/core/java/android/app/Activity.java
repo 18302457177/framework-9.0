@@ -1212,6 +1212,7 @@ public class Activity extends ContextThemeWrapper
         return dialog;
     }
 
+    //根据给定的键值生成用于保存对话框状态的键名
     private static String savedDialogKeyFor(int key) {
         return SAVED_DIALOG_KEY_PREFIX + key;
     }
@@ -1386,6 +1387,7 @@ public class Activity extends ContextThemeWrapper
         mCalled = true;
     }
 
+    //设置语音交互器，用于处理与用户的语音交互
     void setVoiceInteractor(IVoiceInteractor voiceInteractor) {
         if (mVoiceInteractor != null) {
             for (Request activeRequest: mVoiceInteractor.getActiveRequests()) {
@@ -1446,6 +1448,7 @@ public class Activity extends ContextThemeWrapper
      * started by the voice interaction service as the initiation of a voice interaction.
      * Otherwise, for example if it was started by another activity while under voice
      * interaction, returns false.
+     * 检查当前 Activity 是否是语音交互的根活动
      */
     public boolean isVoiceInteractionRoot() {
         try {
@@ -1541,6 +1544,7 @@ public class Activity extends ContextThemeWrapper
      * @see #getIntent
      * @see #setIntent
      * @see #onResume
+     * 处理重新启动处于栈顶的Activity时传递的新Intent
      */
     protected void onNewIntent(Intent intent) {
     }
@@ -1774,6 +1778,7 @@ public class Activity extends ContextThemeWrapper
 
     /**
      * @deprecated Method doesn't do anything and will be removed in the future.
+     * 创建 Activity 缩略图的回调方法
      */
     @Deprecated
     public boolean onCreateThumbnail(Bitmap outBitmap, Canvas canvas) {
@@ -1856,6 +1861,7 @@ public class Activity extends ContextThemeWrapper
         sendBroadcastAsUser(intent, UserHandle.SYSTEM);
     }
 
+    //提供键盘快捷键信息，用于显示键盘快捷键帮助界面
     @Override
     public void onProvideKeyboardShortcuts(
             List<KeyboardShortcutGroup> data, Menu menu, int deviceId) {
@@ -1892,6 +1898,7 @@ public class Activity extends ContextThemeWrapper
      * {@link android.service.voice.VoiceInteractionSession#SHOW_SOURCE_APPLICATION} set.
      * @return Returns true if the assistant was successfully invoked, else false.  For example
      * false will be returned if the caller is not the current top activity.
+     * 请求显示当前的助手（Assistant）给用户
      */
     public boolean showAssist(Bundle args) {
         try {
@@ -2061,6 +2068,7 @@ public class Activity extends ContextThemeWrapper
      * @param isInMultiWindowMode True if the activity is in multi-window mode.
      *
      * @deprecated Use {@link #onMultiWindowModeChanged(boolean, Configuration)} instead.
+     * 当Activity在全屏模式和多窗口模式之间切换时由系统调用
      */
     @Deprecated
     public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
@@ -2215,6 +2223,7 @@ public class Activity extends ContextThemeWrapper
      * user interacts with the activity currently in picture-in-picture mode. This number may change
      * if the global configuration changes (ie. if the device is plugged into an external display),
      * but will always be larger than three.
+     * 获取在画中画（picture-in-picture）模式下，当用户与当前处于画中画模式的Activity交互时将显示的操作数量
      */
     public int getMaxNumPictureInPictureActions() {
         try {
@@ -2332,6 +2341,7 @@ public class Activity extends ContextThemeWrapper
      * available on older platforms through the Android support libraries.
      *
      * @return the object previously returned by {@link #onRetainNonConfigurationInstance()}
+     * 获取之前由 onRetainNonConfigurationInstance() 返回的非配置实例数据
      */
     @Nullable
     public Object getLastNonConfigurationInstance() {
@@ -2425,6 +2435,7 @@ public class Activity extends ContextThemeWrapper
      * or null.  This method is intended to be used by Activity framework subclasses that control a
      * set of child activities, such as ActivityGroup.  The same guarantees and restrictions apply
      * as for {@link #onRetainNonConfigurationInstance()}.  The default implementation returns null.
+     * 返回子Activity的非配置实例数据映射
      */
     @Nullable
     HashMap<String,Object> onRetainNonConfigurationChildInstances() {
@@ -2467,6 +2478,7 @@ public class Activity extends ContextThemeWrapper
         mFragments.dispatchLowMemory();
     }
 
+    //响应系统内存裁剪通知，用于在内存不足时释放不必要的资源
     public void onTrimMemory(int level) {
         if (DEBUG_LIFECYCLE) Slog.v(TAG, "onTrimMemory " + this + ": " + level);
         mCalled = true;
@@ -2525,6 +2537,7 @@ public class Activity extends ContextThemeWrapper
      * @hide
      *
      * @deprecated Use {@link CursorLoader} instead.
+     * 对 ContentResolver.query() 的封装，自动管理查询结果游标(Cursor)的生命周期
      */
     @Deprecated
     public final Cursor managedQuery(Uri uri, String[] projection, String selection,
@@ -2602,6 +2615,7 @@ public class Activity extends ContextThemeWrapper
      * @deprecated Use the new {@link android.content.CursorLoader} class with
      * {@link LoaderManager} instead; this is also
      * available on older platforms through the Android compatibility package.
+     * 管理 Cursor 的生命周期，使其与 Activity 的生命周期同步
      */
     @Deprecated
     public void startManagingCursor(Cursor c) {
@@ -2645,6 +2659,7 @@ public class Activity extends ContextThemeWrapper
      * @deprecated As of {@link android.os.Build.VERSION_CODES#GINGERBREAD}
      * this is a no-op.
      * @hide
+     * 设置 Activity 的持久性状态
      */
     @Deprecated
     public void setPersistent(boolean isPersistent) {
@@ -2752,6 +2767,7 @@ public class Activity extends ContextThemeWrapper
     /**
      * Creates a new ActionBar, locates the inflated ActionBarView,
      * initializes the ActionBar with the view, and sets mActionBar.
+     * 初始化窗口装饰栏中的ActionBar
      */
     private void initWindowDecorActionBar() {
         Window window = getWindow();
@@ -2863,6 +2879,7 @@ public class Activity extends ContextThemeWrapper
      * <p>This method will return null if the current content is not represented by a Scene.</p>
      *
      * @return Current Scene being shown or null
+     * 获取表示当前窗口内容的 Scene 对象
      */
     public Scene getContentScene() {
         return getWindow().getContentScene();
@@ -2871,6 +2888,7 @@ public class Activity extends ContextThemeWrapper
     /**
      * Sets whether this activity is finished when touched outside its window's
      * bounds.
+     * 设置当触摸超出Activity窗口边界时是否结束Activity
      */
     public void setFinishOnTouchOutside(boolean finish) {
         mWindow.setCloseOnTouchOutside(finish);
@@ -2878,11 +2896,11 @@ public class Activity extends ContextThemeWrapper
 
     /** @hide */
     @IntDef(prefix = { "DEFAULT_KEYS_" }, value = {
-            DEFAULT_KEYS_DISABLE,
-            DEFAULT_KEYS_DIALER,
-            DEFAULT_KEYS_SHORTCUT,
-            DEFAULT_KEYS_SEARCH_LOCAL,
-            DEFAULT_KEYS_SEARCH_GLOBAL
+            DEFAULT_KEYS_DISABLE,//禁用默认按键处理
+            DEFAULT_KEYS_DIALER,//使用拨号器默认按键处理
+            DEFAULT_KEYS_SHORTCUT,//使用快捷键默认按键处理
+            DEFAULT_KEYS_SEARCH_LOCAL,//使用本地搜索默认按键处理
+            DEFAULT_KEYS_SEARCH_GLOBAL//使用全局搜索默认按键处理
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface DefaultKeyMode {}
@@ -3112,6 +3130,7 @@ public class Activity extends ContextThemeWrapper
      * Called when the activity has detected the user's press of the back
      * key.  The default implementation simply finishes the current activity,
      * but you can override this to do whatever you want.
+     * 处理用户按下返回键的事件
      */
     public void onBackPressed() {
         if (mActionBar != null && mActionBar.collapseActionView()) {
@@ -3225,6 +3244,7 @@ public class Activity extends ContextThemeWrapper
      * and touch-up actions that follow.
      *
      * @see #onUserLeaveHint()
+     * 当用户与设备交互时被调用，用于检测用户在Activity运行期间与设备的交互行为
      */
     public void onUserInteraction() {
     }
@@ -3331,6 +3351,7 @@ public class Activity extends ContextThemeWrapper
      * {@link WindowConfiguration#WINDOWING_MODE_FULLSCREEN}.
      *
      * @hide
+     * 将Activity从自由窗口模式（freeform windowing mode）切换到全屏模式（fullscreen windowing mode）
      */
     @Override
     public void exitFreeformMode() throws RemoteException {
@@ -3475,6 +3496,7 @@ public class Activity extends ContextThemeWrapper
      * for activities. This
      * simply returns null so that all panel sub-windows will have the default
      * menu behavior.
+     * 为活动提供一个自定义面板视图创建的入口点，当返回 null 时，系统会使用默认的菜单行为来处理面板子窗口
      */
     @Nullable
     public View onCreatePanelView(int featureId) {
@@ -3729,6 +3751,7 @@ public class Activity extends ContextThemeWrapper
      *
      * @return true if Up navigation completed successfully and this Activity was finished,
      *         false otherwise.
+     * 当用户从操作栏选择在应用的Activity层级结构中向上导航时调用此方法
      */
     public boolean onNavigateUp() {
         // Automatically handle hierarchical Up navigation if the proper
@@ -4199,6 +4222,7 @@ public class Activity extends ContextThemeWrapper
 
     /**
      * @see #onSearchRequested(SearchEvent)
+     * 处理搜索请求的默认实现
      */
     public boolean onSearchRequested() {
         final int uiMode = getResources().getConfiguration().uiMode
@@ -4284,6 +4308,7 @@ public class Activity extends ContextThemeWrapper
      * a chance to process key events.
      *
      * @see android.view.Window#takeKeyEvents
+     * 请求将按键事件传递给当前Activity
      */
     public void takeKeyEvents(boolean get) {
         getWindow().takeKeyEvents(get);
@@ -4307,6 +4332,7 @@ public class Activity extends ContextThemeWrapper
     /**
      * Convenience for calling
      * {@link android.view.Window#setFeatureDrawableResource}.
+     * 设置窗口特性（feature）的drawable资源
      */
     public final void setFeatureDrawableResource(int featureId, @DrawableRes int resId) {
         getWindow().setFeatureDrawableResource(featureId, resId);
@@ -4536,6 +4562,7 @@ public class Activity extends ContextThemeWrapper
      * @see #checkSelfPermission(String)
      * @see #requestPermissions(String[], int)
      * @see #onRequestPermissionsResult(int, String[], int[])
+     * 检查是否应该显示请求权限的说明UI
      */
     public boolean shouldShowRequestPermissionRationale(@NonNull String permission) {
         return getPackageManager().shouldShowRequestPermissionRationale(permission);
@@ -5739,6 +5766,7 @@ public class Activity extends ContextThemeWrapper
      * @param child The activity making the call.
      * @param requestCode Request code that had been used to start the
      *                    activity.
+     * 处理子Activity调用 finishActivity() 时的完成操作
      */
     public void finishActivityFromChild(@NonNull Activity child, int requestCode) {
         try {
@@ -5823,6 +5851,7 @@ public class Activity extends ContextThemeWrapper
      *                   through its setResult().
      * @param data An Intent, which can return result data to the caller
      *               (various data can be attached to Intent "extras").
+     * Activity返回过渡回调: 当使用Activity过渡启动的Activity通过返回Activity过渡显示此Activity时被调用
      */
     public void onActivityReenter(int resultCode, Intent data) {
     }
@@ -6170,6 +6199,7 @@ public class Activity extends ContextThemeWrapper
      *
      * @param visible Whether to show the progress bars in the title.
      * @deprecated No longer supported starting in API 21.
+     * 设置标题栏中的不确定进度条可见性：控制Activity标题栏中的不确定进度条（圆形旋转进度条）的显示与隐藏
      */
     @Deprecated
     public final void setProgressBarIndeterminateVisibility(boolean visible) {
@@ -6223,6 +6253,7 @@ public class Activity extends ContextThemeWrapper
      * @param secondaryProgress The secondary progress for the progress bar. Valid ranges are from
      *            0 to 10000 (both inclusive).
      * @deprecated No longer supported starting in API 21.
+     * 设置标题栏进度条的次要进度：控制标题栏中进度条的次要进度显示
      */
     @Deprecated
     public final void setSecondaryProgress(int secondaryProgress) {
@@ -6761,6 +6792,7 @@ public class Activity extends ContextThemeWrapper
      * @see android.service.vr.VrListenerService
      * @see android.provider.Settings#ACTION_VR_LISTENER_SETTINGS
      * @see android.R.attr#enableVrMode
+     * 启用或禁用虚拟现实（VR）模式：为当前 Activity 设置VR模式
      */
     public void setVrModeEnabled(boolean enabled, @NonNull ComponentName requestedComponent)
           throws PackageManager.NameNotFoundException {
@@ -7547,6 +7579,7 @@ public class Activity extends ContextThemeWrapper
      *
      * @see #stopLockTask()
      * @see android.R.attr#lockTaskMode
+     * 启动锁定任务模式：请求将当前Activity置于受限应用集合的锁定模式
      */
     public void startLockTask() {
         try {
@@ -7582,6 +7615,7 @@ public class Activity extends ContextThemeWrapper
      * Shows the user the system defined message for telling the user how to exit
      * lock task mode. The task containing this activity must be in lock task mode at the time
      * of this call for the message to be displayed.
+     * 显示退出锁定任务模式的消息：向用户显示系统定义的如何退出锁定任务模式的提示信息
      */
     public void showLockTaskEscapeMessage() {
         try {
@@ -7597,6 +7631,7 @@ public class Activity extends ContextThemeWrapper
      *
      * @see #setOverlayWithDecorCaptionEnabled(boolean)
      * @hide
+     * 检查自由窗口模式下的标题显示方式：判断自由窗口模式（freeform windows）的标题是否直接显示在内容上
      */
     public boolean isOverlayWithDecorCaptionEnabled() {
         return mWindow.isOverlayWithDecorCaptionEnabled();
@@ -7900,6 +7935,7 @@ public class Activity extends ContextThemeWrapper
      * @see #setShowWhenLocked(boolean)
      * @see android.R.attr#turnScreenOn
      * @see android.R.attr#showWhenLocked
+     * 设置当前Activity是否可以在锁屏状态下唤醒屏幕
      */
     public void setTurnScreenOn(boolean turnScreenOn) {
         try {

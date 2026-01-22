@@ -47,6 +47,8 @@ import java.io.File;
  *
  * <p>A <a href="https://github.com/googlesamples/android-ndk/tree/master/native-activity">sample
  * native activity</a> is available in the NDK samples.
+ * 方便实现一个将完全用本地代码实现的活动。也就是说，一个游戏（或类似游戏的东西）。
+ * 无需从这个类派生；你只需在清单中声明它，并从那里使用 NDK API。
  */
 public class NativeActivity extends Activity implements SurfaceHolder.Callback2,
         InputQueue.Callback, OnGlobalLayoutListener {

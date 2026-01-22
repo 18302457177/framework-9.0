@@ -30,6 +30,8 @@ import java.util.List;
  *
  * @deprecated Use the <a href="{@docRoot}tools/extras/support-library.html">Support Library</a>
  *      {@link android.support.v4.app.FragmentManagerNonConfig}
+ * 存储保留的 Fragment 实例：跨 Activity 重建事件保存 Fragment 的实例状态
+ * 状态保存与恢复：在 Activity 重建（如屏幕旋转）时，保存和恢复 Fragment 的状态
  */
 @Deprecated
 public class FragmentManagerNonConfig {

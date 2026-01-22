@@ -66,6 +66,25 @@ import java.util.List;
  * interaction the system has with the application.  An Instrumentation
  * implementation is described to the system through an AndroidManifest.xml's
  * &lt;instrumentation&gt; tag.
+ * 1. 应用监控
+ * 在应用代码执行前被实例化，监控系统与应用的所有交互
+ * 提供对应用生命周期的完全控制和观察
+ * 2. 测试框架基础
+ * 作为应用测试代码的基础类
+ * 通过 <instrumentation> 标签在 AndroidManifest.xml 中声明
+ * 3. 核心操作支持
+ * Activity 启动: 提供 startActivitySync 等同步启动方法
+ * 输入事件注入: sendKeySync、sendPointerSync 等方法
+ * UI 自动化: 提供 UiAutomation 接口访问
+ * 4. 生命周期管理
+ * 应用创建: newApplication、callApplicationOnCreate
+ * Activity 生命周期: callActivityOnCreate、callActivityOnResume 等
+ * 5. 性能监控
+ * 性能快照: setAutomaticPerformanceSnapshots、startPerformanceSnapshot
+ * 内存统计: startAllocCounting、getAllocCounts
+ * 6. Activity 监控
+ * ActivityMonitor: 监控特定 Intent 的启动
+ * 等待机制: waitForIdle、waitForIdleSync 等
  */
 public class Instrumentation {
 
@@ -88,6 +107,8 @@ public class Instrumentation {
 
     /**
      * @hide
+     * 0 - 默认标志值
+     * UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES - 不抑制无障碍服务的标志
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({0, UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES})
@@ -327,6 +348,7 @@ public class Instrumentation {
      * Check whether this instrumentation was started with profiling enabled.
      * 
      * @return Returns true if profiling was enabled when starting, else false.
+     * 检查当前 Instrumentation 是否在启用性能分析（profiling）的状态下启动
      */
     public boolean isProfiling() {
         return mThread.isProfiling();
@@ -513,6 +535,9 @@ public class Instrumentation {
      * <p>An ActivityMonitor can also be used to look for the creation of an
      * activity, through the {@link #waitForActivity} method.  This will return
      * after a matching activity has been created with that activity object.
+     * Intent 监控: 监控特定类型的 Intent 启动活动
+     * 命中计数: 跟踪匹配到的次数
+     * 结果拦截: 可选择性地阻止调用并返回预设结果
      */
     public static class ActivityMonitor {
         private final IntentFilter mWhich;
@@ -812,7 +837,9 @@ public class Instrumentation {
      * 
      * @return True if the hit count has been reached, else false. 
      *  
-     * @see #addMonitor 
+     * @see #addMonitor
+     * 检查现有的 ActivityMonitor 是否达到最小命中次数
+     * 如果达到要求的命中次数，则从监控列表中移除该监控器
      */
     public boolean checkMonitorHit(ActivityMonitor monitor, int minHits) {
         waitForIdleSync();
@@ -1265,6 +1292,7 @@ public class Instrumentation {
      *
      * @param activity The activity being created.
      * @param icicle The previously frozen state (or null) to pass through to onCreate().
+     *           执行 Activity 的 onCreate 方法调用
      */
     public void callActivityOnCreate(Activity activity, Bundle icicle) {
         prePerformCreate(activity);
@@ -2190,6 +2218,17 @@ public class Instrumentation {
         }
     }
 
+    /**
+     * 1. 空闲处理机制
+     * 实现 MessageQueue.IdleHandler 接口
+     * 在消息队列空闲时执行特定操作
+     * 2. Activity 等待管理
+     * 维护对 ActivityWaiter 的引用
+     * 从等待活动列表中移除对应的等待项
+     * 3. 同步处理
+     * 在 mSync 锁保护下操作
+     * 移除等待活动后通知所有等待线程
+     */
     private final class ActivityGoing implements MessageQueue.IdleHandler {
         private final ActivityWaiter mWaiter;
 
@@ -2206,6 +2245,14 @@ public class Instrumentation {
         }
     }
 
+    /**
+     * 1. 空闲处理机制
+     * 实现 MessageQueue.IdleHandler 接口
+     * 在消息队列空闲时执行回调任务
+     * 2. 状态管理
+     * 维护 mIdle 状态标识
+     * 提供同步等待机制
+     */
     private static final class Idler implements MessageQueue.IdleHandler {
         private final Runnable mCallback;
         private boolean mIdle;

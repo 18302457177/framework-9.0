@@ -48,6 +48,8 @@ import java.text.NumberFormat;
  * be embedded in your app's UI. Alternatively, you can use a
  * <a href="/guide/topics/ui/notifiers/notifications.html">notification</a>
  * to inform the user of the task's progress.
+ * 进度指示器: 显示带有进度条的对话框，可同时显示文本消息或视图
+ * 模态对话框: 阻止用户与应用交互直到任务完成
  */
 @Deprecated
 public class ProgressDialog extends AlertDialog {
@@ -365,6 +367,8 @@ public class ProgressDialog extends AlertDialog {
      *
      * @param diff the amount by which the current progress will be incremented,
      * up to {@link #getMax()}
+     * 递增进度值: 递增当前进度值，增加量为 diff 参数指定的数值
+     * 最大值限制: 递增后的进度值不会超过 getMax() 返回的最大值
      */
     public void incrementProgressBy(int diff) {
         if (mProgress != null) {
@@ -412,6 +416,8 @@ public class ProgressDialog extends AlertDialog {
      *
      * @see ProgressBar#setProgressDrawable(Drawable)
      * @see #setIndeterminate(boolean)
+     * 设置不确定模式进度绘制: 用于设置显示不确定模式进度的drawable
+     * 条件处理: 根据进度条是否已创建采用不同处理方式
      */
     public void setIndeterminateDrawable(Drawable d) {
         if (mProgress != null) {

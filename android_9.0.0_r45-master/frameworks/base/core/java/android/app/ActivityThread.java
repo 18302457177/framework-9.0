@@ -196,6 +196,8 @@ final class RemoteServiceException extends AndroidRuntimeException {
  * manager requests.
  *
  * {@hide}
+ * 主进程线程管理器：管理应用程序进程中的主线程执行
+ * 调度和执行组件：负责调度和执行 activities、broadcasts 及其他组件操作
  */
 public final class ActivityThread extends ClientTransactionHandler {
     /** @hide */
@@ -314,8 +316,9 @@ public final class ActivityThread extends ClientTransactionHandler {
 
     private final ResourcesManager mResourcesManager;
 
+    //内容提供者标识键：用于唯一标识一个内容提供者
     private static final class ProviderKey {
-        final String authority;
+        final String authority;//内容提供者的授权字符串，用于标识提供者的名称
         final int userId;
 
         public ProviderKey(String authority, int userId) {
@@ -368,7 +371,10 @@ public final class ActivityThread extends ClientTransactionHandler {
 
     Bundle mCoreSettings = null;
 
-    /** Activity client record, used for bookkeeping for the real {@link Activity} instance. */
+    /** Activity client record, used for bookkeeping for the real {@link Activity} instance.
+     * Activity 实例管理：用于跟踪和管理真实的 Activity 实例的状态信息
+     * 记录跟踪：作为 Activity 实例的客户端记录，保存与 Activity 相关的各种运行时信息
+     * */
     public static final class ActivityClientRecord {
         public IBinder token;
         int ident;
@@ -496,11 +502,13 @@ public final class ActivityThread extends ClientTransactionHandler {
             }
         }
 
+        //检查当前 Activity 的目标 SDK 版本是否低于 Honeycomb（API 级别 11）
         private boolean isPreHoneycomb() {
             return activity != null && activity.getApplicationInfo().targetSdkVersion
                     < android.os.Build.VERSION_CODES.HONEYCOMB;
         }
 
+        //检查当前 Activity 的目标 SDK 版本是否低于 Android P（API 级别 28）
         private boolean isPreP() {
             return activity != null && activity.getApplicationInfo().targetSdkVersion
                     < android.os.Build.VERSION_CODES.P;
@@ -510,6 +518,7 @@ public final class ActivityThread extends ClientTransactionHandler {
             return activityInfo.persistableMode == ActivityInfo.PERSIST_ACROSS_REBOOTS;
         }
 
+        //检查当前 Activity 是否对服务端（系统）可见
         public boolean isVisibleFromServer() {
             return activity != null && activity.mVisibleFromServer;
         }
@@ -549,6 +558,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //用于管理客户端对内容提供者（Content Provider）的访问记录
     final class ProviderClientRecord {
         final String[] mNames;
         final IContentProvider mProvider;
@@ -564,6 +574,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //用于封装广播接收器处理广播时所需的数据
     static final class ReceiverData extends BroadcastReceiver.PendingResult {
         public ReceiverData(Intent intent, int resultCode, String resultData, Bundle resultExtras,
                 boolean ordered, boolean sticky, IBinder token, int sendingUser) {
@@ -583,6 +594,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //用于封装创建备份代理（Backup Agent）所需的数据信息
     static final class CreateBackupAgentData {
         ApplicationInfo appInfo;
         CompatibilityInfo compatInfo;
@@ -594,6 +606,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //用于封装创建服务（Service）所需的数据信息
     static final class CreateServiceData {
         IBinder token;
         ServiceInfo info;
@@ -606,6 +619,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //用于封装绑定服务（Service）所需的数据信息
     static final class BindServiceData {
         IBinder token;
         Intent intent;
@@ -615,6 +629,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //用于封装服务（Service）启动参数的数据信息
     static final class ServiceArgsData {
         IBinder token;
         boolean taskRemoved;
@@ -627,42 +642,49 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //用于封装应用程序绑定所需的各种数据信息
     static final class AppBindData {
-        LoadedApk info;
-        String processName;
-        ApplicationInfo appInfo;
-        List<ProviderInfo> providers;
-        ComponentName instrumentationName;
-        Bundle instrumentationArgs;
-        IInstrumentationWatcher instrumentationWatcher;
-        IUiAutomationConnection instrumentationUiAutomationConnection;
-        int debugMode;
-        boolean enableBinderTracking;
-        boolean trackAllocation;
-        boolean restrictedBackupMode;
-        boolean persistent;
-        Configuration config;
-        CompatibilityInfo compatInfo;
-        String buildSerial;
+        LoadedApk info;//已加载的APK信息
+        String processName;//进程名称
+        ApplicationInfo appInfo;//应用信息
+        List<ProviderInfo> providers;//内容提供者信息列表
+        ComponentName instrumentationName;//插桩组件名称
+        Bundle instrumentationArgs;//插桩参数
+        IInstrumentationWatcher instrumentationWatcher;//插桩监视器
+        IUiAutomationConnection instrumentationUiAutomationConnection;//UI自动化连接
+        int debugMode;//调试模式
+        boolean enableBinderTracking;//是否启用binder跟踪
+        boolean trackAllocation;//是否跟踪内存分配
+        boolean restrictedBackupMode;//是否限制备份模式
+        boolean persistent;//是否持久化
+        Configuration config;//配置信息
+        CompatibilityInfo compatInfo;//兼容性信息
+        String buildSerial;//构建序列号
 
         /** Initial values for {@link Profiler}. */
-        ProfilerInfo initProfilerInfo;
+        ProfilerInfo initProfilerInfo;//分析器初始信息
 
-        boolean autofillCompatibilityEnabled;
+        boolean autofillCompatibilityEnabled;//是否启用自动填充兼容性
 
         public String toString() {
             return "AppBindData{appInfo=" + appInfo + "}";
         }
     }
 
+    //性能分析器：用于管理应用程序的方法跟踪和性能分析功能
+    //核心作用
+    //性能监控：启动和停止方法跟踪分析
+    //资源管理：管理分析器的文件描述符和状态
+    //配置管理：处理分析器的各种配置参数
     static final class Profiler {
-        String profileFile;
-        ParcelFileDescriptor profileFd;
-        int samplingInterval;
-        boolean autoStopProfiler;
-        boolean streamingOutput;
-        boolean profiling;
-        boolean handlingProfiling;
+        String profileFile;//分析器输出文件路径
+        ParcelFileDescriptor profileFd;//分析器文件描述符
+        int samplingInterval;//采样间隔
+        boolean autoStopProfiler;//是否自动停止分析器
+        boolean streamingOutput;//是否流式输出
+        boolean profiling;//是否正在分析中
+        boolean handlingProfiling;//是否正在处理分析
+        //设置分析器信息，配置分析参数
         public void setProfiler(ProfilerInfo profilerInfo) {
             ParcelFileDescriptor fd = profilerInfo.profileFd;
             if (profiling) {
@@ -731,10 +753,11 @@ public final class ActivityThread extends ClientTransactionHandler {
         String[] args;
     }
 
+    //上下文清理信息封装：用于封装 ContextImpl 对象清理操作所需的信息
     static final class ContextCleanupInfo {
-        ContextImpl context;
-        String what;
-        String who;
+        ContextImpl context;//需要被清理的上下文实例
+        String what;//清理原因或描述信息
+        String who;//触发清理操作的来源或标识
     }
 
     static final class DumpHeapData {
@@ -745,11 +768,13 @@ public final class ActivityThread extends ClientTransactionHandler {
         ParcelFileDescriptor fd;
     }
 
+    //兼容性数据更新信息封装：用于封装应用程序兼容性信息更新所需的数据
     static final class UpdateCompatibilityData {
         String pkg;
         CompatibilityInfo info;
     }
 
+    //辅助上下文扩展信息请求封装：用于封装请求辅助上下文扩展信息所需的数据
     static final class RequestAssistContextExtras {
         IBinder activityToken;
         IBinder requestToken;
@@ -758,6 +783,27 @@ public final class ActivityThread extends ClientTransactionHandler {
         int flags;
     }
 
+    /**
+     * 进程内通信桥梁: 作为 ActivityThread 与系统服务（特别是 ActivityManagerService）之间的通信接口
+     * 主要功能
+     * 1. 组件调度管理
+     * Activity管理: 调度 Activity 的生命周期管理，包括创建、暂停、恢复等
+     * Service管理: 负责 Service 的创建、绑定、启动、停止等操作
+     * Broadcast管理: 处理广播接收器的调度执行
+     * 2. 消息传递机制
+     * 异步消息处理: 将来自系统服务的远程调用转换为本地消息发送到主线程
+     * 统一消息队列: 所有系统调用都通过 H 消息处理器处理
+     * 3. 应用程序绑定
+     * 应用初始化: 处理应用程序绑定请求 bindApplication()
+     * 环境配置: 设置应用运行所需的各种环境参数
+     * 4. 性能监控
+     * 性能分析: 控制方法跟踪分析的启停
+     * 内存管理: 处理内存相关操作，如垃圾回收、内存转储等
+     * 5. 系统集成
+     * 服务管理: 管理系统服务的缓存和访问
+     * 网络配置: 处理网络代理和配置更新
+     * 时区管理: 更新时区和DNS缓存
+     */
     private class ApplicationThread extends IApplicationThread.Stub {
         private static final String DB_INFO_FORMAT = "  %8s %8s %14s %14s  %s";
 
@@ -919,6 +965,7 @@ public final class ActivityThread extends ClientTransactionHandler {
             sendMessage(H.BIND_APPLICATION, data);
         }
 
+        //独立入口点执行：用于在当前应用程序进程中执行指定的独立入口点方法
         public final void runIsolatedEntryPoint(String entryPoint, String[] entryPointArgs) {
             SomeArgs args = SomeArgs.obtain();
             args.arg1 = entryPoint;
@@ -930,10 +977,12 @@ public final class ActivityThread extends ClientTransactionHandler {
             sendMessage(H.EXIT_APPLICATION, null);
         }
 
+        //进程自毁请求：请求当前应用程序进程结束自身
         public final void scheduleSuicide() {
             sendMessage(H.SUICIDE, null);
         }
 
+        //应用信息变更通知：当应用程序信息发生改变时，调度相应的处理操作
         public void scheduleApplicationInfoChanged(ApplicationInfo ai) {
             sendMessage(H.APPLICATION_INFO_CHANGED, ai);
         }
@@ -991,11 +1040,13 @@ public final class ActivityThread extends ClientTransactionHandler {
                     sticky, sendingUser);
         }
 
+        //低内存通知调度：当系统检测到低内存状态时，调度相应的处理操作
         @Override
         public void scheduleLowMemory() {
             sendMessage(H.LOW_MEMORY, null);
         }
 
+        //性能分析控制：控制应用程序的性能分析（profiling）功能的启动和停止
         @Override
         public void profilerControl(boolean start, ProfilerInfo profilerInfo, int profileType) {
             sendMessage(H.PROFILER_CONTROL, profilerInfo, start ? 1 : 0, profileType);
@@ -1033,6 +1084,7 @@ public final class ActivityThread extends ClientTransactionHandler {
             sendMessage(H.DISPATCH_PACKAGE_BROADCAST, packages, cmd);
         }
 
+        //调度崩溃：用于调度应用程序崩溃操作，通常用于测试或系统调试目的
         public void scheduleCrash(String msg) {
             sendMessage(H.SCHEDULE_CRASH, msg);
         }
@@ -1360,6 +1412,7 @@ public final class ActivityThread extends ClientTransactionHandler {
             pw.flush();
         }
 
+        //数据库信息转储：将数据库信息转储到指定的文件描述符中
         @Override
         public void dumpDbInfo(final ParcelFileDescriptor pfd, final String[] args) {
             if (mSystemThread) {
@@ -1392,11 +1445,13 @@ public final class ActivityThread extends ClientTransactionHandler {
             }
         }
 
+        //不稳定内容提供者死亡通知：当一个不稳定的内容提供者（unstable provider）死亡时，调度相应的处理操作
         @Override
         public void unstableProviderDied(IBinder provider) {
             sendMessage(H.UNSTABLE_PROVIDER_DIED, provider);
         }
 
+        //请求辅助上下文扩展信息：用于请求与辅助功能相关的上下文扩展信息
         @Override
         public void requestAssistContextExtras(IBinder activityToken, IBinder requestToken,
                 int requestType, int sessionId, int flags) {
@@ -1409,6 +1464,7 @@ public final class ActivityThread extends ClientTransactionHandler {
             sendMessage(H.REQUEST_ASSIST_CONTEXT_EXTRAS, cmd);
         }
 
+        //核心设置更新：用于设置和更新应用程序的核心系统设置
         public void setCoreSettings(Bundle coreSettings) {
             sendMessage(H.SET_CORE_SETTINGS, coreSettings);
         }
@@ -1420,6 +1476,7 @@ public final class ActivityThread extends ClientTransactionHandler {
             sendMessage(H.UPDATE_PACKAGE_COMPATIBILITY_INFO, ucd);
         }
 
+        //内存修剪调度：调度应用程序的内存修剪操作，用于优化内存使用
         public void scheduleTrimMemory(int level) {
             final Runnable r = PooledLambda.obtainRunnable(ActivityThread::handleTrimMemory,
                     ActivityThread.this, level);
@@ -1432,10 +1489,12 @@ public final class ActivityThread extends ClientTransactionHandler {
             }
         }
 
+        //半透明转换完成调度：调度半透明Activity转换完成的通知
         public void scheduleTranslucentConversionComplete(IBinder token, boolean drawComplete) {
             sendMessage(H.TRANSLUCENT_CONVERSION_COMPLETE, token, drawComplete ? 1 : 0);
         }
 
+        //新Activity选项调度：调度新Activity选项的设置，用于处理Activity启动时的选项配置
         public void scheduleOnNewActivityOptions(IBinder token, Bundle options) {
             sendMessage(H.ON_NEW_ACTIVITY_OPTIONS,
                     new Pair<IBinder, ActivityOptions>(token, ActivityOptions.fromBundle(options)));
@@ -1470,6 +1529,7 @@ public final class ActivityThread extends ClientTransactionHandler {
          * Updates {@link #mNetworkBlockSeq}. This is used by ActivityManagerService to inform
          * the main thread that it needs to wait for the network rules to get updated before
          * launching an activity.
+         * 网络规则阻塞序列更新：用于设置网络规则更新的阻塞序列号
          */
         @Override
         public void setNetworkBlockSeq(long procStateSeq) {
@@ -1483,6 +1543,7 @@ public final class ActivityThread extends ClientTransactionHandler {
             sendMessage(H.INSTALL_PROVIDER, provider);
         }
 
+        //时间格式偏好更新：根据系统设置更新应用程序的时间格式偏好
         @Override
         public final void updateTimePrefs(int timeFormatPreference) {
             final Boolean timeFormatPreferenceBool;
@@ -1504,6 +1565,7 @@ public final class ActivityThread extends ClientTransactionHandler {
             sendMessage(H.ENTER_ANIMATION_COMPLETE, token);
         }
 
+        //明文网络检测通知：当检测到应用使用明文网络流量时，通知StrictMode进行处理
         @Override
         public void notifyCleartextNetwork(byte[] firstPacket) {
             if (StrictMode.vmCleartextNetworkEnabled()) {
@@ -1540,6 +1602,7 @@ public final class ActivityThread extends ClientTransactionHandler {
             NetworkSecurityPolicy.getInstance().handleTrustStorageUpdate();
         }
 
+        //事务调度：调度客户端事务的执行
         @Override
         public void scheduleTransaction(ClientTransaction transaction) throws RemoteException {
             // 这里调用的是父类 ClientTransactionHandler 的 scheduleTransaction() 方法
@@ -1557,6 +1620,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         mAppThread.updateProcessState(processState, fromIpc);
     }
 
+    //作为主线程的消息处理器。
     class H extends Handler {
         public static final int BIND_APPLICATION        = 110;
         public static final int EXIT_APPLICATION        = 111;
@@ -1840,6 +1904,8 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //空闲处理器：实现了 MessageQueue.IdleHandler 接口，用于在消息队列空闲时执行特定操作
+    //活动状态报告：主要负责向 ActivityManagerService 报告新活动（activities）的空闲状态
     private class Idler implements MessageQueue.IdleHandler {
         @Override
         public final boolean queueIdle() {
@@ -1880,6 +1946,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //用于在消息队列空闲时执行垃圾回收相关操作
     final class GcIdler implements MessageQueue.IdleHandler {
         @Override
         public final boolean queueIdle() {
@@ -1889,6 +1956,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //用于在消息队列空闲时执行资源清理操作
     final class PurgeIdler implements MessageQueue.IdleHandler {
         @Override
         public boolean queueIdle() {
@@ -1903,10 +1971,12 @@ public final class ActivityThread extends ClientTransactionHandler {
         return sCurrentActivityThread;
     }
 
+    //判断当前 ActivityThread 是否运行在系统进程中
     public static boolean isSystem() {
         return (sCurrentActivityThread != null) ? sCurrentActivityThread.mSystemThread : false;
     }
 
+    //获取当前应用的操作包名
     public static String currentOpPackageName() {
         ActivityThread am = currentActivityThread();
         return (am != null && am.getApplication() != null)
@@ -1960,6 +2030,7 @@ public final class ActivityThread extends ClientTransactionHandler {
     /**
      * Creates the top level resources for the given package. Will return an existing
      * Resources if one has already been created.
+     * 资源创建: 为指定的应用包创建顶级资源对象
      */
     Resources getTopLevelResources(String resDir, String[] splitResDirs, String[] overlayDirs,
             String[] libDirs, int displayId, LoadedApk pkgInfo) {
@@ -2057,6 +2128,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         return getPackageInfo(ai, compatInfo, null, false, true, false);
     }
 
+    //快速查询: 快速查找已加载的 APK 信息，不会触发新的加载操作
     public final LoadedApk peekPackageInfo(String packageName, boolean includeCode) {
         synchronized (mResourcesManager) {
             WeakReference<LoadedApk> ref;
@@ -2125,16 +2197,19 @@ public final class ActivityThread extends ClientTransactionHandler {
         return mAppThread;
     }
 
+    //获取当前 ActivityThread 实例的 Instrumentation 对象
     public Instrumentation getInstrumentation()
     {
         return mInstrumentation;
     }
 
+    //判断当前应用程序是否正在进行性能分析（profiling）
     public boolean isProfiling() {
         return mProfiler != null && mProfiler.profileFile != null
                 && mProfiler.profileFd == null;
     }
 
+    //获取当前性能分析文件的路径
     public String getProfileFilePath() {
         return mProfiler.profileFile;
     }
@@ -2183,6 +2258,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //确保JIT（即时编译）功能已启用
     void ensureJitEnabled() {
         if (!mJitEnabled) {
             mJitEnabled = true;
@@ -2222,6 +2298,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         mH.removeMessages(H.PURGE_RESOURCES);
     }
 
+    //在空闲时执行垃圾回收，但需要满足最小时间间隔的条件
     void doGcIfNeeded() {
         mGcIdlerScheduled = false;
         final long now = SystemClock.uptimeMillis();
@@ -2790,6 +2867,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //返回当前 ActivityThread 实例的事务执行器
     @Override
     TransactionExecutor getTransactionExecutor() {
         return mTransactionExecutor;
@@ -3024,6 +3102,7 @@ public final class ActivityThread extends ClientTransactionHandler {
      * Checks if {@link #mNetworkBlockSeq} is {@link #INVALID_PROC_STATE_SEQ} and if so, returns
      * immediately. Otherwise, makes a blocking call to ActivityManagerService to wait for the
      * network rules to get updated.
+     * 检查网络访问阻塞序列号，若存在则等待网络规则更新完成
      */
     private void checkAndBlockForNetworkAccess() {
         synchronized (mNetworkPolicyLock) {
@@ -3036,6 +3115,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //为 Activity 创建基础的 ContextImpl 上下文对象
     private ContextImpl createBaseContextForActivity(ActivityClientRecord r) {
         final int displayId;
         try {
@@ -3147,6 +3227,7 @@ public final class ActivityThread extends ClientTransactionHandler {
 
     }
 
+    //向 Activity 传递新的 Intent 对象
     private void deliverNewIntents(ActivityClientRecord r, List<ReferrerIntent> intents) {
         final int N = intents.size();
         for (int i=0; i<N; i++) {
@@ -3190,6 +3271,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         performNewIntents(token, intents, andPause);
     }
 
+    //处理辅助上下文扩展信息请求，支持语音助手和自动填充功能的数据收集。
     public void handleRequestAssistContextExtras(RequestAssistContextExtras cmd) {
         // Filling for autofill has a few differences:
         // - it does not need an AssistContent
@@ -3278,6 +3360,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //处理内容提供者（Content Provider）的安装请求
     public void handleInstallProvider(ProviderInfo info) {
         final StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
         try {
@@ -3334,6 +3417,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //处理本地语音交互启动事件，设置Activity的语音交互器并调用相应的回调方法
     private void handleLocalVoiceInteractionStarted(IBinder token, IVoiceInteractor interactor) {
         final ActivityClientRecord r = mActivities.get(token);
         if (r != null) {
@@ -3373,6 +3457,7 @@ public final class ActivityThread extends ClientTransactionHandler {
      * Return the Intent that's currently being handled by a
      * BroadcastReceiver on this thread, or null if none.
      * @hide
+     * 获取当前在该线程上由 BroadcastReceiver 处理的 Intent，如果没有则返回 null
      */
     public static Intent getIntentBeingBroadcast() {
         return sCurrentBroadcastIntent.get();
@@ -4106,6 +4191,8 @@ public final class ActivityThread extends ClientTransactionHandler {
                 false /* finalStateRequest */, reason);
     }
 
+    //内容提供者引用计数管理：用于跟踪和管理对内容提供者（Content Provider）的引用计数
+    //引用计数控制：通过增加和减少引用计数来控制内容提供者的生命周期，确保在没有客户端使用时能够正确释放资源
     private static final class ProviderRefCount {
         public final ContentProviderHolder holder;
         public final ProviderClientRecord client;
@@ -4532,6 +4619,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         return r;
     }
 
+    //安全地获取 Intent 组件的短字符串表示
     private static String safeToComponentShortString(Intent intent) {
         ComponentName component = intent.getComponent();
         return component == null ? "[Unknown]" : component.toShortString();
@@ -5553,6 +5641,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
     }
 
+    //更新默认的屏幕密度值，用于适配不同设备的显示密度
     private void updateDefaultDensity() {
         final int densityDpi = mCurDefaultDisplayDpi;
         if (!mDensityCompatMode
@@ -5569,6 +5658,7 @@ public final class ActivityThread extends ClientTransactionHandler {
      * If we're dealing with a multi-arch application that has both 32 and 64 bit shared
      * libraries, we might need to choose the secondary depending on what the current
      * runtime's instruction set is.
+     * 根据当前运行时环境和CPU架构返回正确的插桩库目录
      */
     private String getInstrumentationLibrary(ApplicationInfo appInfo, InstrumentationInfo insInfo) {
         if (appInfo.primaryCpuAbi != null && appInfo.secondaryCpuAbi != null
@@ -6159,6 +6249,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //获取已存在的内容提供者（Content Provider）实例
     public final IContentProvider acquireExistingProvider(
             Context c, String auth, int userId, boolean stable) {
         synchronized (mProviderMap) {
@@ -6321,6 +6412,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //处理不稳定的Content Provider死亡事件
     final void handleUnstableProviderDied(IBinder provider, boolean fromClient) {
         synchronized (mProviderMap) {
             handleUnstableProviderDiedLocked(provider, fromClient);
@@ -6357,6 +6449,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //通过Content Provider触发应用程序无响应（ANR）通知
     final void appNotRespondingViaProvider(IBinder provider) {
         synchronized (mProviderMap) {
             ProviderRefCount prc = mProviderRefCountMap.get(provider);
@@ -6371,6 +6464,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //安装内容提供者（Content Provider）的授权信息，并将其注册到提供者映射表中
     private ProviderClientRecord installProviderAuthoritiesLocked(IContentProvider provider,
             ContentProvider localProvider, ContentProviderHolder holder) {
         final String auths[] = holder.info.authority.split(";");
@@ -6560,6 +6654,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         return retHolder;
     }
 
+    //通过反射调用指定类的main方法来执行独立入口点
     private void handleRunIsolatedEntryPoint(String entryPoint, String[] entryPointArgs) {
         try {
             Method main = Class.forName(entryPoint).getMethod("main", String[].class);
@@ -6686,6 +6781,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //用于将事件写入 Android 系统事件日志
     private static class EventLoggingReporter implements EventLogger.Reporter {
         @Override
         public void report (int code, Object... list) {
@@ -6693,6 +6789,7 @@ public final class ActivityThread extends ClientTransactionHandler {
         }
     }
 
+    //提供向系统 DropBox 服务报告数据的功能
     private class DropBoxReporter implements DropBox.Reporter {
 
         private DropBoxManager dropBox;

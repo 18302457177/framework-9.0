@@ -8,17 +8,24 @@
 components. Two such application components are defined in this package: {@link
 android.app.Activity} and {@link android.app.Service}. The other two components are from the {@link
 android.content} package: {@link android.content.BroadcastReceiver} and {@link
-android.content.ContentProvider}.</p>
+android.content.ContentProvider}.
+    一个 Android 应用程序是使用 Android 的四个核心应用程序组件中的一个或多个来定义的。此包中定义了两个这样的应用程序组件：Activity 和 Service。
+    其余两个组件来自内容包：BroadcastReceiver 和 ContentProvider。
+</p>
 
 <p>An {@link android.app.Activity} is an application component that provides a screen with which
 users can interact in order to do something, such as dial the phone, take a photo, send an email, or
 view a map. An activity can start other activities, including activities that live in separate
-applications.</p>
+applications.
+    活动是一个应用组件，它提供一个屏幕，让用户可以与之互动以完成某些操作，例如拨打电话、拍照、发送电子邮件或查看地图。一个活动可以启动其他活动，包括存在于不同应用中的活动。
+</p>
 
 <p>A {@link android.app.Service} is an application component that can perform
 long-running operations in the background without a user interface. For example, a service
 can handle network transactions, play music, or work with a content provider without the user being
-aware of the work going on.</p>
+aware of the work going on.
+    服务是一种应用组件，可以在后台执行长时间运行的操作而无需用户界面。例如，服务可以处理网络事务、播放音乐，或与内容提供者协作，而用户无需察觉这些操作正在进行。
+</p>
 
 <p>The {@link android.app.Fragment} class is also an important part of an application's
 design&mdash;especially when designing for large screen devices, such as tablets. A fragment defines
@@ -26,10 +33,14 @@ a distinct part of an activity's behavior, including the associated UI. It has i
 that is similar to that of the activity and can exist alongside other fragments that are embedded in
 the activity. While an activity is running, you can add and remove fragments and include each
 fragment in a back stack that's managed by the activity&mdash;allowing the user to navigate
-backwards through the fragment states, without leaving the activity.</p>
+backwards through the fragment states, without leaving the activity.
+    Fragment 类也是应用程序设计中一个重要的部分——尤其是在为大屏设备（如平板电脑）设计时。Fragment 定义了活动行为的一个独立部分，包括相关的用户界面。它有自己的生命周期，类似于活动的生命周期，并且可以与嵌入在活动中的其他 Fragment 并存。
+    当活动正在运行时，你可以添加和移除 Fragment，并将每个 Fragment 包含在由活动管理的返回堆栈中——允许用户在不离开活动的情况下回退到前一个 Fragment 状态。</p>
 
 <p>This package also defines application utilities, such as dialogs, notifications, and the
-action bar.</p>
+action bar.
+    该软件包还定义了应用程序实用工具，如对话框、通知和操作栏。
+</p>
 
 <p>For information about using some the classes in this package, see the following
 documents: <a href="{@docRoot}guide/topics/fundamentals/activities.html">Activities</a>, <a

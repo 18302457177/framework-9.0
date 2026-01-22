@@ -266,12 +266,16 @@ public class AlertDialog extends Dialog implements DialogInterface {
         mAlert.setMessage(message);
     }
 
-    /** @hide */
+    /** @hide
+     * 设置消息文本的移动方法，用于控制消息文本的交互行为（如滚动、选择等）
+     * */
     public void setMessageMovementMethod(MovementMethod movementMethod) {
         mAlert.setMessageMovementMethod(movementMethod);
     }
 
-    /** @hide */
+    /** @hide
+     * 设置消息文本的连字符频率，用于控制文本在换行时的连字符断词行为
+     * */
     public void setMessageHyphenationFrequency(
             @Layout.HyphenationFrequency int hyphenationFrequency) {
         mAlert.setMessageHyphenationFrequency(hyphenationFrequency);
@@ -426,6 +430,7 @@ public class AlertDialog extends Dialog implements DialogInterface {
         mAlert.setIcon(out.resourceId);
     }
 
+    //设置是否强制使用反向背景
     public void setInverseBackgroundForced(boolean forceInverseBackground) {
         mAlert.setInverseBackgroundForced(forceInverseBackground);
     }
@@ -670,6 +675,7 @@ public class AlertDialog extends Dialog implements DialogInterface {
          * @param listener The {@link DialogInterface.OnClickListener} to use.
          *
          * @return This Builder object to allow for chaining of calls to set methods
+         * 设置对话框中性按钮（如"稍后提醒"）的点击监听器
          */
         public Builder setNeutralButton(@StringRes int textId, final OnClickListener listener) {
             P.mNeutralButtonText = P.mContext.getText(textId);
@@ -743,6 +749,7 @@ public class AlertDialog extends Dialog implements DialogInterface {
          * selected item via the supplied listener. This should be an array type i.e. R.array.foo
          *
          * @return This Builder object to allow for chaining of calls to set methods
+         * 设置要在对话框中显示的项目列表，并提供选择项目的监听器
          */
         public Builder setItems(@ArrayRes int itemsId, final OnClickListener listener) {
             P.mItems = P.mContext.getResources().getTextArray(itemsId);
@@ -789,6 +796,7 @@ public class AlertDialog extends Dialog implements DialogInterface {
          *          in the label.
          *
          * @return This Builder object to allow for chaining of calls to set methods
+         * 用于创建基于数据库查询结果的动态列表对话框，常用于显示来自数据库的数据列表
          */
         public Builder setCursor(final Cursor cursor, final OnClickListener listener,
                 String labelColumn) {

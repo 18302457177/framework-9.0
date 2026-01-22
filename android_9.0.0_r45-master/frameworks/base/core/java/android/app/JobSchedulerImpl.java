@@ -38,6 +38,7 @@ public class JobSchedulerImpl extends JobScheduler {
         mBinder = binder;
     }
 
+    //通过远程接口调度作业
     @Override
     public int schedule(JobInfo job) {
         try {
@@ -47,6 +48,7 @@ public class JobSchedulerImpl extends JobScheduler {
         }
     }
 
+    //将作业加入队列
     @Override
     public int enqueue(JobInfo job, JobWorkItem work) {
         try {
@@ -56,6 +58,7 @@ public class JobSchedulerImpl extends JobScheduler {
         }
     }
 
+    //以特定包身份调度作业
     @Override
     public int scheduleAsPackage(JobInfo job, String packageName, int userId, String tag) {
         try {

@@ -35,6 +35,7 @@ import com.android.internal.util.Preconditions;
  * {@link SecurityException}, and thus there is no guarantee that the action contained will be
  * invoked by the user.
  * </p>
+ * 专门用于需要用户认证才能继续查看内容的场景
  */
 public final class AuthenticationRequiredException extends SecurityException implements Parcelable {
     private static final String TAG = "AuthenticationRequiredException";

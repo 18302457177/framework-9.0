@@ -93,6 +93,33 @@ import java.lang.annotation.RetentionPolicy;
  * {@link #FLAG_CANCEL_CURRENT} or {@link #FLAG_UPDATE_CURRENT} to either
  * cancel or modify whatever current PendingIntent is associated with the
  * Intent you are supplying.
+ * 1. 延迟执行机制
+ * 延迟意图执行: 允许其他应用在将来某个时间执行你指定的操作
+ * 代理执行: 其他应用可以代表你执行操作，拥有相同的权限和身份
+ * 2. 操作类型支持
+ * getActivity: 启动Activity
+ * getBroadcast: 发送广播
+ * getService: 启动服务
+ * getActivities: 启动多个Activity
+ * 重要特性
+ * 3. 系统级令牌管理
+ * 令牌维护: 系统维护令牌，即使应用进程被杀也可使用
+ * 跨进程可用: 其他进程可以获得并使用该令牌
+ * 唯一性识别: 通过操作类型、Intent属性、标志位等识别相同令牌
+ * 4. 匹配规则
+ * Intent匹配: 基于 Intent.filterEquals 规则匹配
+ * 请求码区分: 通过不同的requestCode区分不同的PendingIntent
+ * 属性变化: 仅改变extra不会产生新的PendingIntent
+ * 使用策略
+ * 5. 创建选项
+ * FLAG_ONE_SHOT: 一次性使用
+ * FLAG_NO_CREATE: 不存在时返回null
+ * FLAG_CANCEL_CURRENT: 取消现有后创建新的
+ * FLAG_UPDATE_CURRENT: 更新现有PendingIntent的extra
+ * 6. 安全考虑
+ * 显式Intent: 建议使用显式Intent，明确指定组件
+ * 权限控制: 其他应用获得执行权限，需谨慎构建
+ * 组件验证: 确保Intent最终发送到自己的组件
  */
 public final class PendingIntent implements Parcelable {
     private final IIntentSender mTarget;
@@ -100,7 +127,16 @@ public final class PendingIntent implements Parcelable {
     private IBinder mWhitelistToken;
     private ArraySet<CancelListener> mCancelListeners;
 
-    /** @hide */
+    /** @hide
+     * Intent.FILL_IN_ACTION: 填充动作
+     * Intent.FILL_IN_DATA: 填充数据
+     * Intent.FILL_IN_CATEGORIES: 填充类别
+     * Intent.FILL_IN_COMPONENT: 填充组件
+     * Intent.FILL_IN_PACKAGE: 填充包名
+     * Intent.FILL_IN_SOURCE_BOUNDS: 填充源边界
+     * Intent.FILL_IN_SELECTOR: 填充选择器
+     * Intent.FILL_IN_CLIP_DATA: 填充剪贴板数据
+     * */
     @IntDef(flag = true,
             value = {
                     FLAG_ONE_SHOT,
@@ -206,6 +242,7 @@ public final class PendingIntent implements Parcelable {
                 int resultCode, String resultData, Bundle resultExtras);
     }
 
+    //用于处理 PendingIntent 发送完成后的回调分发
     private static class FinishedDispatcher extends IIntentReceiver.Stub
             implements Runnable {
         private final PendingIntent mPendingIntent;
@@ -252,6 +289,7 @@ public final class PendingIntent implements Parcelable {
      * Listener for observing when pending intents are written to a parcel.
      *
      * @hide
+     * 提供在 PendingIntent 序列化时的通知机制
      */
     public interface OnMarshaledListener {
         /**

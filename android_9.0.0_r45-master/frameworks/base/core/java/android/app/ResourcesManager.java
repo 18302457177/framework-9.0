@@ -90,6 +90,7 @@ public class ResourcesManager {
      */
     private final ArrayList<WeakReference<Resources>> mResourceReferences = new ArrayList<>();
 
+    //用于标识和区分不同的 APK 资源文件
     private static class ApkKey {
         public final String path;
         public final boolean sharedLib;
@@ -137,6 +138,7 @@ public class ResourcesManager {
 
     /**
      * Resources and base configuration override associated with an Activity.
+     * 管理与单个 Activity 关联的资源和配置覆盖信息
      */
     private static class ActivityResources {
         public final Configuration overrideConfig = new Configuration();
@@ -212,6 +214,7 @@ public class ResourcesManager {
         return dm;
     }
 
+    //将非默认显示设备的显示指标（DisplayMetrics）应用到配置对象（Configuration）中
     private static void applyNonDefaultDisplayMetricsToConfiguration(
             @NonNull DisplayMetrics dm, @NonNull Configuration config) {
         config.touchscreen = Configuration.TOUCHSCREEN_NOTOUCH;
@@ -234,6 +237,7 @@ public class ResourcesManager {
         config.compatSmallestScreenWidthDp = config.smallestScreenWidthDp;
     }
 
+    //应用兼容性配置锁定
     public boolean applyCompatConfigurationLocked(int displayDensity,
             @NonNull Configuration compatConfiguration) {
         if (mResCompatibilityInfo != null && !mResCompatibilityInfo.supportsScreen()) {
@@ -306,10 +310,12 @@ public class ResourcesManager {
         }
     }
 
+    //将资源覆盖（overlay）路径转换为 idmap 文件路径
     private static String overlayPathToIdmapPath(String path) {
         return "/data/resource-cache/" + path.substring(1).replace('/', '@') + "@idmap";
     }
 
+    //加载 APK 资源文件并返回 ApkAssets 对象
     private @NonNull ApkAssets loadApkAssets(String path, boolean sharedLib, boolean overlay)
             throws IOException {
         final ApkKey newKey = new ApkKey(path, sharedLib, overlay);
@@ -424,6 +430,8 @@ public class ResourcesManager {
         return builder.build();
     }
 
+    //计算集合中存活的弱引用（WeakReference）数量
+    //统计给定集合中尚未被垃圾回收的引用对象数量
     private static <T> int countLiveReferences(Collection<WeakReference<T>> collection) {
         int count = 0;
         for (WeakReference<T> ref : collection) {
@@ -524,6 +532,8 @@ public class ResourcesManager {
      *
      * @param key The key to match.
      * @return a ResourcesImpl if the key matches a cache entry, null otherwise.
+     * 根据给定的 ResourcesKey 查找缓存的 ResourcesImpl 对象
+     * 实现资源实现对象的缓存查找机制
      */
     private @Nullable ResourcesImpl findResourcesImplForKeyLocked(@NonNull ResourcesKey key) {
         WeakReference<ResourcesImpl> weakImplRef = mResourceImpls.get(key);
@@ -1081,6 +1091,8 @@ public class ResourcesManager {
      * assetPath.
      * @param assetPath The main asset path for which to add the library asset path.
      * @param libAsset The library asset path to add.
+     * 为包含主资源路径的 ResourcesImpl 对象追加库资产路径
+     * 动态更新资源实现对象的库路径列表
      */
     public void appendLibAssetForMainAssetPath(String assetPath, String libAsset) {
         synchronized (this) {

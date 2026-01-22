@@ -1449,6 +1449,7 @@ public class AppOpsManager {
      * Retrieve whether the op allows the system (and system ui) to
      * bypass the user restriction.
      * @hide
+     * 查指定的操作是否允许系统（和系统UI）绕过用户限制
      */
     public static boolean opAllowSystemBypassRestriction(int op) {
         return sOpAllowSystemRestrictionBypass[op];
@@ -1484,6 +1485,7 @@ public class AppOpsManager {
     /**
      * Class holding all of the operation information associated with an app.
      * @hide
+     * 封装与应用程序相关的所有操作信息
      */
     public static class PackageOps implements Parcelable {
         private final String mPackageName;
@@ -1547,6 +1549,7 @@ public class AppOpsManager {
     /**
      * Class holding the information about one unique operation of an application.
      * @hide
+     * 操作条目封装：封装单个应用操作（app op）的详细信息
      */
     public static class OpEntry implements Parcelable {
         private final int mOp;
@@ -2139,6 +2142,7 @@ public class AppOpsManager {
      * Like {@link #checkOp} but returns the <em>raw</em> mode associated with the op.
      * Does not throw a security exception, does not translate {@link #MODE_FOREGROUND}.
      * @hide
+     * 检查指定应用是否被允许执行某个操作，并返回原始操作模式
      */
     public int unsafeCheckOpRaw(String op, int uid, String packageName) {
         try {
@@ -2283,6 +2287,7 @@ public class AppOpsManager {
      * Like {@link #checkOp} but instead of throwing a {@link SecurityException} it
      * returns {@link #MODE_ERRORED}.
      * @hide
+     * 检查指定应用是否被允许执行某个操作，但不会抛出安全异常而是返回错误模式
      */
     public int checkOpNoThrow(int op, int uid, String packageName) {
         try {
@@ -2353,6 +2358,7 @@ public class AppOpsManager {
      * causing the app to crash).
      * @throws SecurityException If the app has been configured to crash on this op.
      * @hide
+     * 记录应用执行某个操作的尝试
      */
     public int noteOp(int op, int uid, String packageName) {
         final int mode = noteOpNoThrow(op, uid, packageName);

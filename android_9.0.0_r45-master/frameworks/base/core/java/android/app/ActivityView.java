@@ -50,6 +50,15 @@ import java.util.List;
  * <p>Activity launching into this container is restricted by the same rules that apply to launching
  * on VirtualDisplays.
  * @hide
+ * 活动容器：提供一个可将活动（Activities）启动到其中的容器，并支持输入转发功能
+ * 虚拟显示集成：基于虚拟显示器（VirtualDisplay）实现，将活动内容渲染到虚拟显示器上
+ * 输入事件处理：实现输入事件转发机制，将触摸等输入事件传递给虚拟显示器上的活动
+ * 权限限制：
+ * 创建此视图需要 INJECT_EVENTS 权限
+ * 活动启动规则遵循虚拟显示器的相同限制
+ * 生命周期管理：管理容器的创建、准备就绪、销毁等状态变化，通过 StateCallback 通知外部
+ * 任务栈监听：监听任务栈变化，处理顶部任务移动等事件
+ * 触摸排除区域：自动更新触摸排除区域，避免在此视图区域内的触摸事件干扰底层界面的焦点切换
  */
 public class ActivityView extends ViewGroup {
 
@@ -251,6 +260,7 @@ public class ActivityView extends ViewGroup {
     }
 
     /** Send current location and size to the WM to set tap exclude region for this view. */
+    //更新 ActivityView 在屏幕上的位置信息，设置触摸排除区域
     private void updateLocation() {
         try {
             getLocationOnScreen(mLocationOnScreen);
@@ -276,6 +286,7 @@ public class ActivityView extends ViewGroup {
         return super.onGenericMotionEvent(event);
     }
 
+    //将输入事件转发到虚拟显示器上的活动
     private boolean injectInputEvent(InputEvent event) {
         if (mInputForwarder != null) {
             try {
@@ -287,6 +298,7 @@ public class ActivityView extends ViewGroup {
         return false;
     }
 
+    //实现 SurfaceHolder.Callback 接口，处理 SurfaceView 的生命周期事件
     private class SurfaceCallback implements SurfaceHolder.Callback {
         @Override
         public void surfaceCreated(SurfaceHolder surfaceHolder) {
@@ -436,6 +448,11 @@ public class ActivityView extends ViewGroup {
      * It also calls StateCallback.onTaskMovedToFront to notify interested parties that the stack
      * associated with the {@link ActivityView} has had a Task moved to the front. This is useful
      * when needing to also bring the host Activity to the foreground at the same time.
+     * 任务栈监听：监听虚拟显示器上的任务栈变化，特别是顶部栈的信息变更
+     * 背景色更新：检测顶部栈的背景色变化，并更新 SurfaceView 的背景色，确保在 SurfaceView 调整大小但应用尚未绘制新内容时显示正确的背景
+     * 任务前置通知：当任务移动到栈顶时，调用 StateCallback.onTaskMovedToFront 通知相关方，便于同步将宿主 Activity 带到前台
+     * 栈信息查询：提供 getTopMostStackInfo 方法获取虚拟显示器上的顶部栈信息
+     * 任务描述变更处理：处理任务描述变化事件，更新对应任务的背景色设置
      */
     private class TaskStackListenerImpl extends TaskStackListener {
 

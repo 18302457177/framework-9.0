@@ -90,13 +90,13 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
 
     /** @hide */
     @IntDef(prefix = { "WINDOWING_MODE_" }, value = {
-            WINDOWING_MODE_UNDEFINED,
-            WINDOWING_MODE_FULLSCREEN,
-            WINDOWING_MODE_PINNED,
-            WINDOWING_MODE_SPLIT_SCREEN_PRIMARY,
-            WINDOWING_MODE_SPLIT_SCREEN_SECONDARY,
-            WINDOWING_MODE_FULLSCREEN_OR_SPLIT_SCREEN_SECONDARY,
-            WINDOWING_MODE_FREEFORM,
+            WINDOWING_MODE_UNDEFINED,//窗口模式未定义
+            WINDOWING_MODE_FULLSCREEN,//全屏模式，占据整个屏幕或父容器
+            WINDOWING_MODE_PINNED,//固定模式，始终置顶显示
+            WINDOWING_MODE_SPLIT_SCREEN_PRIMARY,//分屏主窗口模式
+            WINDOWING_MODE_SPLIT_SCREEN_SECONDARY,//分屏副窗口模式
+            WINDOWING_MODE_FULLSCREEN_OR_SPLIT_SCREEN_SECONDARY,//全屏或分屏副窗口模式
+            WINDOWING_MODE_FREEFORM,//自由调整大小模式，可在父容器内自由调整大小
     })
     public @interface WindowingMode {}
 
@@ -116,11 +116,11 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
 
     /** @hide */
     @IntDef(prefix = { "ACTIVITY_TYPE_" }, value = {
-            ACTIVITY_TYPE_UNDEFINED,
-            ACTIVITY_TYPE_STANDARD,
-            ACTIVITY_TYPE_HOME,
-            ACTIVITY_TYPE_RECENTS,
-            ACTIVITY_TYPE_ASSISTANT,
+            ACTIVITY_TYPE_UNDEFINED,//活动类型未定义
+            ACTIVITY_TYPE_STANDARD,//标准活动类型，普通应用活动
+            ACTIVITY_TYPE_HOME,//主页/启动器活动类型
+            ACTIVITY_TYPE_RECENTS,//最近任务/概览活动类型，系统中只有一个此类活动
+            ACTIVITY_TYPE_ASSISTANT,//助手活动类型
     })
     public @interface ActivityType {}
 
@@ -139,10 +139,10 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
 
     /** @hide */
     @IntDef(flag = true, prefix = { "WINDOW_CONFIG_" }, value = {
-            WINDOW_CONFIG_BOUNDS,
-            WINDOW_CONFIG_APP_BOUNDS,
-            WINDOW_CONFIG_WINDOWING_MODE,
-            WINDOW_CONFIG_ACTIVITY_TYPE
+            WINDOW_CONFIG_BOUNDS,//表示 mBounds 属性发生变化
+            WINDOW_CONFIG_APP_BOUNDS,//表示 mAppBounds 属性发生变化
+            WINDOW_CONFIG_WINDOWING_MODE,//表示 mWindowingMode 属性发生变化
+            WINDOW_CONFIG_ACTIVITY_TYPE//表示 mActivityType 属性发生变化
     })
     public @interface WindowConfig {}
 
@@ -276,6 +276,7 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
         return mActivityType;
     }
 
+    //用于将当前对象的所有配置属性复制自另一个 WindowConfiguration 对象。
     public void setTo(WindowConfiguration other) {
         setBounds(other.mBounds);
         setAppBounds(other.mAppBounds);
@@ -444,6 +445,7 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
      * @param protoOutputStream Stream to write the WindowConfiguration object to.
      * @param fieldId           Field Id of the WindowConfiguration as defined in the parent message
      * @hide
+     * 将 WindowConfiguration 对象序列化为协议缓冲区格式。
      */
     public void writeToProto(ProtoOutputStream protoOutputStream, long fieldId) {
         final long token = protoOutputStream.start(fieldId);
@@ -468,6 +470,7 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
      * Returns true if the activities associated with this window configuration display a decor
      * view.
      * @hide
+     * 判断与此窗口配置关联的活动是否显示装饰视图
      */
     public boolean hasWindowDecorCaption() {
         return mWindowingMode == WINDOWING_MODE_FREEFORM;
@@ -477,13 +480,16 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
      * Returns true if the tasks associated with this window configuration can be resized
      * independently of their parent container.
      * @hide
+     * 判断与此窗口配置关联的任务是否可以独立于其父容器进行重调整大小
      */
     public boolean canResizeTask() {
         return mWindowingMode == WINDOWING_MODE_FREEFORM;
     }
 
     /** Returns true if the task bounds should persist across power cycles.
-     * @hide */
+     * @hide
+     * 判断任务边界是否应该跨电源循环持久保存
+     * */
     public boolean persistTaskBounds() {
         return mWindowingMode == WINDOWING_MODE_FREEFORM;
     }
@@ -493,6 +499,7 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
      * Floating tasks are laid out differently as they are allowed to extend past the display bounds
      * without overscan insets.
      * @hide
+     * 判断与此窗口配置关联的任务是否为浮动任务
      */
     public boolean tasksAreFloating() {
         return isFloating(mWindowingMode);
@@ -509,6 +516,7 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
     /**
      * Returns true if the windows associated with this window configuration can receive input keys.
      * @hide
+     * 判断与此窗口配置关联的窗口是否可以接收键盘输入
      */
     public boolean canReceiveKeys() {
         return mWindowingMode != WINDOWING_MODE_PINNED;
@@ -527,6 +535,7 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
      * Returns true if any visible windows belonging to apps with this window configuration should
      * be kept on screen when the app is killed due to something like the low memory killer.
      * @hide
+     * 判断与此窗口配置关联的应用的可见窗口在应用被杀死时是否应保持在屏幕上
      */
     public boolean keepVisibleDeadAppWindowOnScreen() {
         return mWindowingMode != WINDOWING_MODE_PINNED;
@@ -536,6 +545,7 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
      * Returns true if the backdrop on the client side should match the frame of the window.
      * Returns false, if the backdrop should be fullscreen.
      * @hide
+     * 判断客户端侧的背景(backdrop)是否应与窗口框架(frame)匹配
      */
     public boolean useWindowFrameForBackdrop() {
         return mWindowingMode == WINDOWING_MODE_FREEFORM || mWindowingMode == WINDOWING_MODE_PINNED;
@@ -545,6 +555,7 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
      * Returns true if this container may be scaled without resizing, and windows within may need
      * to be configured as such.
      * @hide
+     * 判断此容器是否可以在不调整大小的情况下进行缩放，以及窗口内的内容是否需要相应配置
      */
     public boolean windowsAreScaleable() {
         return mWindowingMode == WINDOWING_MODE_PINNED;
@@ -563,6 +574,7 @@ public class WindowConfiguration implements Parcelable, Comparable<WindowConfigu
      * {@link #WINDOWING_MODE_SPLIT_SCREEN_PRIMARY} or
      * {@link #WINDOWING_MODE_SPLIT_SCREEN_SECONDARY} windowing modes based on its current state.
      * @hide
+     * 分屏模式支持判断: 判断此容器是否可以根据其当前状态置于分屏主窗口模式或分屏副窗口模式
      */
     public boolean supportSplitScreenWindowingMode() {
         return supportSplitScreenWindowingMode(mActivityType);

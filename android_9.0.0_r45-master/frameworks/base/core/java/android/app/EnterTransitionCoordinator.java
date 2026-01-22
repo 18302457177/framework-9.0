@@ -44,6 +44,7 @@ import java.util.ArrayList;
  * This ActivityTransitionCoordinator is created by the Activity to manage
  * the enter scene and shared element transfer into the Scene, either during
  * launch of an Activity or returning from a launched Activity.
+ * 用于管理 Activity 进入场景和共享元素转换的协调器类。
  */
 class EnterTransitionCoordinator extends ActivityTransitionCoordinator {
     private static final String TAG = "EnterTransitionCoordinator";
@@ -101,6 +102,7 @@ class EnterTransitionCoordinator extends ActivityTransitionCoordinator {
         return mIsCrossTask;
     }
 
+    //处理共享元素视图实例准备就绪的情况，判断是否需要重新映射共享元素并触发视图准备就绪流程。
     public void viewInstancesReady(ArrayList<String> accepted, ArrayList<String> localNames,
             ArrayList<View> localViews) {
         boolean remap = false;
@@ -449,6 +451,7 @@ class EnterTransitionCoordinator extends ActivityTransitionCoordinator {
         }
     }
 
+    //处理共享元素的接收和转换准备工作，确保共享元素转换在正确的时机开始。
     private void onTakeSharedElements() {
         if (!mIsReadyForTransition || mSharedElementsBundle == null) {
             return;
@@ -665,6 +668,7 @@ class EnterTransitionCoordinator extends ActivityTransitionCoordinator {
         super.clearState();
     }
 
+    //将 Activity 从半透明状态转换回不透明状态，恢复 Activity 的正常显示状态。
     private void makeOpaque() {
         if (!mHasStopped && mActivity != null) {
             if (mWasOpaque) {
@@ -674,6 +678,7 @@ class EnterTransitionCoordinator extends ActivityTransitionCoordinator {
         }
     }
 
+    //判断当前转换是否允许重叠，即共享元素转换和视图转换是否可以同时进行。
     private boolean allowOverlappingTransitions() {
         return mIsReturning ? getWindow().getAllowReturnTransitionOverlap()
                 : getWindow().getAllowEnterTransitionOverlap();
@@ -713,6 +718,7 @@ class EnterTransitionCoordinator extends ActivityTransitionCoordinator {
         }
     }
 
+    //启动仅包含视图转换而不包含共享元素转换的进入转换。
     private void startEnterTransitionOnly() {
         startTransition(new Runnable() {
             @Override

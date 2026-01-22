@@ -577,6 +577,7 @@ public class Fragment implements ComponentCallbacks2, OnCreateContextMenuListene
         }
     }
 
+    //判断当前 Fragment 是否在 Fragment 回退栈中。
     final boolean isInBackStack() {
         return mBackStackNesting > 0;
     }
@@ -932,6 +933,7 @@ public class Fragment implements ComponentCallbacks2, OnCreateContextMenuListene
      * <li> {@link #onAttach(Activity)} and {@link #onActivityCreated(Bundle)} <b>will</b>
      * still be called.
      * </ul>
+     * 用于控制 Fragment 实例是否在 Activity 重建（如配置更改）时被保留。
      */
     public void setRetainInstance(boolean retain) {
         mRetainInstance = retain;
@@ -2144,6 +2146,7 @@ public class Fragment implements ComponentCallbacks2, OnCreateContextMenuListene
      * @param transition The Transition to use to move Views into the scene when reentering from a
      *                   previously-started Activity.
      * @attr ref android.R.styleable#Fragment_fragmentReenterTransition
+     * 用于设置当从回退栈弹出（pop）时，用于将视图移入场景的过渡动画。
      */
     public void setReenterTransition(Transition transition) {
         if (shouldChangeTransition(transition, USE_DEFAULT_TRANSITION)) {
@@ -2254,6 +2257,7 @@ public class Fragment implements ComponentCallbacks2, OnCreateContextMenuListene
      * @param allow true to start the enter transition when possible or false to
      *              wait until the exiting transition completes.
      * @attr ref android.R.styleable#Fragment_fragmentAllowEnterTransitionOverlap
+     * 设置退出过渡动画和进入过渡动画是否可以重叠。
      */
     public void setAllowEnterTransitionOverlap(boolean allow) {
         ensureAnimationInfo().mAllowEnterTransitionOverlap = allow;
@@ -2465,6 +2469,7 @@ public class Fragment implements ComponentCallbacks2, OnCreateContextMenuListene
         }
     }
 
+    //根据唯一标识符（who）查找对应的 Fragment 实例。
     Fragment findFragmentByWho(String who) {
         if (who.equals(mWho)) {
             return this;
@@ -2946,6 +2951,7 @@ public class Fragment implements ComponentCallbacks2, OnCreateContextMenuListene
      * Used internally to be notified when {@link #startPostponedEnterTransition()} has
      * been called. This listener will only be called once and then be removed from the
      * listeners.
+     * 用于在 startPostponedEnterTransition() 方法被调用时接收通知。
      */
     interface OnStartEnterTransitionListener {
         void onStartEnterTransition();

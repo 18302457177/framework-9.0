@@ -886,6 +886,7 @@ public class Dialog implements DialogInterface, Window.Callback,
         return onGenericMotionEvent(ev);
     }
 
+    //处理无障碍功能事件填充，为无障碍服务提供对话框的基本信息
     @Override
     public boolean dispatchPopulateAccessibilityEvent(@NonNull AccessibilityEvent event) {
         event.setClassName(getClass().getName());
@@ -1339,7 +1340,9 @@ public class Dialog implements DialogInterface, Window.Callback,
         mDismissMessage = msg;
     }
 
-    /** @hide */
+    /** @hide
+     * 获取对话框的取消和关闭监听器，用于内部框架使用
+     * */
     public boolean takeCancelAndDismissListeners(@Nullable String msg,
             @Nullable OnCancelListener cancel, @Nullable OnDismissListener dismiss) {
         if (mCancelAndDismissTaken != null) {

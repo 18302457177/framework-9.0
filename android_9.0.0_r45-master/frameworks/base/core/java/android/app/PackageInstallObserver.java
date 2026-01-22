@@ -20,8 +20,11 @@ import android.content.Intent;
 import android.content.pm.IPackageInstallObserver2;
 import android.os.Bundle;
 
-/** {@hide} */
+/** {@hide}
+ *
+ * */
 public class PackageInstallObserver {
+
     private final IPackageInstallObserver2.Stub mBinder = new IPackageInstallObserver2.Stub() {
         @Override
         public void onUserActionRequired(Intent intent) {

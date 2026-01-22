@@ -26,6 +26,7 @@ import android.os.Bundle;
  * {@link android.content.Context#sendBroadcast(android.content.Intent)
  * Context.sendBroadcast(Intent)} and related methods.
  * {@hide}
+ * 广播选项构建器：辅助类用于构建可在 Context.sendBroadcast(Intent) 及相关方法中使用的选项 Bundle
  */
 @SystemApi
 public class BroadcastOptions {
@@ -59,6 +60,7 @@ public class BroadcastOptions {
     static final String KEY_DONT_SEND_TO_RESTRICTED_APPS =
             "android:broadcast.dontSendToRestrictedApps";
 
+    //创建一个基础的 BroadcastOptions 实例
     public static BroadcastOptions makeBasic() {
         BroadcastOptions opts = new BroadcastOptions();
         return opts;
@@ -80,6 +82,7 @@ public class BroadcastOptions {
      * Set a duration for which the system should temporary place an application on the
      * power whitelist when this broadcast is being delivered to it.
      * @param duration The duration in milliseconds; 0 means to not place on whitelist.
+     * 设置在向应用发送广播时，系统将应用临时加入功耗白名单的持续时间
      */
     @RequiresPermission(android.Manifest.permission.CHANGE_DEVICE_IDLE_TEMP_WHITELIST)
     public void setTemporaryAppWhitelistDuration(long duration) {
@@ -99,6 +102,7 @@ public class BroadcastOptions {
      * is targeting an API level less than this, the broadcast will not be delivered to
      * them.  This only applies to receivers declared in the app's AndroidManifest.xml.
      * @hide
+     * 设置接收广播的最低目标API级别
      */
     public void setMinManifestReceiverApiLevel(int apiLevel) {
         mMinManifestReceiverApiLevel = apiLevel;
@@ -134,6 +138,7 @@ public class BroadcastOptions {
      * Sets whether pending intent can be sent for an application with background restrictions
      * @param dontSendToRestrictedApps if true, pending intent will not be sent for an application
      * with background restrictions. Default value is {@code false}
+     * 设置是否向有后台限制的应用发送广播
      */
     public void setDontSendToRestrictedApps(boolean dontSendToRestrictedApps) {
         mDontSendToRestrictedApps = dontSendToRestrictedApps;

@@ -150,6 +150,7 @@ public class MediaRouteActionProvider extends ActionProvider {
         refreshVisibility();
     }
 
+    //监听媒体路由的变化事件
     private static class MediaRouterCallback extends MediaRouter.SimpleCallback {
         private final WeakReference<MediaRouteActionProvider> mProviderWeak;
 
@@ -157,6 +158,7 @@ public class MediaRouteActionProvider extends ActionProvider {
             mProviderWeak = new WeakReference<MediaRouteActionProvider>(provider);
         }
 
+        //当有新路由添加时触发刷新
         @Override
         public void onRouteAdded(MediaRouter router, RouteInfo info) {
             refreshRoute(router);

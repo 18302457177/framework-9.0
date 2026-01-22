@@ -40,6 +40,24 @@ import java.util.List;
  *
  * @deprecated Use the <a href="{@docRoot}tools/extras/support-library.html">Support Library</a>
  *      {@link android.support.v4.app.FragmentController}
+ * 1. 生命周期管理
+ * 负责处理 Fragment 的完整生命周期
+ * 提供一系列 dispatch 方法来触发 Fragment 的各个生命周期阶段
+ * 2. 核心集成点
+ * 作为 Fragment 主机和 FragmentManager 之间的桥梁
+ * 通过 FragmentHostCallback 与主机进行通信
+ * 3. 主要功能
+ * Fragment 查找: 通过 findFragmentByWho() 方法根据标识符查找 Fragment
+ * 状态管理: 保存(saveAllState())和恢复(restoreAllState())所有 Fragment 的状态
+ * 配置变更处理: 管理配置变更时的 Fragment 保留(retainNonConfig())
+ * 4. 生命周期调度方法
+ * dispatchCreate(): 移动到创建状态
+ * dispatchStart()/dispatchResume(): 移动到启动/恢复状态
+ * dispatchPause()/dispatchStop(): 移动到暂停/停止状态
+ * dispatchDestroy(): 移动到销毁状态
+ * 5. 菜单和事件处理
+ * 处理选项菜单创建和交互事件
+ * 管理配置变更和低内存通知
  */
 @Deprecated
 public class FragmentController {
@@ -155,6 +173,7 @@ public class FragmentController {
     /**
      * Returns a nested tree of Fragments that have opted to retain their instance across
      * configuration changes.
+     * 用于获取选择在配置更改期间保留其实例的 Fragment 的嵌套树。
      */
     public FragmentManagerNonConfig retainNestedNonConfig() {
         return mHost.mFragmentManager.retainNonConfig();

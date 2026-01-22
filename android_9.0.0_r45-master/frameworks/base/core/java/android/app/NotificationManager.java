@@ -87,6 +87,35 @@ import java.util.Objects;
  * </div>
  *
  * @see android.app.Notification
+ * 1. 通知管理核心类
+ * 用户事件通知：用于向用户通知后台发生的事件
+ * 通知生命周期管理：负责通知的发送、更新和取消
+ * 2. 通知形式多样
+ * 状态栏图标：持久性图标，可通过启动器访问
+ * LED控制：设备LED灯的开启和闪烁
+ * 提醒功能：背光闪烁、声音播放、振动等
+ * 3. 通知标识机制
+ * ID和标签配对：(tag, id) 或 ({@code null}, id) 形式
+ * 唯一性保证：在应用内保持唯一标识
+ * 动态更新：相同标识的通知会被新参数替换
+ * 4. 通知操作方法
+ * notify()：发送或更新通知
+ * cancel()：取消单个通知
+ * cancelAll()：取消所有通知
+ * 5. 通道管理（Android O及以后）
+ * NotificationChannel 管理：创建和管理通知渠道
+ * NotificationChannelGroup 管理：对相关渠道进行分组
+ * 6. 策略控制
+ * 勿扰模式(DND)：管理中断过滤器
+ * 权限检查：通知策略访问授权验证
+ * 优先级管理：重要性级别控制
+ * 7. 系统服务集成
+ * 系统服务标识：通过 Context.NOTIFICATION_SERVICE 访问
+ * 远程调用：通过 INotificationManager 与系统服务通信
+ * 8. 状态查询
+ * 活动通知查询：获取当前激活的通知列表
+ * 通知状态检查：验证通知是否启用
+ * 权限状态查询：检查策略访问权限
  */
 @SystemService(Context.NOTIFICATION_SERVICE)
 public class NotificationManager {
@@ -208,7 +237,13 @@ public class NotificationManager {
     public static final String ACTION_INTERRUPTION_FILTER_CHANGED_INTERNAL
             = "android.app.action.INTERRUPTION_FILTER_CHANGED_INTERNAL";
 
-    /** @hide */
+    /** @hide
+     * INTERRUPTION_FILTER_NONE：完全禁止中断（勿扰模式）
+     * INTERRUPTION_FILTER_PRIORITY：仅允许优先级通知
+     * INTERRUPTION_FILTER_ALARMS：仅允许闹钟通知
+     * INTERRUPTION_FILTER_ALL：允许所有通知
+     * INTERRUPTION_FILTER_UNKNOWN：未知状态
+     * */
     @IntDef(prefix = { "INTERRUPTION_FILTER_" }, value = {
             INTERRUPTION_FILTER_NONE, INTERRUPTION_FILTER_PRIORITY, INTERRUPTION_FILTER_ALARMS,
             INTERRUPTION_FILTER_ALL, INTERRUPTION_FILTER_UNKNOWN
@@ -251,7 +286,14 @@ public class NotificationManager {
      */
     public static final int INTERRUPTION_FILTER_UNKNOWN = 0;
 
-    /** @hide */
+    /** @hide
+     * IMPORTANCE_UNSPECIFIED：未指定重要性
+     * IMPORTANCE_NONE：无重要性（不显示）
+     * IMPORTANCE_MIN：最低重要性
+     * IMPORTANCE_LOW：低重要性
+     * IMPORTANCE_DEFAULT：默认重要性
+     * IMPORTANCE_HIGH：高重要性
+     * */
     @IntDef(prefix = { "IMPORTANCE_" }, value = {
             IMPORTANCE_UNSPECIFIED, IMPORTANCE_NONE,
             IMPORTANCE_MIN, IMPORTANCE_LOW, IMPORTANCE_DEFAULT, IMPORTANCE_HIGH
@@ -326,7 +368,9 @@ public class NotificationManager {
         mContext = context;
     }
 
-    /** {@hide} */
+    /** {@hide}
+     * 用于从 Context 中获取 NotificationManager 实例。
+     * */
     public static NotificationManager from(Context context) {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
@@ -409,6 +453,7 @@ public class NotificationManager {
         }
     }
 
+    //用于修复旧版本通知中缺少小图标的兼容性问题。
     private void fixLegacySmallIcon(Notification n, String pkg) {
         if (n.getSmallIcon() == null && n.icon != 0) {
             n.setSmallIcon(Icon.createWithResource(pkg, n.icon));
@@ -628,6 +673,7 @@ public class NotificationManager {
 
     /**
      * @hide
+     * 用于获取当前生效的效果抑制器（Effects Suppressor）的组件名称。
      */
     @TestApi
     public ComponentName getEffectsSuppressor() {
@@ -641,6 +687,7 @@ public class NotificationManager {
 
     /**
      * @hide
+     * 用于检查通话过滤器是否匹配给定的参数。
      */
     public boolean matchesCallFilter(Bundle extras) {
         INotificationManager service = getService();
@@ -868,6 +915,7 @@ public class NotificationManager {
      * <p>
      * Use {@link #ACTION_NOTIFICATION_POLICY_ACCESS_GRANTED_CHANGED} to listen for
      * user grant or denial of this access.
+     * 用于检查应用程序是否具有修改通知勿扰模式策略权限的方法。
      */
     public boolean isNotificationPolicyAccessGranted() {
         INotificationManager service = getService();
@@ -1009,6 +1057,7 @@ public class NotificationManager {
 
     private Context mContext;
 
+    //用于检查参数是否为空，并在参数为空时抛出异常。
     private static void checkRequired(String name, Object value) {
         if (value == null) {
             throw new IllegalArgumentException(name + " is required");
@@ -1018,6 +1067,7 @@ public class NotificationManager {
     /**
      * Notification policy configuration.  Represents user-preferences for notification
      * filtering.
+     * 通知策略配置。表示用户对通知筛选的偏好。
      */
     public static class Policy implements android.os.Parcelable {
         /** Reminder notifications are prioritized. */
@@ -1546,6 +1596,7 @@ public class NotificationManager {
      * <p>
      * Only available if policy access is granted to this package. See
      * {@link #isNotificationPolicyAccessGranted}.
+     * 设置当前的通知中断过滤器，控制哪些通知可以中断用户（如声音和振动）
      */
     public final void setInterruptionFilter(@InterruptionFilter int interruptionFilter) {
         final INotificationManager service = getService();

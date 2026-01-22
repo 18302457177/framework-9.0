@@ -31,6 +31,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
+//返回栈状态
 final class BackStackState implements Parcelable {
     final int[] mOps;
     final int mTransition;
@@ -375,6 +376,7 @@ final class BackStackRecord extends FragmentTransaction implements
         return mIndex;
     }
 
+    //获取面包屑标题的资源ID
     public int getBreadCrumbTitleRes() {
         return mBreadCrumbTitleRes;
     }
@@ -620,6 +622,7 @@ final class BackStackRecord extends FragmentTransaction implements
         }
     }
 
+    //在 FragmentTransaction 提交后执行指定的 Runnable 任务
     @Override
     public FragmentTransaction runOnCommit(Runnable runnable) {
         if (runnable == null) {
@@ -724,6 +727,7 @@ final class BackStackRecord extends FragmentTransaction implements
         return false;
     }
 
+    //检查当前 BackStackRecord 与指定范围内的其他事务记录是否存在容器交互
     boolean interactsWith(ArrayList<BackStackRecord> records, int startIndex, int endIndex) {
         if (endIndex == startIndex) {
             return false;
@@ -964,6 +968,7 @@ final class BackStackRecord extends FragmentTransaction implements
      * @param added Initialized to the fragments that are in the mManager.mAdded, this
      *              will be modified to contain the fragments that will be in mAdded
      *              after the execution ({@link #executeOps()}.
+     * 在回退栈弹出操作期间跟踪Fragment的添加和移除状态
      */
     void trackAddedFragmentsInPop(ArrayList<Fragment> added) {
         for (int opNum = 0; opNum < mOps.size(); opNum++) {

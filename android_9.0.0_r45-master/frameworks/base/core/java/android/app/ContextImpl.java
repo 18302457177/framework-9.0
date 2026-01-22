@@ -142,6 +142,7 @@ class ReceiverRestrictedContext extends ContextWrapper {
 /**
  * Common implementation of Context API, which provides the base
  * context object for Activity and other application components.
+ * Context API 的常见实现，它为 Activity 和其他应用组件提供基础上下文对象。
  */
 class ContextImpl extends Context {
     private final static String TAG = "ContextImpl";
@@ -225,10 +226,10 @@ class ContextImpl extends Context {
 
     /** @hide */
     @IntDef(prefix = { "STATE_" }, value = {
-            STATE_UNINITIALIZED,
-            STATE_INITIALIZING,
-            STATE_READY,
-            STATE_NOT_FOUND,
+            STATE_UNINITIALIZED,//未初始化状态
+            STATE_INITIALIZING,//正在初始化状态
+            STATE_READY,//已就绪状态
+            STATE_NOT_FOUND,//未找到状态
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ServiceInitializationState {}
@@ -681,6 +682,7 @@ class ContextImpl extends Context {
         }
     }
 
+    //获取应用的 OBB（Opaque Binary Blob）目录
     @Override
     public File getObbDir() {
         // Operates on primary external storage
@@ -847,18 +849,21 @@ class ContextImpl extends Context {
         }
     }
 
+    //获取当前壁纸的 Drawable 对象
     @Override
     @Deprecated
     public Drawable getWallpaper() {
         return getWallpaperManager().getDrawable();
     }
 
+    //获取当前壁纸的 Drawable 对象，但不会启动壁纸服务（如果未运行的话）
     @Override
     @Deprecated
     public Drawable peekWallpaper() {
         return getWallpaperManager().peekDrawable();
     }
 
+    //获取壁纸期望的最小宽度
     @Override
     @Deprecated
     public int getWallpaperDesiredMinimumWidth() {
@@ -2491,6 +2496,7 @@ class ContextImpl extends Context {
         return mReceiverRestrictedContext = new ReceiverRestrictedContext(getOuterContext());
     }
 
+    //设置外部上下文对象
     final void setOuterContext(Context context) {
         mOuterContext = context;
     }

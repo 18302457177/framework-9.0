@@ -19,8 +19,11 @@ package android.app;
 import android.content.Intent;
 import android.content.pm.IPackageDeleteObserver2;
 
-/** {@hide} */
+/** {@hide}
+ * 提供包删除操作的状态回调机制
+ * */
 public class PackageDeleteObserver {
+    //将本地回调方法暴露给系统服务的Binder接口
     private final IPackageDeleteObserver2.Stub mBinder = new IPackageDeleteObserver2.Stub() {
         @Override
         public void onUserActionRequired(Intent intent) {
@@ -38,9 +41,11 @@ public class PackageDeleteObserver {
         return mBinder;
     }
 
+    //用户操作需求回调
     public void onUserActionRequired(Intent intent) {
     }
 
+    //包删除完成回调
     public void onPackageDeleted(String basePackageName, int returnCode, String msg) {
     }
 }

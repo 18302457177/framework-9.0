@@ -150,6 +150,8 @@ import java.util.Map;
  * 
  * @see #setListAdapter
  * @see android.widget.ExpandableListView
+ * 可展开列表展示：提供一个可展开的列表界面，通过绑定实现了 ExpandableListAdapter 接口的数据源来显示数据
+ * 事件处理：暴露用户选择项目时的事件处理器
  */
 public class ExpandableListActivity extends Activity implements
         OnCreateContextMenuListener,
@@ -184,6 +186,7 @@ public class ExpandableListActivity extends Activity implements
 
     /**
      * Override this for receiving callbacks when a group has been collapsed.
+     * 用于接收组折叠时的回调事件。
      */
     public void onGroupCollapse(int groupPosition) {
     }
@@ -265,6 +268,7 @@ public class ExpandableListActivity extends Activity implements
         return mAdapter;
     }
 
+    //用于确保 ExpandableListActivity 中的 ExpandableListView 已经被创建。
     private void ensureList() {
         if (mList != null) {
             return;

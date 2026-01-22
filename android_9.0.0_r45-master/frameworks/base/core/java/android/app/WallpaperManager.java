@@ -175,8 +175,8 @@ public class WallpaperManager {
 
     /** @hide */
     @IntDef(flag = true, prefix = { "FLAG_" }, value = {
-            FLAG_SYSTEM,
-            FLAG_LOCK
+            FLAG_SYSTEM,//系统壁纸
+            FLAG_LOCK//锁屏壁纸
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SetWallpaperFlags {}
@@ -197,6 +197,8 @@ public class WallpaperManager {
      * Special drawable that draws a wallpaper as fast as possible.  Assumes
      * no scaling or placement off (0,0) of the wallpaper (this should be done
      * at the time the bitmap is loaded).
+     * 专门用于快速绘制壁纸的特殊 Drawable 子类
+     * 优化目标是最小化开销，提升绘制速度
      */
     static class FastBitmapDrawable extends Drawable {
         private final Bitmap mBitmap;
@@ -222,11 +224,13 @@ public class WallpaperManager {
             canvas.drawBitmap(mBitmap, mDrawLeft, mDrawTop, mPaint);
         }
 
+        //返回 FastBitmapDrawable 的不透明度类型
         @Override
         public int getOpacity() {
             return PixelFormat.OPAQUE;
         }
 
+        //设置 FastBitmapDrawable 的绘制边界，并计算居中偏移量
         @Override
         public void setBounds(int left, int top, int right, int bottom) {
             mDrawLeft = left + (right-left - mWidth) / 2;
@@ -243,6 +247,7 @@ public class WallpaperManager {
             throw new UnsupportedOperationException("Not supported with this drawable");
         }
 
+        //设置抖动效果
         @Override
         public void setDither(boolean dither) {
             throw new UnsupportedOperationException("Not supported with this drawable");
@@ -253,6 +258,7 @@ public class WallpaperManager {
             throw new UnsupportedOperationException("Not supported with this drawable");
         }
 
+        //获取 FastBitmapDrawable 的固有宽度
         @Override
         public int getIntrinsicWidth() {
             return mWidth;
@@ -274,6 +280,14 @@ public class WallpaperManager {
         }
     }
 
+    /**
+     * 服务代理管理：持有 IWallpaperManager 服务实例，负责与壁纸服务进行通信
+     * 异步回调处理：实现 IWallpaperManagerCallback.Stub，接收来自壁纸服务的异步回调事件
+     * 壁纸缓存管理：维护当前壁纸的缓存 (mCachedWallpaper)，减少重复加载开销
+     * 颜色监听管理：管理壁纸颜色变化监听器 (mColorListeners)，支持监听壁纸颜色变化
+     * 默认壁纸缓存：缓存默认壁纸 (mDefaultWallpaper)，提高获取效率
+     * 线程同步控制：使用 sSync 对象保证多线程访问安全
+     */
     private static class Globals extends IWallpaperManagerCallback.Stub {
         private final IWallpaperManager mService;
         private boolean mColorCallbackRegistered;
@@ -438,6 +452,7 @@ public class WallpaperManager {
             return null;
         }
 
+        //清空已加载的壁纸缓存
         void forgetLoadedWallpaper() {
             synchronized (this) {
                 mCachedWallpaper = null;
@@ -446,6 +461,7 @@ public class WallpaperManager {
             }
         }
 
+        //获取指定用户的当前壁纸位图
         private Bitmap getCurrentWallpaperLocked(Context context, int userId, boolean hardware) {
             if (mService == null) {
                 Log.w(TAG, "WallpaperService not running");
@@ -600,6 +616,8 @@ public class WallpaperManager {
      *     IllegalArgumentException if an invalid wallpaper is requested.
      * @return A Drawable presenting the built-in default wallpaper image of the given type,
      *        or {@code null} if no default image of that type is defined on this device.
+     * 获取内置壁纸：根据指定参数获取系统内置静态壁纸的 Drawable 对象
+     * 支持裁剪缩放：可以根据输出尺寸对原始壁纸进行裁剪或缩放处理
      */
     public Drawable getBuiltInDrawable(int outWidth, int outHeight, boolean scaleToFit,
             float horizontalAlignment, float verticalAlignment, @SetWallpaperFlags int which) {
@@ -839,6 +857,7 @@ public class WallpaperManager {
      * Like {@link #getDrawable()} but returns a Bitmap for the provided user.
      *
      * @hide
+     * 获取指定用户的系统壁纸位图
      */
     public Bitmap getBitmapAsUser(int userId, boolean hardware) {
         return sGlobals.peekWallpaperBitmap(mContext, true, FLAG_SYSTEM, userId, hardware);
@@ -1061,6 +1080,7 @@ public class WallpaperManager {
      *
      * @throws IllegalArgumentException if the URI is not a content URI or its MIME type is
      *         not "image/*"
+     *         用于获取一个启动壁纸裁剪和设置活动的 Intent。
      */
     public Intent getCropAndSetWallpaperIntent(Uri imageUri) {
         if (imageUri == null) {
@@ -1138,6 +1158,7 @@ public class WallpaperManager {
      * @return An integer ID assigned to the newly active wallpaper; or zero on failure.
      *
      * @throws IOException
+     * 根据资源ID设置指定类型的壁纸（系统壁纸或锁屏壁纸）
      */
     @RequiresPermission(android.Manifest.permission.SET_WALLPAPER)
     public int setResource(@RawRes int resid, @SetWallpaperFlags int which)
@@ -1267,6 +1288,7 @@ public class WallpaperManager {
      * id. If the user id doesn't match the user id the process is running under, calling this
      * requires permission {@link android.Manifest.permission#INTERACT_ACROSS_USERS_FULL}.
      * @hide
+     * 为指定用户设置壁纸图像，支持指定可见区域和备份选项
      */
     public int setBitmap(Bitmap fullImage, Rect visibleCropHint,
             boolean allowBackup, @SetWallpaperFlags int which, int userId)
@@ -1331,6 +1353,7 @@ public class WallpaperManager {
         setStream(bitmapData, null, true);
     }
 
+    //将输入流 data 的内容复制到文件输出流 fos 中
     private void copyStreamToWallpaperFile(InputStream data, FileOutputStream fos)
             throws IOException {
         FileUtils.copy(data, fos);
@@ -1429,6 +1452,7 @@ public class WallpaperManager {
      * Return whether any users are currently set to use the wallpaper
      * with the given resource ID.  That is, their wallpaper has been
      * set through {@link #setResource(int)} with the same resource id.
+     * 检查当前是否有任何用户正在使用指定资源ID的壁纸
      */
     public boolean hasResourceWallpaper(@RawRes int resid) {
         if (sGlobals.mService == null) {
@@ -1457,6 +1481,7 @@ public class WallpaperManager {
      * @return The desired minimum width for the wallpaper. This value should
      * be honored by applications that set the wallpaper but it is not
      * mandatory.
+     * 获取系统建议的壁纸最小宽度
      */
     public int getDesiredMinimumWidth() {
         if (sGlobals.mService == null) {
@@ -1514,6 +1539,7 @@ public class WallpaperManager {
      *
      * @param minimumWidth Desired minimum width
      * @param minimumHeight Desired minimum height
+     * 供主屏幕应用程序使用，指定其希望使用的壁纸尺寸
      */
     public void suggestDesiredDimensions(int minimumWidth, int minimumHeight) {
         try {
@@ -1656,6 +1682,7 @@ public class WallpaperManager {
      * another user's wallpaper.
      *
      * @hide
+     * 设置指定用户的动态壁纸组件
      */
     @RequiresPermission(android.Manifest.permission.SET_WALLPAPER_COMPONENT)
     public boolean setWallpaperComponent(ComponentName name, int userId) {
@@ -1684,6 +1711,7 @@ public class WallpaperManager {
      * View.getWindowToken()}.
      * @param xOffset The offset along the X dimension, from 0 to 1.
      * @param yOffset The offset along the Y dimension, from 0 to 1.
+     * 设置当前壁纸在给定窗口背后的显示位置偏移量
      */
     public void setWallpaperOffsets(IBinder windowToken, float xOffset, float yOffset) {
         try {
@@ -1721,6 +1749,7 @@ public class WallpaperManager {
      * @param y Arbitrary integer argument based on command.
      * @param z Arbitrary integer argument based on command.
      * @param extras Optional additional information for the command, or null.
+     * 向当前激活的壁纸发送任意命令
      */
     public void sendWallpaperCommand(IBinder windowToken, String action,
             int x, int y, int z, Bundle extras) {
@@ -1738,6 +1767,7 @@ public class WallpaperManager {
      * Returns whether wallpapers are supported for the calling user. If this function returns
      * {@code false}, any attempts to changing the wallpaper will have no effect,
      * and any attempt to obtain of the wallpaper will return {@code null}.
+     * 检查当前用户是否支持壁纸功能
      */
     public boolean isWallpaperSupported() {
         if (sGlobals.mService == null) {
@@ -1908,6 +1938,7 @@ public class WallpaperManager {
      *
      * @return true on success; false on error.
      * @hide
+     * 注册锁屏壁纸观察回调
      */
     public boolean setLockWallpaperCallback(IWallpaperManagerCallback callback) {
         if (sGlobals.mService == null) {
@@ -1927,6 +1958,7 @@ public class WallpaperManager {
      *
      * Only the OS itself may use this method.
      * @hide
+     * 查询当前系统壁纸是否符合备份条件
      */
     public boolean isWallpaperBackupEligible(int which) {
         if (sGlobals.mService == null) {
@@ -1942,6 +1974,7 @@ public class WallpaperManager {
     }
 
     // Private completion callback for setWallpaper() synchronization
+    //用于 setWallpaper() 操作的同步等待机制。
     private class WallpaperSetCompletion extends IWallpaperManagerCallback.Stub {
         final CountDownLatch mLatch;
 
@@ -1949,6 +1982,7 @@ public class WallpaperManager {
             mLatch = new CountDownLatch(1);
         }
 
+        //等待壁纸设置操作完成
         public void waitForCompletion() {
             try {
                 mLatch.await(30, TimeUnit.SECONDS);

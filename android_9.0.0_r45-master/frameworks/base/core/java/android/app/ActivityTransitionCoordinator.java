@@ -116,6 +116,7 @@ import java.util.Collection;
  * 9) The MSG_EXIT_TRANSITION_COMPLETE is received by the EnterTransitionCoordinator.
  *    - If the window doesn't allow overlapping enter transitions, the enter transition is started
  *      by setting entering views to VISIBLE.
+ * 用于管理 Activity 间的转场动画和协调它们之间的通信。
  */
 abstract class ActivityTransitionCoordinator extends ResultReceiver {
     private static final String TAG = "ActivityTransitionCoordinator";
@@ -223,6 +224,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
         mIsReturning = isReturning;
     }
 
+    //处理共享元素就绪状态，完成转场动画的准备工作
     protected void viewsReady(ArrayMap<String, View> sharedElements) {
         sharedElements.retainAll(mAllSharedElementNames);
         if (mListener != null) {
@@ -269,6 +271,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
 
     /**
      * Returns true when view is nested in any of the values of sharedElements.
+     * 检查指定的 View 是否嵌套在 sharedElements 集合中的某个视图内部
      */
     private static boolean isNested(View view, ArrayMap<String, View> sharedElements) {
         ViewParent parent = view.getParent();
@@ -284,6 +287,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
         return isNested;
     }
 
+    //移除屏幕外的视图，从转场动画中排除不可见的视图
     protected void stripOffscreenViews() {
         if (mTransitioningViews == null) {
             return;
@@ -298,16 +302,19 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
         }
     }
 
+    //提供对窗口对象的访问，用于转场动画相关的窗口操作
     protected Window getWindow() {
         return mWindow;
     }
 
+    //获取窗口的装饰视图
     public ViewGroup getDecor() {
         return (mWindow == null) ? null : (ViewGroup) mWindow.getDecorView();
     }
 
     /**
      * Sets the transition epicenter to the position of the first shared element.
+     * 设置转场动画的中心点（epicenter），基于第一个共享元素的位置
      */
     protected void setEpicenter() {
         View epicenter = null;
@@ -330,6 +337,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
         }
     }
 
+    //获取已接受的共享元素名称列表
     public ArrayList<String> getAcceptedNames() {
         return mSharedElementNames;
     }
@@ -348,6 +356,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
 
     public ArrayList<String> getAllSharedElementNames() { return mAllSharedElementNames; }
 
+    //为转场动画设置目标视图，决定哪些视图参与或排除在转场动画之外
     protected Transition setTargets(Transition transition, boolean add) {
         if (transition == null || (add &&
                 (mTransitioningViews == null || mTransitioningViews.isEmpty()))) {
@@ -559,6 +568,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
         view.layout(x, y, x + width, y + height);
     }
 
+    //为所有共享元素计算并存储其父视图的变换矩阵
     private void setSharedElementMatrices() {
         int numSharedElements = mSharedElements.size();
         if (numSharedElements > 0) {
@@ -917,6 +927,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
         }
     }
 
+    //设置所有共享元素对应的 GhostView 的可见性状态
     protected void setGhostVisibility(int visibility) {
         int numSharedElements = mSharedElements.size();
         for (int i = 0; i < numSharedElements; i++) {
@@ -936,6 +947,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
         }
     }
 
+    //检查视图转场动画是否已完成
     protected boolean isViewsTransitionComplete() {
         return mViewsTransitionComplete;
     }
@@ -976,6 +988,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
 
     protected void onTransitionsComplete() {}
 
+    //用于处理转场动画开始和结束的监听器
     protected class ContinueTransitionListener extends TransitionListenerAdapter {
         @Override
         public void onTransitionStart(Transition transition) {
@@ -993,6 +1006,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
         }
     }
 
+    //将 ImageView.ScaleType 枚举转换为对应的整数值
     private static int scaleTypeToInt(ImageView.ScaleType scaleType) {
         for (int i = 0; i < SCALE_TYPE_VALUES.length; i++) {
             if (scaleType == SCALE_TYPE_VALUES[i]) {
@@ -1020,6 +1034,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
      * Blocks suppressLayout from Visibility transitions. It is ok to suppress the layout,
      * but we don't want to force the layout when suppressLayout becomes false. This leads
      * to visual glitches.
+     * 阻止 Visibility 转场动画的布局抑制功能
      */
     private static void noLayoutSuppressionForVisibilityTransitions(Transition transition) {
         if (transition instanceof Visibility) {
@@ -1039,6 +1054,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
                 mBackgroundAnimatorComplete);
     }
 
+    //用于提供固定的转场中心点矩形区域
     private static class FixedEpicenterCallback extends Transition.EpicenterCallback {
         private Rect mEpicenter;
 
@@ -1050,6 +1066,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
         }
     }
 
+    //用于管理共享元素在转场动画期间的变换矩阵更新
     private static class GhostViewListeners implements ViewTreeObserver.OnPreDrawListener,
             View.OnAttachStateChangeListener {
         private View mView;
@@ -1069,6 +1086,7 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
             return mView;
         }
 
+        //在每次绘制前更新 GhostView 的变换矩阵
         @Override
         public boolean onPreDraw() {
             GhostView ghostView = GhostView.getGhost(mView);
@@ -1090,17 +1108,20 @@ abstract class ActivityTransitionCoordinator extends ResultReceiver {
             mParent.removeOnAttachStateChangeListener(this);
         }
 
+        //更新 ViewTreeObserver
         @Override
         public void onViewAttachedToWindow(View v) {
             mViewTreeObserver = v.getViewTreeObserver();
         }
 
+        //移除监听器
         @Override
         public void onViewDetachedFromWindow(View v) {
             removeListener();
         }
     }
 
+    //用于存储共享元素在转场动画开始前的原始状态信息
     static class SharedElementOriginalState {
         int mLeft;
         int mTop;

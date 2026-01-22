@@ -102,6 +102,8 @@ public class TaskStackBuilder {
      * @param nextIntent Intent for the topmost Activity in the synthesized task stack.
      *                   Its chain of parents as specified in the manifest will be added.
      * @return This TaskStackBuilder for method chaining.
+     * 向任务栈添加一个新的 Intent 及其父活动链
+     * 自动解析目标活动的父活动链并将其添加到任务栈中
      */
     public TaskStackBuilder addNextIntentWithParentStack(Intent nextIntent) {
         ComponentName target = nextIntent.getComponent();
@@ -124,6 +126,7 @@ public class TaskStackBuilder {
      *
      * @param sourceActivity All parents of this activity will be added
      * @return This TaskStackBuilder for method chaining
+     * 将指定活动的父活动链添加到任务栈构建器中
      */
     public TaskStackBuilder addParentStack(Activity sourceActivity) {
         final Intent parent = sourceActivity.getParentActivityIntent();

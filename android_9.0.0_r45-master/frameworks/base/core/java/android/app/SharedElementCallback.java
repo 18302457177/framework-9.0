@@ -42,6 +42,7 @@ import java.util.Map;
  * {@link Fragment#setExitSharedElementCallback(SharedElementCallback)}
  * to monitor the Shared element transitions. The events can be used to customize Activity
  * and Fragment Transition behavior.
+ * 共享元素过渡监听器，用于监控共享元素过渡过程
  */
 public abstract class SharedElementCallback {
     private Matrix mTempMatrix;
@@ -81,6 +82,9 @@ public abstract class SharedElementCallback {
      *                               be part of the scene, but will be positioned relative
      *                               to the Window decor View. This list is null for Fragment
      *                               Transitions.
+     * 触发时机: 在捕获共享元素开始状态之前调用
+     * Activity 过渡: 在进入和重新进入过渡时调用
+     * Fragment 过渡: 在捕获所有共享元素过渡的开始状态之前调用
      */
     public void onSharedElementStart(List<String> sharedElementNames,
             List<View> sharedElements, List<View> sharedElementSnapshots) {}
@@ -137,6 +141,7 @@ public abstract class SharedElementCallback {
      *                               are positioned relative to the Window decor View. A
      *                               View removed from this list will not be transitioned
      *                               automatically.
+     * 处理没有映射关系的共享元素
      */
     public void onRejectSharedElements(List<View> rejectedSharedElements) {}
 
@@ -148,6 +153,7 @@ public abstract class SharedElementCallback {
      *              or Fragment in the order they were provided.
      * @param sharedElements The mapping of shared element names to Views. The best guess
      *                       will be filled into sharedElements based on the transitionNames.
+     * 调整共享元素名称到视图的映射关系
      */
     public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {}
 
@@ -169,6 +175,7 @@ public abstract class SharedElementCallback {
      * {@link #onCreateSnapshotView(android.content.Context, android.os.Parcelable)} and passed
      * into {@link #onSharedElementStart(java.util.List, java.util.List, java.util.List)} and
      * {@link #onSharedElementEnd(java.util.List, java.util.List, java.util.List)}.
+     * 创建共享元素快照
      */
     public Parcelable onCaptureSharedElementSnapshot(View sharedElement, Matrix viewToGlobalMatrix,
             RectF screenBounds) {
@@ -223,6 +230,7 @@ public abstract class SharedElementCallback {
      * @return A View to be sent in {@link #onSharedElementStart(java.util.List, java.util.List,
      * java.util.List)} and {@link #onSharedElementEnd(java.util.List, java.util.List,
      * java.util.List)}. A null value will produce a null snapshot value for those two methods.
+     * 从快照数据重建视图
      */
     public View onCreateSnapshotView(Context context, Parcelable snapshot) {
         View view = null;
@@ -271,6 +279,7 @@ public abstract class SharedElementCallback {
      * @param sharedElements The shared elements that are part of the View hierarchy.
      * @param listener The listener to call when the shared elements are ready to be hidden
      *                 in the source Activity or shown in the destination Activity.
+     * 共享元素到达最终位置时调用
      */
     public void onSharedElementsArrived(List<String> sharedElementNames,
             List<View> sharedElements, OnSharedElementsReadyListener listener) {

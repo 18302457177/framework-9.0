@@ -21,6 +21,11 @@ import android.content.pm.IPackageManager;
 /**
  * Special private access for certain globals related to a process.
  * @hide
+ * 进程全局访问：提供对进程相关某些全局对象的特殊私有访问接口
+ * 应用实例获取：通过 getInitialApplication() 方法获取进程中创建的第一个 Application 对象
+ * 包名获取：通过 getInitialPackage() 方法返回加载到进程中的第一个 .apk 的包名
+ * 包管理器访问：通过 getPackageManager() 方法获取包管理器的原始接口 IPackageManager
+ * 核心设置获取：通过 getIntCoreSetting() 方法获取整数类型的核心设置值
  */
 public class AppGlobals {
     /**

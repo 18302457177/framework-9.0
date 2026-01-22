@@ -70,6 +70,7 @@ public class Application extends ContextWrapper implements ComponentCallbacks2 {
     /**
      * Callback interface for use with {@link Application#registerOnProvideAssistDataListener}
      * and {@link Application#unregisterOnProvideAssistDataListener}.
+     * 辅助数据提供回调接口，用于处理用户请求辅助功能时的数据提供
      */
     public interface OnProvideAssistDataListener {
         /**

@@ -60,6 +60,7 @@ import java.util.ArrayList;
  * {@link Request#getActivity() Request.getActivity} to get back to the activity of a
  * request, rather than holding on to the activity instance yourself, either explicitly
  * or implicitly through a non-static inner class.
+ * 为 Activity 提供与用户进行语音交互的接口
  */
 public final class VoiceInteractor {
     static final String TAG = "VoiceInteractor";
@@ -323,6 +324,7 @@ public final class VoiceInteractor {
      * include context information about how the action will be completed
      * (e.g. booking a cab might include details about how long until the cab arrives)
      * so the user can give a confirmation.
+     * 通过可信系统的 VoiceInteractionService 与用户确认操作
      */
     public static class ConfirmationRequest extends Request {
         final Prompt mPrompt;
@@ -385,6 +387,7 @@ public final class VoiceInteractor {
      * The result of the confirmation will be returned through an asynchronous call to
      * either {@link #onPickOptionResult} or {@link #onCancel()} - these methods should
      * be overridden to define the application specific behavior.
+     * 通过可信系统 VoiceInteractionService 与用户交互，从多个选项中选择一个
      */
     public static class PickOptionRequest extends Request {
         final Prompt mPrompt;
@@ -433,6 +436,8 @@ public final class VoiceInteractor {
              * may be matched.
              * @param synonym The synonym that will be matched against what the user speaks,
              *     but not displayed.
+             * 为选项添加同义词，用于语音匹配
+             * 允许用户通过不同的词汇来匹配同一个选项
              */
             public Option addSynonym(CharSequence synonym) {
                 if (mSynonyms == null) {
@@ -600,6 +605,7 @@ public final class VoiceInteractor {
      * activity to use {@link android.content.Intent#FLAG_ACTIVITY_NEW_TASK
      * Intent.FLAG_ACTIVITY_NEW_TASK} to keep the new activity out of the current voice
      * interaction task.
+     * 报告当前语音交互已成功完成
      */
     public static class CompleteVoiceRequest extends Request {
         final Prompt mPrompt;
@@ -659,6 +665,7 @@ public final class VoiceInteractor {
      * to use {@link android.content.Intent#FLAG_ACTIVITY_NEW_TASK
      * Intent.FLAG_ACTIVITY_NEW_TASK} to keep the new activity out of the current voice
      * interaction task.
+     * 报告当前语音交互无法通过语音完成，应用程序需要切换到传统的输入界面（UI）
      */
     public static class AbortVoiceRequest extends Request {
         final Prompt mPrompt;
@@ -722,6 +729,7 @@ public final class VoiceInteractor {
      * available commands is expected to grow over time.  An example might be
      * "com.google.voice.commands.REQUEST_NUMBER_BAGS" to request the number of bags as part of
      * airline check-in.  (This is not an actual working example.)
+     * 执行供应商特定的命令，通过可信系统 VoiceInteractionService 来处理语音交互
      */
     public static class CommandRequest extends Request {
         final String mCommand;
@@ -769,6 +777,7 @@ public final class VoiceInteractor {
      * visual prompt must be provided, which might not match the spoken version. For example, the
      * confirmation "Are you sure you want to purchase this item?" might use a visual label like
      * "Purchase item".
+     * 为语音交互系统提供一套语音提示，用于确认操作、选择选项或执行类似操作
      */
     public static class Prompt implements Parcelable {
         // Mandatory voice prompt. Must contain at least one item, which must not be null.
@@ -889,6 +898,7 @@ public final class VoiceInteractor {
         mHandlerCaller = new HandlerCaller(context, looper, mHandlerCallerCallback, true);
     }
 
+    //获取并移除请求：从活跃请求映射中获取指定的请求对象
     Request pullRequest(IVoiceInteractorRequest request, boolean complete) {
         synchronized (mActiveRequests) {
             Request req = mActiveRequests.get(request.asBinder());

@@ -38,6 +38,12 @@ import java.util.List;
  * Activity manager local system service interface.
  *
  * @hide Only for use within the system server.
+ * 核心功能封装：提供了对 Activity Manager 各种内部功能的访问接口，包括：
+ * 进程生命周期管理
+ * 应用权限控制
+ * 用户切换处理
+ * 系统配置更新
+ * 应用状态监控
  */
 public abstract class ActivityManagerInternal {
 
@@ -114,6 +120,7 @@ public abstract class ActivityManagerInternal {
 
     /**
      * @return {@code true} if process start is successful, {@code false} otherwise.
+     * 启动一个隔离进程
      */
     public abstract boolean startIsolatedProcess(String entryPoint, String[] mainArgs,
             String processName, String abiOverride, int uid, Runnable crashHandler);
@@ -130,11 +137,13 @@ public abstract class ActivityManagerInternal {
      * Sleep tokens cause the activity manager to put the top activity to sleep.
      * They are used by components such as dreams that may hide and block interaction
      * with underlying activities.
+     * 用于管理睡眠令牌
      */
     public static abstract class SleepToken {
 
         /**
          * Releases the sleep token.
+         * 释放睡眠令牌
          */
         public abstract void release();
     }
@@ -155,6 +164,7 @@ public abstract class ActivityManagerInternal {
      */
     public abstract void onUserRemoved(int userId);
 
+    //本地语音交互启动回调方法
     public abstract void onLocalVoiceInteractionStarted(IBinder callingActivity,
             IVoiceInteractionSession mSession,
             IVoiceInteractor mInteractor);
@@ -190,6 +200,7 @@ public abstract class ActivityManagerInternal {
     /**
      * Callback for window manager to let activity manager know that docked stack changes its
      * minimized state.
+     * 窗口管理器向活动管理器发送通知，告知停靠栈（docked stack）的最小化状态发生变化
      */
     public abstract void notifyDockedStackMinimizedChanged(boolean minimized);
 
@@ -201,12 +212,14 @@ public abstract class ActivityManagerInternal {
     /**
      *  Sets how long a {@link PendingIntent} can be temporarily whitelist to by bypass restrictions
      *  such as Power Save mode.
+     *  设置 PendingIntent 可以临时绕过限制（如省电模式）的白名单持续时间
      */
     public abstract void setPendingIntentWhitelistDuration(IIntentSender target,
             IBinder whitelistToken, long duration);
 
     /**
      * Allow DeviceIdleController to tell us about what apps are whitelisted.
+     * 允许 DeviceIdleController 告知系统哪些应用被加入白名单
      */
     public abstract void setDeviceIdleWhitelist(int[] allAppids, int[] exceptIdleAppids);
 
@@ -261,6 +274,7 @@ public abstract class ActivityManagerInternal {
      * @param callback Callback to run after activity visibilities have been reevaluated. This can
      *                 be used from window manager so that when the callback is called, it's
      *                 guaranteed that all apps have their visibility updated accordingly.
+     * 当 Keyguard（锁屏）标志位可能发生变化时被调用
      */
     public abstract void notifyKeyguardFlagsChanged(@Nullable Runnable callback);
 
@@ -271,6 +285,7 @@ public abstract class ActivityManagerInternal {
 
     /**
      * Called when the trusted state of Keyguard has changed.
+     * 当 Keyguard（锁屏）的受信任状态发生变化时被调用
      */
     public abstract void notifyKeyguardTrustedChanged();
 
@@ -316,6 +331,7 @@ public abstract class ActivityManagerInternal {
     /**
      * Saves the current activity manager state and includes the saved state in the next dump of
      * activity manager.
+     * 保存当前 Activity Manager 状态并在下次 Activity Manager 转储时包含已保存的状态
      */
     public abstract void saveANRState(String reason);
 
@@ -352,7 +368,9 @@ public abstract class ActivityManagerInternal {
     public abstract boolean hasRunningActivity(int uid, @Nullable String packageName);
 
     public interface ScreenObserver {
+        //当设备唤醒状态发生变化时调用
         public void onAwakeStateChanged(boolean isAwake);
+        //当锁屏状态发生变化时调用
         public void onKeyguardStateChanged(boolean isShowing);
     }
 
@@ -406,6 +424,7 @@ public abstract class ActivityManagerInternal {
     /**
      * This enforces {@code func} can only be called if either the caller is Recents activity or
      * has {@code permission}.
+     * 强制执行调用者权限验证
      */
     public abstract void enforceCallerIsRecentsOrHasPermission(String permission, String func);
 

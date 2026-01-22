@@ -140,6 +140,7 @@ import java.io.PrintWriter;
  * @deprecated Use the <a href="{@docRoot}tools/extras/support-library.html">Support Library</a>
  *      {@link android.support.v4.app.DialogFragment} for consistent behavior across all devices
  *      and access to <a href="{@docRoot}topic/libraries/architecture/lifecycle.html">Lifecycle</a>.
+ * 显示对话框窗口的 Fragment，该对话框浮动在其 Activity 窗口的顶部。这个 Fragment 包含一个 Dialog 对象，并根据 Fragment 的状态适当地显示它。
  */
 @Deprecated
 public class DialogFragment extends Fragment

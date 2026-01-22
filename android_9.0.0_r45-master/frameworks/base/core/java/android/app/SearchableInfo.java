@@ -48,6 +48,8 @@ import java.util.HashMap;
  *
  * @see SearchManager#getSearchableInfo(ComponentName)
  * @see SearchManager#getSearchablesInGlobalSearch()
+ * 搜索活动的元数据信息容器
+ * 仅用于搜索其他应用程序的应用程序
  */
 public final class SearchableInfo implements Parcelable {
 
@@ -186,6 +188,7 @@ public final class SearchableInfo implements Parcelable {
      * 
      * @return The suggestion path, or {@code null} if not set.
      * @see android.R.styleable#Searchable_searchSuggestPath
+     * 用于获取搜索建议的内容提供者路径
      */
     public String getSuggestPath() {
         return mSuggestPath;
@@ -234,6 +237,7 @@ public final class SearchableInfo implements Parcelable {
 
     /**
      * Gets the suggestion threshold.
+     * 获取建议阈值。
      * 
      * @return The suggestion threshold, or {@code 0} if not set.
      * @see android.R.styleable#Searchable_searchSuggestThreshold
@@ -379,6 +383,7 @@ public final class SearchableInfo implements Parcelable {
 
     /**
      * Information about an action key in searchability meta-data.
+     * 有关可搜索性元数据中操作键的信息。
      *
      * @see SearchableInfo#findActionKey(int)
      *
@@ -717,6 +722,7 @@ public final class SearchableInfo implements Parcelable {
      * @return the max results count, if specified in the searchable
      *         activity's metadata, or {@code 0} if not specified.
      * @see android.R.styleable#Searchable_voiceMaxResults
+     * 获取语音识别返回的最大结果数
      */
     public int getVoiceMaxResults() {
         return mVoiceMaxResults;
@@ -752,6 +758,7 @@ public final class SearchableInfo implements Parcelable {
      * 
      * @return the input type
      * @see android.R.styleable#Searchable_imeOptions
+     * 获取在可搜索属性中指定的输入法选项
      */
     public int getImeOptions() {
         return mSearchImeOptions;
@@ -763,6 +770,7 @@ public final class SearchableInfo implements Parcelable {
      * @return The value of the {@link android.R.styleable#Searchable_includeInGlobalSearch}
      *         attribute, or {@code false} if the attribute is not set.
      * @see android.R.styleable#Searchable_includeInGlobalSearch
+     * 检查可搜索项是否应该包含在全局搜索中
      */
     public boolean shouldIncludeInGlobalSearch() {
         return mIncludeInGlobalSearch;
@@ -773,6 +781,7 @@ public final class SearchableInfo implements Parcelable {
      * of the query has returned no results.
      *
      * @see android.R.styleable#Searchable_queryAfterZeroResults
+     * 检查当查询前缀返回无结果时，是否应查询此可搜索活动以获取建议
      */
     public boolean queryAfterZeroResults() {
         return mQueryAfterZeroResults;
@@ -782,6 +791,7 @@ public final class SearchableInfo implements Parcelable {
      * Checks whether this searchable activity has auto URL detection turned on.
      *
      * @see android.R.styleable#Searchable_autoUrlDetect
+     * 检查此可搜索活动是否启用了自动URL检测
      */
     public boolean autoUrlDetect() {
         return mAutoUrlDetect;

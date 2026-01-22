@@ -28,6 +28,8 @@ import java.util.List;
 /**
  * Represents a set of parameters used to initialize and update an Activity in picture-in-picture
  * mode.
+ * 画中画参数: 用于初始化和更新Activity的画中画模式参数
+ * 参数配置: 管理画中画模式的各种配置参数
  */
 public final class PictureInPictureParams implements Parcelable {
 
@@ -117,12 +119,14 @@ public final class PictureInPictureParams implements Parcelable {
 
     /**
      * The expected aspect ratio of the picture-in-picture.
+     * 控制画中画窗口的宽高比
      */
     @Nullable
     private Rational mAspectRatio;
 
     /**
      * The set of actions that are associated with this activity when in picture-in-picture.
+     * 在画中画菜单中显示的用户操作
      */
     @Nullable
     private List<RemoteAction> mUserActions;
@@ -131,6 +135,7 @@ public final class PictureInPictureParams implements Parcelable {
      * The source bounds hint used when entering picture-in-picture, relative to the window bounds.
      * We can use this internally for the transition into picture-in-picture to ensure that a
      * particular source rect is visible throughout the whole transition.
+     * 进入画中画时的窗口坐标边界
      */
     @Nullable
     private Rect mSourceRectHint;
@@ -164,6 +169,7 @@ public final class PictureInPictureParams implements Parcelable {
     /**
      * Copies the set parameters from the other picture-in-picture args.
      * @hide
+     * 从另一个 PictureInPictureParams 对象复制已设置的参数到当前对象
      */
     public void copyOnlySet(PictureInPictureParams otherArgs) {
         if (otherArgs.hasSetAspectRatio()) {
@@ -220,6 +226,7 @@ public final class PictureInPictureParams implements Parcelable {
     /**
      * Truncates the set of actions to the given {@param size}.
      * @hide
+     * 将用户操作列表截断到指定大小
      */
     public void truncateActions(int size) {
         if (hasSetActions()) {

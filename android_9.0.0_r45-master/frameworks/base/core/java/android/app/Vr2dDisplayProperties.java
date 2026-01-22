@@ -25,6 +25,7 @@ import java.io.PrintWriter;
  * Display properties to be used by VR mode when creating a virtual display.
  *
  * @hide
+ * VR模式虚拟显示器属性管理：为VR模式下创建虚拟显示器提供显示属性配置
  */
 public final class Vr2dDisplayProperties implements Parcelable {
 
@@ -133,6 +134,7 @@ public final class Vr2dDisplayProperties implements Parcelable {
         return mHeight;
     }
 
+    //获取DPI值：返回当前虚拟显示器的DPI（每英寸点数）属性
     public int getDpi() {
         return mDpi;
     }

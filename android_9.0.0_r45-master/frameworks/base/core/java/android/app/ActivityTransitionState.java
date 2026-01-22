@@ -32,6 +32,14 @@ import java.util.ArrayList;
 /**
  * This class contains all persistence-related functionality for Activity Transitions.
  * Activities start exit and enter Activity Transitions through this class.
+ * 状态管理：管理 Activity 转场过程中的所有持久化相关功能，包括进入和退出转场的状态信息
+ * 共享元素处理：
+ * 维护进入转场的共享元素名称列表（mEnteringNames）
+ * 管理退出转场的共享元素映射关系（mExitingFrom、mExitingTo）
+ * 转场协调器管理：
+ * 管理 EnterTransitionCoordinator 和 ExitTransitionCoordinator 实例
+ * 处理转场协调器的生命周期和状态
+ * 状态保存与恢复：通过 saveState 和 readState 方法在 Activity 生命周期中保存和恢复转场状态
  */
 class ActivityTransitionState {
 
@@ -110,6 +118,7 @@ class ActivityTransitionState {
     public ActivityTransitionState() {
     }
 
+    //管理多个退出转场协调器实例，支持跨任务转场场景，通过弱引用防止内存泄漏，并通过键值机制实现协调器的查找和移除
     public int addExitTransitionCoordinator(ExitTransitionCoordinator exitTransitionCoordinator) {
         if (mExitTransitionCoordinators == null) {
             mExitTransitionCoordinators =
@@ -129,6 +138,8 @@ class ActivityTransitionState {
         return newKey;
     }
 
+    //从 Bundle 对象中恢复转场状态信息
+    //在 Activity 重建时恢复转场相关的状态信息，确保转场动画能够正确继续
     public void readState(Bundle bundle) {
         if (bundle != null) {
             if (mEnterTransitionCoordinator == null || mEnterTransitionCoordinator.isReturning()) {
@@ -178,6 +189,7 @@ class ActivityTransitionState {
         }
     }
 
+    //准备进入转场，初始化 EnterTransitionCoordinator 并启动转场
     public void enterReady(Activity activity) {
         if (mEnterActivityOptions == null || mIsEnterTriggered) {
             return;
@@ -203,6 +215,7 @@ class ActivityTransitionState {
         }
     }
 
+    //推迟进入转场动画的执行
     public void postponeEnterTransition() {
         mIsEnterPostponed = true;
     }
@@ -285,6 +298,7 @@ class ActivityTransitionState {
         }
     }
 
+    //恢复重新进入的视图状态，用于处理返回转场场景
     private void restoreReenteringViews() {
         if (mEnterTransitionCoordinator != null && mEnterTransitionCoordinator.isReturning() &&
                 !mEnterTransitionCoordinator.isCrossTask()) {

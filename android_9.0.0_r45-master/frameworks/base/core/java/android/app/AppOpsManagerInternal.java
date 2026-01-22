@@ -22,6 +22,7 @@ import android.util.SparseIntArray;
  * App ops service local interface.
  *
  * @hide Only for use within the system server.
+ * App ops 服务的本地接口，供系统服务器内部使用
  */
 public abstract class AppOpsManagerInternal {
     /**

@@ -181,6 +181,7 @@ public class ApplicationPackageManager extends PackageManager {
         throw new NameNotFoundException(packageName);
     }
 
+    //将当前包名数组转换为规范包名数组
     @Override
     public String[] currentToCanonicalPackageNames(String[] names) {
         try {
@@ -227,11 +228,13 @@ public class ApplicationPackageManager extends PackageManager {
         return intent;
     }
 
+    //获取适用于 Leanback 界面的启动 Intent
     @Override
     public Intent getLeanbackLaunchIntentForPackage(String packageName) {
         return getLaunchIntentForPackageAndCategory(packageName, Intent.CATEGORY_LEANBACK_LAUNCHER);
     }
 
+    //获取适用于车载设备的启动 Intent
     @Override
     public Intent getCarLaunchIntentForPackage(String packageName) {
         return getLaunchIntentForPackageAndCategory(packageName, Intent.CATEGORY_CAR_LAUNCHER);
@@ -259,6 +262,7 @@ public class ApplicationPackageManager extends PackageManager {
         return getPackageGids(packageName, 0);
     }
 
+    //获取指定应用包的所有组ID（GIDs）
     @Override
     public int[] getPackageGids(String packageName, int flags)
             throws NameNotFoundException {
@@ -335,6 +339,7 @@ public class ApplicationPackageManager extends PackageManager {
         throw new NameNotFoundException(group);
     }
 
+    //检查权限审查模式是否启用
     @Override
     public boolean isPermissionReviewModeEnabled() {
         return mContext.getResources().getBoolean(
@@ -395,6 +400,7 @@ public class ApplicationPackageManager extends PackageManager {
         throw new NameNotFoundException(packageName);
     }
 
+    //根据当前运行时的指令集架构调整 ApplicationInfo 中的本地库目录
     private static ApplicationInfo maybeAdjustApplicationInfo(ApplicationInfo info) {
         // If we're dealing with a multi-arch application that has both
         // 32 and 64 bit shared libraries, we might need to choose the secondary
@@ -511,7 +517,9 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 获取系统服务共享库包名
+     * */
     @Override
     public @NonNull String getServicesSystemSharedLibraryPackageName() {
         try {
@@ -584,6 +592,7 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
+    //检查指定的应用程序权限是否被策略撤销
     @Override
     public boolean isPermissionRevokedByPolicy(String permName, String pkgName) {
         try {
@@ -677,6 +686,7 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
+    //判断是否应该向用户显示权限请求的说明理由
     @Override
     public boolean shouldShowRequestPermissionRationale(String permission) {
         try {
@@ -863,6 +873,7 @@ public class ApplicationPackageManager extends PackageManager {
         return isInstantApp(mContext.getPackageName());
     }
 
+    //检查指定包名的应用是否为即时应用（Instant App）
     @Override
     public boolean isInstantApp(String packageName) {
         try {
@@ -1973,12 +1984,14 @@ public class ApplicationPackageManager extends PackageManager {
         return candidates;
     }
 
+    //检查是否强制允许应用安装到外部存储
     @VisibleForTesting
     protected boolean isForceAllowOnExternal(Context context) {
         return Settings.Global.getInt(
                 context.getContentResolver(), Settings.Global.FORCE_ALLOW_ON_EXTERNAL, 0) != 0;
     }
 
+    //检查是否允许第三方应用安装到内部存储
     @VisibleForTesting
     protected boolean isAllow3rdPartyOnInternal(Context context) {
         return context.getResources().getBoolean(
@@ -2027,6 +2040,7 @@ public class ApplicationPackageManager extends PackageManager {
         return (vol.getType() == VolumeInfo.TYPE_PRIVATE);
     }
 
+    //移动主存储到指定卷
     @Override
     public int movePrimaryStorage(VolumeInfo vol) {
         try {
@@ -2227,6 +2241,7 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
+    //将应用包添加到首选应用列表
     @Override
     public void addPackageToPreferred(String packageName) {
         Log.w(TAG, "addPackageToPreferred() is a no-op");
@@ -2351,6 +2366,7 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
+    //刷新指定用户的包限制设置
     @Override
     public void flushPackageRestrictionsAsUser(int userId) {
         try {
@@ -2415,7 +2431,9 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
-    /** @hide */
+    /** @hide
+     * 检查应用是否完全由指定的密钥集合签名
+     * */
     @Override
     public boolean isSignedByExactly(String packageName, KeySet ks) {
         Preconditions.checkNotNull(packageName);
@@ -2441,6 +2459,7 @@ public class ApplicationPackageManager extends PackageManager {
 
     /**
      * @hide
+     * 检查系统是否正在进行升级
      */
     @Override
     public boolean isUpgrade() {
@@ -2503,6 +2522,7 @@ public class ApplicationPackageManager extends PackageManager {
 
     /**
      * @hide
+     * 加载带用户徽章的应用图标
      */
     public Drawable loadItemIcon(PackageItemInfo itemInfo, ApplicationInfo appInfo) {
         Drawable dr = loadUnbadgedItemIcon(itemInfo, appInfo);
@@ -2514,6 +2534,7 @@ public class ApplicationPackageManager extends PackageManager {
 
     /**
      * @hide
+     * 加载无用户徽章的应用图标
      */
     public Drawable loadUnbadgedItemIcon(PackageItemInfo itemInfo, ApplicationInfo appInfo) {
         if (itemInfo.showUserIcon != UserHandle.USER_NULL) {
@@ -2603,7 +2624,9 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
-    /** {@hide} */
+    /** {@hide}
+     * 包移动回调委托类，用于处理包移动操作的状态回调
+     * */
     private static class MoveCallbackDelegate extends IPackageMoveObserver.Stub implements
             Handler.Callback {
         private static final int MSG_CREATED = 1;
@@ -2707,6 +2730,7 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
+    //获取即时应用解析器设置组件的组件名称
     @Override
     public ComponentName getInstantAppResolverSettingsComponent() {
         try {
@@ -2734,6 +2758,7 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
+    //DEX模块注册结果封装类，用于存储DEX模块注册操作的结果信息
     private static class DexModuleRegisterResult {
         final String dexModulePath;
         final boolean success;
@@ -2826,6 +2851,7 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
+    //获取 ART (Android Runtime) 管理器实例
     @Override
     public ArtManager getArtManager() {
         synchronized (mLock) {
@@ -2840,6 +2866,7 @@ public class ApplicationPackageManager extends PackageManager {
         }
     }
 
+    //获取系统文本分类器包名称
     @Override
     public String getSystemTextClassifierPackageName() {
         try {

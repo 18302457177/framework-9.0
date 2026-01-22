@@ -80,6 +80,7 @@ import java.util.concurrent.TimeoutException;
  * example, going to the settings application to change a setting and then
  * interacting with another application whose behavior depends on that setting.
  * </p>
+ * 用于通过模拟用户操作和内省屏幕内容与设备UI进行交互
  */
 public final class UiAutomation {
 
@@ -216,6 +217,7 @@ public final class UiAutomation {
      * @param flags Any flags to apply to the automation as it gets connected
      *
      * @hide
+     * 将 UiAutomation 连接到可访问性内省API
      */
     public void connect(int flags) {
         synchronized (mLock) {
@@ -483,6 +485,7 @@ public final class UiAutomation {
      * Gets the root {@link AccessibilityNodeInfo} in the active window.
      *
      * @return The root info.
+     * 获取活动窗口中的根 AccessibilityNodeInfo
      */
     public AccessibilityNodeInfo getRootInActiveWindow() {
         final int connectionId;
@@ -742,6 +745,7 @@ public final class UiAutomation {
      *
      * @param enable whether to run in a "monkey" mode or not. Default is not.
      * @see ActivityManager#isUserAMonkey()
+     * 设置 UiAutomation 是否运行在"monkey"模式
      */
     public void setRunAsMonkey(boolean enable) {
         synchronized (mLock) {
@@ -767,6 +771,7 @@ public final class UiAutomation {
      * @see #getWindowContentFrameStats(int)
      * @see #getWindows()
      * @see AccessibilityWindowInfo#getId() AccessibilityWindowInfo.getId()
+     * 清除指定窗口内容的帧统计信息
      */
     public boolean clearWindowContentFrameStats(int windowId) {
         synchronized (mLock) {
@@ -1081,6 +1086,7 @@ public final class UiAutomation {
         return result;
     }
 
+    //将屏幕旋转值转换为度数值
     private static float getDegreesForRotation(int value) {
         switch (value) {
             case Surface.ROTATION_90: {
@@ -1097,6 +1103,7 @@ public final class UiAutomation {
         }
     }
 
+    //检查 UiAutomation 是否已连接
     private boolean isConnectedLocked() {
         return mConnectionId != CONNECTION_ID_UNDEFINED;
     }

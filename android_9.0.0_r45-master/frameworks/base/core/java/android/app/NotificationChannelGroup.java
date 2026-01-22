@@ -34,6 +34,8 @@ import java.util.List;
 
 /**
  * A grouping of related notification channels. e.g., channels that all belong to a single account.
+ * 通知渠道分组：将相关的通知渠道组织在一起，例如属于同一个账户的所有渠道
+ * 统一管理：提供对一组相关通知渠道的集中管理功能
  */
 public final class NotificationChannelGroup implements Parcelable {
 
@@ -89,6 +91,7 @@ public final class NotificationChannelGroup implements Parcelable {
         mBlocked = in.readBoolean();
     }
 
+    //用于限制字符串长度。
     private String getTrimmedString(String input) {
         if (input != null && input.length() > MAX_TEXT_LENGTH) {
             return input.substring(0, MAX_TEXT_LENGTH);

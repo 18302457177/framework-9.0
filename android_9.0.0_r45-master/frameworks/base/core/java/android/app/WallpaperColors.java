@@ -41,6 +41,7 @@ import java.util.List;
  * Exposes the 3 most visually representative colors of a wallpaper. Can be either
  * {@link WallpaperColors#getPrimaryColor()}, {@link WallpaperColors#getSecondaryColor()}
  * or {@link WallpaperColors#getTertiaryColor()}.
+ * 提供壁纸颜色信息的封装类，用于描述壁纸的主要颜色特征
  */
 public final class WallpaperColors implements Parcelable {
 
@@ -106,6 +107,7 @@ public final class WallpaperColors implements Parcelable {
      * Main colors will be extracted from the drawable.
      *
      * @param drawable Source where to extract from.
+     * 从 Drawable 对象创建 WallpaperColors 实例
      */
     public static WallpaperColors fromDrawable(Drawable drawable) {
         if (drawable == null) {
@@ -304,6 +306,7 @@ public final class WallpaperColors implements Parcelable {
      * Gets the third most preeminent color of the wallpaper. Can be null.
      *
      * @return A color, may be null.
+     * 获取壁纸的第三显著颜色
      */
     public @Nullable Color getTertiaryColor() {
         return mMainColors.size() < 3 ? null : mMainColors.get(2);
@@ -314,6 +317,7 @@ public final class WallpaperColors implements Parcelable {
      *
      * @return List of colors.
      * @hide
+     * 返回壁纸的主要颜色列表，按重要性排序
      */
     public @NonNull List<Color> getMainColors() {
         return Collections.unmodifiableList(mMainColors);
@@ -360,6 +364,7 @@ public final class WallpaperColors implements Parcelable {
      *
      * @param source What to read.
      * @return Whether image supports dark text or not.
+     * 分析图像亮度特征，计算适合的显示提示（暗色文本或暗色主题）
      */
     private static int calculateDarkHints(Bitmap source) {
         if (source == null) {
@@ -400,6 +405,7 @@ public final class WallpaperColors implements Parcelable {
         return hints;
     }
 
+    //计算最优的位图尺寸，用于控制后续颜色提取处理的计算复杂度
     private static Size calculateOptimalSize(int width, int height) {
         // Calculate how big the bitmap needs to be.
         // This avoids unnecessary processing and allocation inside Palette.

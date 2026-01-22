@@ -22,6 +22,7 @@ import android.os.Parcelable;
 /**
  * The memory stats for a process.
  * {@hide}
+ * 用于表示进程的内存统计信息
  */
 public class ProcessMemoryState implements Parcelable {
     public int uid;

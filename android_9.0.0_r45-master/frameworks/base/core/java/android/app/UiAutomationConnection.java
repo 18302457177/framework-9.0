@@ -55,6 +55,7 @@ import java.io.OutputStream;
  * user actions and performing screen introspection.
  *
  * @hide
+ * 远程对象，用于在shell和instrumentation之间传递特权操作权限
  */
 public final class UiAutomationConnection extends IUiAutomationConnection.Stub {
 
@@ -153,6 +154,7 @@ public final class UiAutomationConnection extends IUiAutomationConnection.Stub {
         return false;
     }
 
+    //截取屏幕截图
     @Override
     public Bitmap takeScreenshot(Rect crop, int rotation) {
         synchronized (mLock) {
@@ -379,6 +381,7 @@ public final class UiAutomationConnection extends IUiAutomationConnection.Stub {
         }
     }
 
+    //注册UI测试自动化服务
     private void registerUiTestAutomationServiceLocked(IAccessibilityServiceClient client,
             int flags) {
         IAccessibilityManager manager = IAccessibilityManager.Stub.asInterface(
@@ -417,6 +420,7 @@ public final class UiAutomationConnection extends IUiAutomationConnection.Stub {
         }
     }
 
+    //存储当前屏幕旋转状态
     private void storeRotationStateLocked() {
         try {
             if (mWindowManager.isRotationFrozen()) {

@@ -295,6 +295,7 @@ public class ApplicationErrorReport implements Parcelable {
 
     /**
      * Describes an application crash.
+     * 描述应用程序崩溃。
      */
     public static class CrashInfo {
         /**
@@ -386,6 +387,7 @@ public class ApplicationErrorReport implements Parcelable {
 
         /**
          * Ensure that the string is of reasonable size, truncating from the middle if needed.
+         * 确保字符串大小合理，如果需要则从中间截断
          */
         private String sanitizeString(String s) {
             int prefixLength = 10 * 1024;
@@ -499,6 +501,7 @@ public class ApplicationErrorReport implements Parcelable {
 
     /**
      * Describes an application not responding error.
+     * 描述应用程序无响应错误。
      */
     public static class AnrInfo {
         /**
@@ -552,6 +555,7 @@ public class ApplicationErrorReport implements Parcelable {
 
     /**
      * Describes a battery usage report.
+     * 描述电池使用报告。
      */
     public static class BatteryInfo {
         /**

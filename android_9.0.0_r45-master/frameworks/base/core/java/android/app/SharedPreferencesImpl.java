@@ -51,6 +51,30 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * 1. 数据持久化管理
+ * 文件存储: 将键值对数据存储到 XML 文件中
+ * 内存缓存: 在内存中维护数据映射 (mMap) 以提高读取性能
+ * 异步加载: 通过后台线程异步加载文件内容到内存
+ * 2. 读写操作实现
+ * 读取操作: 从内存缓存中快速获取数据
+ * 写入操作: 提供 EditorImpl 类进行数据修改
+ * 同步/异步: 支持 commit() 同步写入和 apply() 异步写入
+ * 3. 线程安全控制
+ * 锁机制: 使用多重锁 (mLock, mWritingToDiskLock, mEditorLock) 确保并发安全
+ * 等待机制: 读取前等待文件加载完成 (awaitLoadedLocked())
+ * 4. 文件一致性保障
+ * 备份机制: 写入前创建 .bak 备份文件防止数据丢失
+ * 原子操作: 确保文件写入的原子性，失败时可回滚到备份
+ * 变更检测: 检测外部文件变更并重新加载
+ * 5. 监听器支持
+ * 变更通知: 实现 OnSharedPreferenceChangeListener 机制
+ * 事件分发: 在数据变更时通知注册的监听器
+ * 6. 性能优化
+ * 内存状态跟踪: 维护内存状态代数 (mCurrentMemoryStateGeneration)
+ * 批量写入: 队列化写入操作减少磁盘 I/O
+ * 延迟写入: apply() 方法异步执行文件写入
+ */
 final class SharedPreferencesImpl implements SharedPreferences {
     private static final String TAG = "SharedPreferencesImpl";
     private static final boolean DEBUG = false;
@@ -387,6 +411,7 @@ final class SharedPreferencesImpl implements SharedPreferences {
         }
     }
 
+    //用于修改 SharedPreferences 数据
     public final class EditorImpl implements Editor {
         private final Object mEditorLock = new Object();
 

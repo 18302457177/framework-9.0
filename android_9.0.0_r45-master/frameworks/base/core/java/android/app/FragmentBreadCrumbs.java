@@ -39,6 +39,7 @@ import android.widget.TextView;
  * {@link android.R.style#Widget_FragmentBreadCrumbs}.
  *
  * @deprecated This widget is no longer supported.
+ * 用于显示代表 Fragment 栈的"面包屑"(bread crumbs)的辅助类。
  */
 @Deprecated
 public class FragmentBreadCrumbs extends ViewGroup
@@ -172,7 +173,8 @@ public class FragmentBreadCrumbs extends ViewGroup
     public void setOnBreadCrumbClickListener(OnBreadCrumbClickListener listener) {
         mOnBreadCrumbClickListener = listener;
     }
-    
+
+    //专门用于面包屑导航显示。
     private BackStackRecord createBackStackEntry(CharSequence title, CharSequence shortTitle) {
         if (title == null) return null;
 
@@ -282,6 +284,7 @@ public class FragmentBreadCrumbs extends ViewGroup
     /**
      * Returns the number of entries before the backstack, including the title of the current
      * fragment and any custom parent title that was set.
+     * 用于计算回退栈之前的条目数量，包括当前 Fragment 的标题和任何设置的自定义父标题。
      */
     private int getPreEntryCount() {
         return (mTopEntry != null ? 1 : 0) + (mParentEntry != null ? 1 : 0);

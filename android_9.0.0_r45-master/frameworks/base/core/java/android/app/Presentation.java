@@ -145,6 +145,12 @@ import android.util.TypedValue;
  * current media route.
  * @see DisplayManager for information on how to enumerate displays and receive
  * notifications when displays are added or removed.
+ * 1. 副屏展示
+ * 特殊对话框: 专门用于在副屏上展示内容的对话框
+ * 显示关联: 与目标 Display 关联，在创建时绑定
+ * 2. 上下文配置
+ * 独立上下文: Context 与宿主 Activity 不同
+ * 资源适配: 根据显示设备的指标配置资源，确保加载正确的尺寸和密度资源
  */
 public class Presentation extends Dialog {
     private static final String TAG = "Presentation";
@@ -201,6 +207,7 @@ public class Presentation extends Dialog {
      * Gets the {@link Display} that this presentation appears on.
      *
      * @return The display.
+     * 返回当前 Presentation 实例所关联的显示设备
      */
     public Display getDisplay() {
         return mDisplay;
@@ -294,6 +301,7 @@ public class Presentation extends Dialog {
         }
     }
 
+    //配置有效性检查: 验证当前 Presentation 的显示配置是否仍然有效
     private boolean isConfigurationStillValid() {
         DisplayMetrics dm = new DisplayMetrics();
         mDisplay.getMetrics(dm);

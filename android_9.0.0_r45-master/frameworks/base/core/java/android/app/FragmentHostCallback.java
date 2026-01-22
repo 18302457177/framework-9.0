@@ -41,6 +41,7 @@ import java.io.PrintWriter;
  *
  * @deprecated Use the <a href="{@docRoot}tools/extras/support-library.html">Support Library</a>
  *      {@link android.support.v4.app.FragmentHostCallback}
+ * FragmentHostCallback 是 Fragment 宿主的集成点，为 Fragment 提供与宿主（如 Activity）的交互接口。
  */
 @Deprecated
 public abstract class FragmentHostCallback<E> extends FragmentContainer {

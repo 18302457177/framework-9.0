@@ -91,14 +91,15 @@ import java.lang.annotation.RetentionPolicy;
  * modes and more, read the <a href="{@docRoot}guide/topics/ui/actionbar.html">Action
  * Bar</a> developer guide.</p>
  * </div>
+ * 主要工具栏：作为活动中的主要工具栏，可显示活动标题、应用级导航功能和其他交互项
  */
 public abstract class ActionBar {
     /** @hide */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(prefix = { "NAVIGATION_MODE_" }, value = {
-            NAVIGATION_MODE_STANDARD,
-            NAVIGATION_MODE_LIST,
-            NAVIGATION_MODE_TABS
+            NAVIGATION_MODE_STANDARD,//标准导航模式
+            NAVIGATION_MODE_LIST,//列表导航模式
+            NAVIGATION_MODE_TABS//标签页导航模式
     })
     public @interface NavigationMode {}
 
@@ -144,12 +145,12 @@ public abstract class ActionBar {
     /** @hide */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true, prefix = { "DISPLAY_" }, value = {
-            DISPLAY_USE_LOGO,
-            DISPLAY_SHOW_HOME,
-            DISPLAY_HOME_AS_UP,
-            DISPLAY_SHOW_TITLE,
-            DISPLAY_SHOW_CUSTOM,
-            DISPLAY_TITLE_MULTIPLE_LINES
+            DISPLAY_USE_LOGO,//使用logo而非icon
+            DISPLAY_SHOW_HOME,//显示home元素
+            DISPLAY_HOME_AS_UP,//显示home为up导航
+            DISPLAY_SHOW_TITLE,//显示标题和副标题
+            DISPLAY_SHOW_CUSTOM,//显示自定义视图
+            DISPLAY_TITLE_MULTIPLE_LINES//允许标题多行显示
     })
     public @interface DisplayOptions {}
 
@@ -439,6 +440,7 @@ public abstract class ActionBar {
      * 
      * @param options A combination of the bits defined by the DISPLAY_ constants
      *                defined in ActionBar.
+     *                一次设置所有显示选项位，用于控制操作栏的显示行为
      */
     public abstract void setDisplayOptions(@DisplayOptions int options);
     
@@ -467,6 +469,7 @@ public abstract class ActionBar {
      *
      * @see #setDisplayOptions(int)
      * @see #setDisplayOptions(int, int)
+     * 设置是否在操作栏中显示活动logo而非活动图标
      */
     public abstract void setDisplayUseLogoEnabled(boolean useLogo);
 
@@ -480,6 +483,7 @@ public abstract class ActionBar {
      *
      * @see #setDisplayOptions(int)
      * @see #setDisplayOptions(int, int)
+     * 设置是否在操作栏中包含应用程序的home功能
      */
     public abstract void setDisplayShowHomeEnabled(boolean showHome);
 
@@ -495,6 +499,7 @@ public abstract class ActionBar {
      *
      * @see #setDisplayOptions(int)
      * @see #setDisplayOptions(int, int)
+     * 设置是否将home元素显示为"向上"的导航提示
      */
     public abstract void setDisplayHomeAsUpEnabled(boolean showHomeAsUp);
 
@@ -519,6 +524,7 @@ public abstract class ActionBar {
      *
      * @see #setDisplayOptions(int)
      * @see #setDisplayOptions(int, int)
+     * 设置是否显示已设置的自定义视图
      */
     public abstract void setDisplayShowCustomEnabled(boolean showCustom);
 
@@ -537,6 +543,7 @@ public abstract class ActionBar {
      * in the second row/stacked bar on some devices and configurations.
      *
      * @param d Background drawable for the stacked row
+     *          设置操作栏的堆叠背景
      */
     public void setStackedBackgroundDrawable(Drawable d) { }
 
@@ -547,6 +554,7 @@ public abstract class ActionBar {
      * <p>You can enable split action bar with {@link android.R.attr#uiOptions}
      *
      * @param d Background drawable for the split bar
+     *          设置操作栏的分割背景
      */
     public void setSplitBackgroundDrawable(Drawable d) { }
 
@@ -866,6 +874,7 @@ public abstract class ActionBar {
      * This will ensure that views contrast properly against the action bar.
      *
      * @return A themed Context for creating views
+     * 返回一个具有适当主题的 Context，用于创建在操作栏中显示的视图
      */
     public Context getThemedContext() { return null; }
 
@@ -875,6 +884,7 @@ public abstract class ActionBar {
      *
      * @return true if the Title field has been truncated
      * @hide pending API approval
+     * 检查标题字段是否因可用空间不足而在布局过程中被截断
      */
     public boolean isTitleTruncated() { return false; }
 
@@ -895,6 +905,7 @@ public abstract class ActionBar {
      * @see #setDisplayOptions(int, int)
      * @see #setDisplayHomeAsUpEnabled(boolean)
      * @see #setHomeActionContentDescription(int)
+     * 设置在启用 DISPLAY_HOME_AS_UP 时显示在图标/Logo/标题旁边的替代drawable
      */
     public void setHomeAsUpIndicator(Drawable indicator) { }
 
@@ -1061,12 +1072,16 @@ public abstract class ActionBar {
     public void dispatchMenuVisibilityChanged(boolean visible) {
     }
 
-    /** @hide */
+    /** @hide
+     * 启动一个 ActionMode，通常用于上下文操作模式
+     * */
     public ActionMode startActionMode(ActionMode.Callback callback) {
         return null;
     }
 
-    /** @hide */
+    /** @hide
+     * 打开选项菜单
+     * */
     public boolean openOptionsMenu() {
         return false;
     }
@@ -1091,7 +1106,9 @@ public abstract class ActionBar {
         return false;
     }
 
-    /** @hide */
+    /** @hide
+     * 收起操作视图（Action View）
+     * */
     public boolean collapseActionView() {
         return false;
     }
@@ -1149,6 +1166,7 @@ public abstract class ActionBar {
      * toolbar action bars. Consider using other
      * <a href="http://developer.android.com/design/patterns/navigation.html">common
      * navigation patterns</a> instead.
+     * 表示操作栏中的一个标签页，用于管理 Fragment 的显示和隐藏
      */
     @Deprecated
     public static abstract class Tab {
@@ -1164,6 +1182,7 @@ public abstract class ActionBar {
          *
          * @return Current position, or {@link #INVALID_POSITION} if this tab is not currently in
          *         the action bar.
+         *         获取标签页在操作栏中的当前位置
          */
         public abstract int getPosition();
 
@@ -1171,6 +1190,7 @@ public abstract class ActionBar {
          * Return the icon associated with this tab.
          *
          * @return The tab's icon
+         * 获取标签页关联的图标
          */
         public abstract Drawable getIcon();
 
@@ -1178,6 +1198,7 @@ public abstract class ActionBar {
          * Return the text of this tab.
          *
          * @return The tab's text
+         * 获取标签页的文本
          */
         public abstract CharSequence getText();
 
@@ -1264,6 +1285,7 @@ public abstract class ActionBar {
 
         /**
          * Select this tab. Only valid if the tab has been added to the action bar.
+         * 选择此标签页
          */
         public abstract void select();
 
@@ -1295,6 +1317,7 @@ public abstract class ActionBar {
          * @return Description of this tab's content
          * @see #setContentDescription(CharSequence)
          * @see #setContentDescription(int)
+         * 获取无障碍描述
          */
         public abstract CharSequence getContentDescription();
     }
@@ -1347,6 +1370,7 @@ public abstract class ActionBar {
      * Per-child layout information associated with action bar custom views.
      *
      * @attr ref android.R.styleable#ActionBar_LayoutParams_layout_gravity
+     * 为操作栏自定义视图提供子视图布局信息，支持指定视图的重力方向
      */
     public static class LayoutParams extends ViewGroup.MarginLayoutParams {
         /**
@@ -1370,7 +1394,7 @@ public abstract class ActionBar {
                 @ViewDebug.IntToString(from = Gravity.CENTER,            to = "CENTER"),
                 @ViewDebug.IntToString(from = Gravity.FILL,              to = "FILL")
         })
-        public int gravity = Gravity.NO_GRAVITY;
+        public int gravity = Gravity.NO_GRAVITY;//视图的重力方向
 
         public LayoutParams(@NonNull Context c, AttributeSet attrs) {
             super(c, attrs);

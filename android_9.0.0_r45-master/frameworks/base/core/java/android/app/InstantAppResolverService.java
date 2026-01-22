@@ -40,6 +40,7 @@ import java.util.List;
 /**
  * Base class for implementing the resolver service.
  * @hide
+ * 即时应用解析服务基类：提供实现即时应用（Instant App）解析服务的基础框架
  */
 @SystemApi
 public abstract class InstantAppResolverService extends Service {
@@ -58,6 +59,7 @@ public abstract class InstantAppResolverService extends Service {
      * @param digestPrefix The hash prefix of the instant app's domain.
      * @deprecated should implement {@link #onGetInstantAppResolveInfo(Intent, int[], String,
      *             InstantAppResolutionCallback)}
+     * 用于检索即时应用程序的解析信息。
      */
     @Deprecated
     public void onGetInstantAppResolveInfo(
@@ -188,6 +190,7 @@ public abstract class InstantAppResolverService extends Service {
 
     /**
      * Callback to post results from instant app resolution.
+     * 用于提交即时应用解析结果的回调类。
      */
     public static final class InstantAppResolutionCallback {
         private final IRemoteCallback mCallback;

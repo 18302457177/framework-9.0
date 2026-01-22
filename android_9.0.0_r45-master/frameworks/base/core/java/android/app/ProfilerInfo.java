@@ -29,6 +29,8 @@ import java.util.Objects;
  * System private API for passing profiler settings.
  *
  * {@hide}
+ * 性能分析器配置: 用于传递性能分析器(profiler)的设置参数
+ * 系统私有API: 作为系统内部API，用于性能分析相关的功能
  */
 public class ProfilerInfo implements Parcelable {
 
@@ -97,6 +99,9 @@ public class ProfilerInfo implements Parcelable {
 
     /**
      * Close profileFd, if it is open. The field will be null after a call to this function.
+     * 资源释放: 确保文件描述符得到正确释放
+     * 状态管理: 避免重复关闭或使用已关闭的文件描述符
+     * 内存管理: 防止资源泄漏，及时清理不需要的文件句柄
      */
     public void closeFd() {
         if (profileFd != null) {

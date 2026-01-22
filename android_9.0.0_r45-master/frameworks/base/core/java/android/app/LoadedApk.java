@@ -72,6 +72,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 
+//专门用于检测 BroadcastReceiver 泄漏问题
 final class IntentReceiverLeaked extends AndroidRuntimeException {
     public IntentReceiverLeaked(String msg) {
         super(msg);
@@ -248,6 +249,7 @@ public final class LoadedApk {
         return mApplicationInfo.targetSdkVersion;
     }
 
+    //返回当前 LoadedApk 对象是否存在安全违规情况
     public boolean isSecurityViolation() {
         return mSecurityViolation;
     }
@@ -367,6 +369,7 @@ public final class LoadedApk {
         makePaths(activityThread, false, aInfo, outZipPaths, null);
     }
 
+    //用于构建应用运行所需的各种路径集合，包括代码路径（ZIP/APK路径）和原生库路径。
     public static void makePaths(ActivityThread activityThread,
                                  boolean isBundledApp,
                                  ApplicationInfo aInfo,
@@ -516,6 +519,16 @@ public final class LoadedApk {
      * All indices received by the super class should be shifted by 1 when accessing mSplitNames,
      * etc. The super class assumes the base APK is index 0, while the PackageManager APIs don't
      * include the base APK in the list of splits.
+     * 实现分包（split APK）的依赖加载机制
+     * 1. 分包依赖加载
+        实现分包（split APK）的依赖加载机制
+        继承自 SplitDependencyLoader<NameNotFoundException>，扩展了分包加载功能
+        2. 资源路径管理
+        管理分包的资源路径数组 mCachedResourcePaths
+        缓存每个分包的资源路径，避免重复计算
+        3. 类加载器缓存
+        维护分包的类加载器缓存 mCachedClassLoaders
+        确保每个分包只创建一次类加载器
      */
     private class SplitDependencyLoaderImpl extends SplitDependencyLoader<NameNotFoundException> {
         private final String[][] mCachedResourcePaths;
@@ -601,6 +614,7 @@ public final class LoadedApk {
         return mSplitLoader.getSplitPathsForSplit(splitName);
     }
 
+    //用于创建或更新应用程序的类加载器（ClassLoader），并配置相关的库路径和性能优化选项。
     private void createOrUpdateClassLoaderLocked(List<String> addedPaths) {
         if (mPackageName.equals("android")) {
             // Note: This branch is taken for system server and we don't need to setup
@@ -813,6 +827,7 @@ public final class LoadedApk {
         }
     }
 
+    //用于设置 JIT（Just-In-Time）编译性能分析支持，为应用的代码路径注册性能分析文件。
     private void setupJitProfileSupport() {
         if (!SystemProperties.getBoolean("dalvik.vm.usejitprofiles", false)) {
             return;
@@ -951,6 +966,7 @@ public final class LoadedApk {
             return getParent().loadClass(className);
         }
 
+        //设置指定类的断言（assertion）状态
         @Override public void setClassAssertionStatus(String cname, boolean enable) {
             warn("setClassAssertionStatus");
             getParent().setClassAssertionStatus(cname, enable);
@@ -1104,6 +1120,7 @@ public final class LoadedApk {
         return app;
     }
 
+    //用于重写应用程序资源的R常量值，主要是为了处理库APK中的资源ID重新映射。
     private void rewriteRValues(ClassLoader cl, String packageName, int id) {
         final Class<?> rClazz;
         try {
@@ -1773,6 +1790,9 @@ public final class LoadedApk {
             final boolean mDead;
         }
 
+        //监听远程服务 IBinder 的死亡状态
+        //在 binderDied() 方法中处理服务死亡事件
+        //调用 death() 方法通知上层
         private final class DeathMonitor implements IBinder.DeathRecipient
         {
             DeathMonitor(ComponentName name, IBinder service) {

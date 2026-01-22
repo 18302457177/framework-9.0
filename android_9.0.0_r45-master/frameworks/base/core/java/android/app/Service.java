@@ -320,7 +320,11 @@ public abstract class Service extends ContextWrapper implements ComponentCallbac
      */
     public static final int STOP_FOREGROUND_DETACH = 1<<1;
 
-    /** @hide */
+    /** @hide
+     * 用于标记停止前台服务时的操作标志位
+     * STOP_FOREGROUND_REMOVE - 移除通知
+     * STOP_FOREGROUND_DETACH - 分离通知
+     * */
     @IntDef(flag = true, prefix = { "STOP_FOREGROUND_" }, value = {
             STOP_FOREGROUND_REMOVE,
             STOP_FOREGROUND_DETACH
@@ -421,7 +425,12 @@ public abstract class Service extends ContextWrapper implements ComponentCallbac
      */
     public static final int START_REDELIVER_INTENT = 3;
 
-    /** @hide */
+    /** @hide
+     * START_STICKY_COMPATIBILITY - 兼容性粘性启动
+     * START_STICKY - 粘性启动
+     * START_NOT_STICKY - 非粘性启动
+     * START_REDELIVER_INTENT - 重新投递意图启动
+     * */
     @IntDef(flag = false, prefix = { "START_" }, value = {
             START_STICKY_COMPATIBILITY,
             START_STICKY,

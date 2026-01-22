@@ -27,17 +27,19 @@ import java.io.PrintWriter;
 /**
  * Represents a remote action that can be called from another process.  The action can have an
  * associated visualization including metadata like an icon or title.
+ * 远程操作表示: 代表可以从另一个进程调用的操作
+ * 可视化元数据: 包含图标、标题等内容的操作可视化表示
  */
 public final class RemoteAction implements Parcelable {
 
     private static final String TAG = "RemoteAction";
 
-    private final Icon mIcon;
-    private final CharSequence mTitle;
-    private final CharSequence mContentDescription;
-    private final PendingIntent mActionIntent;
-    private boolean mEnabled;
-    private boolean mShouldShowIcon;
+    private final Icon mIcon;//操作的图标表示
+    private final CharSequence mTitle;//操作的标题
+    private final CharSequence mContentDescription;// 操作的内容描述
+    private final PendingIntent mActionIntent;//操作意图(PendingIntent)
+    private boolean mEnabled;//操作是否启用
+    private boolean mShouldShowIcon;//是否应该显示图标
 
     RemoteAction(Parcel in) {
         mIcon = Icon.CREATOR.createFromParcel(in);

@@ -45,6 +45,8 @@ import java.util.LinkedList;
  * The queued asynchronous work is performed on a separate, dedicated thread.
  *
  * @hide
+ * 进程级工作跟踪: 跟踪进程中未完成的全局工作，确保异步任务能够正确完成
+ * 异步工作队列: 管理需要异步执行的任务队列
  */
 public class QueuedWork {
     private static final String LOG_TAG = QueuedWork.class.getSimpleName();
@@ -120,6 +122,7 @@ public class QueuedWork {
      * these Runnables are run is from {@link #waitToFinish}.
      *
      * @param finisher The runnable to add as finisher
+     * 添加完成器: 将一个 Runnable 添加为完成器，用于等待异步处理的工作完成
      */
     public static void addFinisher(Runnable finisher) {
         synchronized (sLock) {
@@ -211,6 +214,8 @@ public class QueuedWork {
      *
      * @param work The new runnable to process
      * @param shouldDelay If the message should be delayed
+     * 异步工作排队: 将工作项（Runnable）添加到队列中进行异步处理
+     * 延迟控制: 支持根据参数决定是否延迟执行工作项
      */
     public static void queue(Runnable work, boolean shouldDelay) {
         Handler handler = getHandler();

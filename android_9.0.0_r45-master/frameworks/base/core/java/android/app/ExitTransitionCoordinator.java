@@ -45,6 +45,7 @@ import java.util.ArrayList;
  * This ActivityTransitionCoordinator is created in ActivityOptions#makeSceneTransitionAnimation
  * to govern the exit of the Scene and the shared elements when calling an Activity as well as
  * the reentry of the Scene when coming back from the called Activity.
+ * 管理 Activity 退出转换的协调器类。
  */
 class ExitTransitionCoordinator extends ActivityTransitionCoordinator {
     private static final String TAG = "ExitTransitionCoordinator";
@@ -502,6 +503,7 @@ class ExitTransitionCoordinator extends ActivityTransitionCoordinator {
         super.clearState();
     }
 
+    //确定在共享元素转换过程中是否应随父视图一起移动共享元素。
     @Override
     protected boolean moveSharedElementWithParent() {
         return !mIsReturning;

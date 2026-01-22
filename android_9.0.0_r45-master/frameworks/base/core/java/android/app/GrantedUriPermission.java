@@ -27,6 +27,8 @@ import android.os.Parcelable;
  * Represents an {@link UriPermission} granted to a package.
  *
  * {@hide}
+ * 表示 URI 权限：代表授予某个包的 UriPermission
+ * 权限管理：用于管理系统中 URI 的访问权限分配
  */
 public class GrantedUriPermission implements Parcelable {
 

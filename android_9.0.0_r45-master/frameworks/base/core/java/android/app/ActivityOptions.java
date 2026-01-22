@@ -57,6 +57,16 @@ import java.util.ArrayList;
  * Helper class for building an options Bundle that can be used with
  * {@link android.content.Context#startActivity(android.content.Intent, android.os.Bundle)
  * Context.startActivity(Intent, Bundle)} and related methods.
+ * 动画控制：提供多种 activity 启动动画的创建方法，包括：
+ *  自定义动画（makeCustomAnimation）
+ *  缩放动画（makeScaleUpAnimation）
+ *  缩略图动画（makeThumbnailScaleUpAnimation）
+ *  场景转换动画（makeSceneTransitionAnimation）
+ * 启动参数设置：管理 activity 启动时的各种参数，如：
+ *  启动边界（setLaunchBounds）
+ *  锁定任务模式（setLockTaskEnabled）
+ *  显示ID（setLaunchDisplayId）
+ *  窗口模式（setLaunchWindowingMode）
  */
 public class ActivityOptions {
     private static final String TAG = "ActivityOptions";
@@ -379,6 +389,7 @@ public class ActivityOptions {
      * @return Returns a new ActivityOptions object that you can use to
      * supply these options as the options Bundle when running an in-place animation.
      * @hide
+     * 创建一个用于在现有 activity 上运行原地动画的 ActivityOptions 实例
      */
     public static ActivityOptions makeCustomInPlaceAnimation(Context context, int animId) {
         if (animId == 0) {
@@ -461,6 +472,7 @@ public class ActivityOptions {
      * @param height The initial height of the new activity.
      * @return Returns a new ActivityOptions object that you can use to
      * supply these options as the options Bundle when starting an activity.
+     * 创建一个 ActivityOptions 实例，用于指定一个缩放动画，新 activity 从屏幕的一个小区域缩放到其最终的完整表示
      */
     public static ActivityOptions makeScaleUpAnimation(View source,
             int startX, int startY, int width, int height) {
@@ -489,6 +501,8 @@ public class ActivityOptions {
      * @param height The initial height of the new activity.
      * @return Returns a new ActivityOptions object that you can use to
      * supply these options as the options Bundle when starting an activity.
+     * 创建一个指定裁剪揭示动画的 ActivityOptions 对象
+     * 新 activity 从屏幕的一个小区域开始，以裁剪揭示的方式展现到最终的完整表示
      */
     public static ActivityOptions makeClipRevealAnimation(View source,
             int startX, int startY, int width, int height) {
@@ -509,6 +523,7 @@ public class ActivityOptions {
      * android.content.pm.crossprofile.CrossProfileApps#startMainActivity(ComponentName, UserHandle)
      * }.
      * @hide
+     * 创建一个指定跨用户配置文件动画的 ActivityOptions 对象
      */
     public static ActivityOptions makeOpenCrossProfileAppsAnimation() {
         ActivityOptions options = new ActivityOptions();
@@ -534,6 +549,8 @@ public class ActivityOptions {
      * @param startY The y starting location of the bitmap, relative to <var>source</var>.
      * @return Returns a new ActivityOptions object that you can use to
      * supply these options as the options Bundle when starting an activity.
+     * 创建一个指定缩略图放大动画的 ActivityOptions 对象
+     * 缩略图从给定位置缩放到新启动的 activity 窗口
      */
     public static ActivityOptions makeThumbnailScaleUpAnimation(View source,
             Bitmap thumbnail, int startX, int startY) {
@@ -581,6 +598,7 @@ public class ActivityOptions {
      * Create an ActivityOptions specifying an animation where a list of activity windows and
      * thumbnails are aspect scaled to/from a new location.
      * @hide
+     * 多个 activity 窗口和缩略图按宽高比缩放到/从新位置缩放
      */
     public static ActivityOptions makeMultiThumbFutureAspectScaleAnimation(Context context,
             Handler handler, IAppTransitionAnimationSpecsFuture specsFuture,
@@ -613,6 +631,8 @@ public class ActivityOptions {
      * @return Returns a new ActivityOptions object that you can use to
      * supply these options as the options Bundle when starting an activity.
      * @hide
+     * 创建一个指定缩略图宽高比缩放动画的 ActivityOptions 对象
+     * 新 activity 窗口和缩略图按宽高比缩放到新位置
      */
     public static ActivityOptions makeThumbnailAspectScaleDownAnimation(View source,
             Bitmap thumbnail, int startX, int startY, int targetWidth, int targetHeight,
@@ -621,6 +641,7 @@ public class ActivityOptions {
                 targetWidth, targetHeight, handler, listener, false);
     }
 
+    //创建一个指定缩略图宽高比缩放动画的 ActivityOptions 对象
     private static ActivityOptions makeAspectScaledThumbnailAnimation(View source, Bitmap thumbnail,
             int startX, int startY, int targetWidth, int targetHeight,
             Handler handler, OnAnimationStartedListener listener, boolean scaleUp) {
@@ -639,7 +660,9 @@ public class ActivityOptions {
         return opts;
     }
 
-    /** @hide */
+    /** @hide
+     * 创建一个指定缩略图宽高比缩放动画的 ActivityOptions 对象
+     * */
     public static ActivityOptions makeThumbnailAspectScaleDownAnimation(View source,
             AppTransitionAnimationSpec[] specs, Handler handler,
             OnAnimationStartedListener onAnimationStartedListener,
@@ -671,6 +694,7 @@ public class ActivityOptions {
      *         supply these options as the options Bundle when starting an activity.
      * @see android.transition.Transition#setEpicenterCallback(
      *          android.transition.Transition.EpicenterCallback)
+     * 创建一个用于在 Activities 之间使用跨 Activity 场景动画进行过渡的 ActivityOptions 对象
      */
     public static ActivityOptions makeSceneTransitionAnimation(Activity activity,
             View sharedElement, String sharedElementName) {
@@ -715,6 +739,7 @@ public class ActivityOptions {
      * the window's decor View will have its visibility set to View.GONE.
      *
      * @hide
+     * 在启动 Activity 之前立即调用此方法，以从非 Activity 环境开始共享元素过渡
      */
     @SafeVarargs
     public static ActivityOptions startSharedElementAnimation(Window window,
@@ -825,6 +850,7 @@ public class ActivityOptions {
      * <p>This behavior is not supported for activities with {@link
      * android.R.styleable#AndroidManifestActivity_launchMode launchMode} values of
      * <code>singleInstance</code> or <code>singleTask</code>.
+     * 创建一个用于后台启动任务的 ActivityOptions 对象
      */
     public static ActivityOptions makeTaskLaunchBehind() {
         final ActivityOptions opts = new ActivityOptions();
@@ -835,6 +861,7 @@ public class ActivityOptions {
     /**
      * Create a basic ActivityOptions that has no special animation associated with it.
      * Other options can still be set.
+     * 创建一个基本的 ActivityOptions 对象，不包含特殊动画
      */
     public static ActivityOptions makeBasic() {
         final ActivityOptions opts = new ActivityOptions();
@@ -991,7 +1018,9 @@ public class ActivityOptions {
         return mAnimationType;
     }
 
-    /** @hide */
+    /** @hide
+     * 获取自定义进入动画资源ID
+     * */
     public int getCustomEnterResId() {
         return mCustomEnterResId;
     }
@@ -1001,7 +1030,9 @@ public class ActivityOptions {
         return mCustomExitResId;
     }
 
-    /** @hide */
+    /** @hide
+     * 获取自定义原地动画资源ID
+     * */
     public int getCustomInPlaceResId() {
         return mCustomInPlaceResId;
     }
@@ -1011,12 +1042,15 @@ public class ActivityOptions {
      * it should always be backed by a GraphicBuffer on the other end.
      *
      * @hide
+     * 获取缩略图的 GraphicBuffer 句柄
      */
     public GraphicBuffer getThumbnail() {
         return mThumbnail != null ? mThumbnail.createGraphicBufferHandle() : null;
     }
 
-    /** @hide */
+    /** @hide
+     * 获取动画起始X坐标
+     * */
     public int getStartX() {
         return mStartX;
     }
@@ -1046,10 +1080,14 @@ public class ActivityOptions {
         return mAnimationFinishedListener;
     }
 
-    /** @hide */
+    /** @hide
+     * 获取退出协调器索引
+     * */
     public int getExitCoordinatorKey() { return mExitCoordinatorIndex; }
 
-    /** @hide */
+    /** @hide
+     * 中止动画启动监听器
+     * */
     public void abort() {
         if (mAnimationStartedListener != null) {
             try {
@@ -1093,7 +1131,9 @@ public class ActivityOptions {
         return mUsageTimeReport;
     }
 
-    /** @hide */
+    /** @hide
+     * 获取动画规格数组
+     * */
     public AppTransitionAnimationSpec[] getAnimSpecs() { return mAnimSpecs; }
 
     /** @hide */
@@ -1111,7 +1151,9 @@ public class ActivityOptions {
         mRemoteAnimationAdapter = remoteAnimationAdapter;
     }
 
-    /** @hide */
+    /** @hide
+     * 从 Bundle 对象创建 ActivityOptions 实例
+     * */
     public static ActivityOptions fromBundle(Bundle bOptions) {
         return bOptions != null ? new ActivityOptions(bOptions) : null;
     }
@@ -1233,6 +1275,7 @@ public class ActivityOptions {
      * activity will always be the top activity of the task.  If {@param canResume} is true, then
      * the task will also not be moved to the front of the stack.
      * @hide
+     * 设置活动是否作为任务覆盖层启动
      */
     @TestApi
     public void setTaskOverlay(boolean taskOverlay, boolean canResume) {
@@ -1259,6 +1302,7 @@ public class ActivityOptions {
      * be moved to the front as a part of launching.
      *
      * @hide
+     * 设置启动活动时是否避免将其所在的活动栈移到前端
      */
     public void setAvoidMoveToFront() {
         mAvoidMoveToFront = true;
@@ -1273,7 +1317,9 @@ public class ActivityOptions {
         return mAvoidMoveToFront;
     }
 
-    /** @hide */
+    /** @hide
+     * 获取分屏创建模式
+     * */
     public int getSplitScreenCreateMode() {
         return mSplitScreenCreateMode;
     }
@@ -1297,6 +1343,7 @@ public class ActivityOptions {
      * Update the current values in this ActivityOptions from those supplied
      * in <var>otherOptions</var>.  Any values
      * defined in <var>otherOptions</var> replace those in the base options.
+     * 从另一个 ActivityOptions 对象更新当前对象的值
      */
     public void update(ActivityOptions otherOptions) {
         if (otherOptions.mPackageName != null) {
@@ -1381,6 +1428,7 @@ public class ActivityOptions {
      * Note that the returned Bundle is still owned by the ActivityOptions
      * object; you must not modify it, but can supply it to the startActivity
      * methods that take an options Bundle.
+     * 将当前 ActivityOptions 对象转换为 Bundle 对象
      */
     public Bundle toBundle() {
         Bundle b = new Bundle();
@@ -1519,6 +1567,7 @@ public class ActivityOptions {
      * Returns the rotation animation set by {@link setRotationAnimationHint} or -1
      * if unspecified.
      * @hide
+     * 获取旋转动画提示值
      */
     public int getRotationAnimationHint() {
         return mRotationAnimationHint;
@@ -1541,6 +1590,7 @@ public class ActivityOptions {
      * This removes the bundle from the ActivityOptions to make sure the installer bundle
      * is only available once.
      * @hide
+     * 取出并移除应用程序安装验证包(Bundle)
      */
     public Bundle popAppVerificationBundle() {
         Bundle out = mAppVerificationBundle;
